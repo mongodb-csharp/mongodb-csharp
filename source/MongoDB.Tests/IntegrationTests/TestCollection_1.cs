@@ -112,11 +112,11 @@ namespace MongoDB.IntegrationTests
 
             inserts.Insert(new[] {indoc1, indoc2});
 
-            var result = inserts.FindOne(new Document().Add("Song", "The Axe"));
+            var result = inserts.FindOneByExample(new Document().Add("Song", "The Axe"));
             Assert.IsNotNull(result);
             Assert.AreEqual(2006, result.Year);
 
-            result = inserts.FindOne(new Document().Add("Song", "The Axe2"));
+            result = inserts.FindOneByExample(new Document().Add("Song", "The Axe2"));
             Assert.IsNotNull(result);
             Assert.AreEqual(2008, result.Year);
         }
@@ -163,12 +163,12 @@ namespace MongoDB.IntegrationTests
 
             var selector = new {x = 2};
 
-            var result = deletes.FindOne(selector);
+            var result = deletes.FindOneByExample(selector);
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.y);
 
             deletes.Delete(selector);
-            result = deletes.FindOne(selector);
+            result = deletes.FindOneByExample(selector);
             Assert.IsNull(result, "Shouldn't have been able to find a document that was deleted");
         }
 
@@ -206,7 +206,7 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestFindOne(){
             var query = new {Index = 10};
-            var result = DB.GetCollection<FindsEntity>("finds").FindOne(query);
+            var result = DB.GetCollection<FindsEntity>("finds").FindOneByExample(query);
             Assert.IsNotNull(result);
             Assert.AreEqual(4, result.x);
             Assert.AreEqual(10, result.Index);
@@ -215,14 +215,14 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestFindOneNotThere(){
             var query = new {not_there = 10};
-            var result = DB.GetCollection<FindsEntity>("finds").FindOne(query);
+            var result = DB.GetCollection<FindsEntity>("finds").FindOneByExample(query);
             Assert.IsNull(result);
         }
 
         [Test]
         public void TestFindOneObjectContainingUKPound(){
             var query = new Document();
-            var result = DB.GetCollection<CharReadsEntity>("charreads").FindOne(query);
+            var result = DB.GetCollection<CharReadsEntity>("charreads").FindOneByExample(query);
             Assert.IsNotNull(result);
             Assert.AreEqual("1234£56", result.test);
         }
@@ -277,7 +277,7 @@ namespace MongoDB.IntegrationTests
             };
             inserts.Insert(album);
 
-            var result = inserts.FindOne(new Document().Add("Songs.Title", "Deliveries After Dark"));
+            var result = inserts.FindOneByExample(new Document().Add("Songs.Title", "Deliveries After Dark"));
             Assert.IsNotNull(result);
 
             Assert.AreEqual(album.Songs.Count, result.Songs.Count);
@@ -289,7 +289,7 @@ namespace MongoDB.IntegrationTests
             var indoc = new InsertsEntity {Artist = "Afroman", Song = "Palmdale", Year = 1999};
             inserts.Insert(indoc);
 
-            var result = inserts.FindOne(new {Song = "Palmdale"});
+            var result = inserts.FindOneByExample(new {Song = "Palmdale"});
             Assert.IsNotNull(result);
             Assert.AreEqual(indoc.Year, result.Year);
         }
@@ -331,7 +331,7 @@ namespace MongoDB.IntegrationTests
             var selector = new {Last = "Einstein"};
 
             updates.Update(new Document {{"$inc", new Document("cnt", 1)}}, selector);
-            Assert.AreEqual(coolness++, Convert.ToInt32(updates.FindOne(selector).Coolness), "Coolness field not incremented", true);
+            Assert.AreEqual(coolness++, Convert.ToInt32(updates.FindOneByExample(selector).Coolness), "Coolness field not incremented", true);
 
             updates.Update(new Document
             {
@@ -340,7 +340,7 @@ namespace MongoDB.IntegrationTests
             },
                 selector,
                 true);
-            Assert.AreEqual(coolness++, Convert.ToInt32(updates.FindOne(selector).Coolness), "Coolness field not incremented");
+            Assert.AreEqual(coolness++, Convert.ToInt32(updates.FindOneByExample(selector).Coolness), "Coolness field not incremented");
         }
 
         [Test]
@@ -351,7 +351,7 @@ namespace MongoDB.IntegrationTests
             updates.Insert(doc);
 
             var selector = new {Last = "Brewer"};
-            doc = updates.FindOne(selector);
+            doc = updates.FindOneByExample(selector);
             Assert.IsNotNull(doc);
             Assert.AreEqual("Mtt", doc.First);
             Assert.IsNotNull(doc.Id);
@@ -359,7 +359,7 @@ namespace MongoDB.IntegrationTests
             doc.First = "Matt";
             updates.Update(doc);
 
-            var result = updates.FindOne(selector);
+            var result = updates.FindOneByExample(selector);
             Assert.IsNotNull(result);
             Assert.AreEqual("Matt", result.First);
         }
@@ -370,7 +370,7 @@ namespace MongoDB.IntegrationTests
             var doc = new CountsEntity {First = "Sam", Last = "CorderNE"};
 
             updates.Update(doc);
-            var result = updates.FindOne(new {Last = "CorderNE"});
+            var result = updates.FindOneByExample(new {Last = "CorderNE"});
             Assert.IsNotNull(result);
             Assert.AreEqual("Sam", result.First);
         }
@@ -380,7 +380,7 @@ namespace MongoDB.IntegrationTests
             var saves = DB.GetCollection<Document>("saves");
             saves.Save(new Document("WithoutId", 1.0));
 
-            var result = saves.FindOne(new Document("WithoutId",1.0));
+            var result = saves.FindOneByExample(new Document("WithoutId",1.0));
             Assert.IsNotNull(result);
         }
 
@@ -389,7 +389,7 @@ namespace MongoDB.IntegrationTests
             var saves = DB.GetCollection<Document>("saves");
             saves.Save(new Document("WithId", 1.0).Add("_id", 5));
 
-            var result = saves.FindOne(new Document("_id", 5));
+            var result = saves.FindOneByExample(new Document("_id", 5));
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Id,5);
         }
@@ -404,7 +404,7 @@ namespace MongoDB.IntegrationTests
 
             saves.Save(updated);
 
-            var result = saves.FindOne(new Document("_id", updated.Id));
+            var result = saves.FindOneByExample(new Document("_id", updated.Id));
             Assert.IsNotNull(result);
             Assert.AreEqual(result["Existing"], 2.0);
         }

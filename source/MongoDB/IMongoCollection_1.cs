@@ -52,11 +52,19 @@ namespace MongoDB
         /// <summary>
         /// Finds and returns the first document in a selector query.
         /// </summary>
+        /// <param name="document">The document.</param>
+        /// <returns></returns>
+        T FindOne(Document document);
+
+        /// <summary>
+        /// Finds and returns the first document in a selector query.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
         /// <param name="selector">The selector.</param>
         /// <returns>
         /// A <see cref="Document"/> from the collection.
         /// </returns>
-        T FindOne(object selector);
+        T FindOneByExample<TExample>(TExample selector);
 
         /// <summary>
         ///   Returns a cursor that contains all of the documents in the collection.

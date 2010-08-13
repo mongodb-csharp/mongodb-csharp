@@ -76,7 +76,7 @@ namespace MongoDB
         /// <returns></returns>
         public Document FindOne(Document spec)
         {
-            return _collection.FindOne(spec);
+            return _collection.FindOneByExample(spec);
         }
 
         /// <summary>

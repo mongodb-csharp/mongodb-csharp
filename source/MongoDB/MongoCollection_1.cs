@@ -90,13 +90,24 @@ namespace MongoDB
         /// <summary>
         /// Finds and returns the first document in a query.
         /// </summary>
+        /// <param name="spec">The spec.</param>
+        /// <returns></returns>
+        public T FindOne(Document spec)
+        {
+            using (var cursor = Find(spec, -1, 0, null))
+                return cursor.Documents.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Finds and returns the first document in a query.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
         /// <param name="spec">A <see cref="Document"/> representing the query.</param>
         /// <returns>
         /// A <see cref="Document"/> from the collection.
         /// </returns>
-        public T FindOne(object spec){
-            using(var cursor = Find(spec, -1, 0, null))
-                return cursor.Documents.FirstOrDefault();
+        public T FindOneByExample<TExample>(TExample spec) {
+            return FindOne(ObjectToDocumentConverter.Convert(spec));
         }
 
         /// <summary>

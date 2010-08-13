@@ -158,7 +158,7 @@ namespace MongoDB
             if(reference == null)
                 throw new ArgumentNullException("reference", "cannot be null");
             var query = new Document().Add("_id", reference.Id);
-            return GetCollection<T>(reference.CollectionName).FindOne(query);
+            return GetCollection<T>(reference.CollectionName).FindOneByExample(query);
         }
 
         /// <summary>

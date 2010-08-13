@@ -137,7 +137,7 @@ namespace Simple
 
         public void Run()
         {
-            var category = categories.FindOne(new Document {{"name", "Bluez"}});
+            var category = categories.FindOneByExample(new Document {{"name", "Bluez"}});
 
             Console.WriteLine("The id findOne" + category["_id"]);
 
@@ -147,18 +147,18 @@ namespace Simple
             //The following will do the same thing.
             categories.Save(category);
 
-            Console.WriteLine("Category after one update " + categories.FindOne(selector));
+            Console.WriteLine("Category after one update " + categories.FindOneByExample(selector));
 
             category["name"] = "Blues";
             categories.Update(category, selector);
 
-            Console.WriteLine("Category after two updates " + categories.FindOne(selector));
+            Console.WriteLine("Category after two updates " + categories.FindOneByExample(selector));
 
             //Find it by _id that has been converted to a string now.
             var id = (category["_id"]).ToString();
 
             Console.WriteLine("Found by string id converted back to Oid");
-            Console.WriteLine(categories.FindOne(new Document {{"_id", id.ToOid()}}));
+            Console.WriteLine(categories.FindOneByExample(new Document {{"_id", id.ToOid()}}));
 
             //Find(new Document()) is equivalent to FindAll();
             //Specifying the cursor in a using block will close it on the server if we decide not

@@ -66,7 +66,7 @@ namespace MongoDB
         /// <returns></returns>
         public static T FindOne<T>(this IMongoCollection<T> collection, Expression<Func<T, bool>> selector) where T : class
         {
-            return collection.FindOne(GetQuery(collection, selector));
+            return collection.FindOneByExample(GetQuery(collection, selector));
         }
 
         /// <summary>
