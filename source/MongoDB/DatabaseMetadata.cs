@@ -35,7 +35,7 @@ namespace MongoDB
         /// </summary>
         /// <param name = "name">The name.</param>
         /// <returns></returns>
-        public IMongoCollection CreateCollection(string name)
+        public IMongoCollection<Document> CreateCollection(string name)
         {
             return CreateCollection(name, null);
         }
@@ -46,12 +46,12 @@ namespace MongoDB
         /// <param name = "name">The name.</param>
         /// <param name = "options">The options.</param>
         /// <returns></returns>
-        public IMongoCollection CreateCollection(string name, Document options)
+        public IMongoCollection<Document> CreateCollection(string name, Document options)
         {
             var cmd = new Document();
             cmd.Add("create", name).Merge(options);
             _database.SendCommand(cmd);
-            return new MongoCollection(_configuration, _connection, _name, name);
+            return new MongoCollection<Document>(_configuration, _connection, _name, name);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace MongoDB
         /// </summary>
         /// <param name = "collection">The col.</param>
         /// <returns></returns>
-        public bool DropCollection(MongoCollection collection)
+        public bool DropCollection(MongoCollection<Document> collection)
         {
             return DropCollection(collection.Name);
         }
@@ -115,7 +115,7 @@ namespace MongoDB
         ///   Lists the users.
         /// </summary>
         /// <returns></returns>
-        public ICursor ListUsers()
+        public ICursor<Document> ListUsers()
         {
             var users = _database["system.users"];
             return users.FindAll();

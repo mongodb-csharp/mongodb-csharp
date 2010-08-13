@@ -85,7 +85,7 @@ namespace MongoDB
         /// </summary>
         /// <param name="collection">The collection.</param>
         /// <returns></returns>
-        public static IQueryable<Document> Linq(this IMongoCollection collection)
+        public static IQueryable<Document> Linq(this IMongoCollection<Document> collection)
         {
             return new MongoQuery<Document>(new MongoQueryProvider(collection.Database, collection.Name));
         }

@@ -26,7 +26,7 @@ namespace MongoDB.IntegrationTests
             charreads.Insert(new Document {{"test", "1234" + POUND + "56"}});
         }
 
-        private static int CountDocs(ICursor cur)
+        private static int CountDocs(ICursor<Document> cur)
         {
             return cur.Documents.Count();
         }
@@ -115,7 +115,7 @@ namespace MongoDB.IntegrationTests
             var fields = new Document();
             fields["x"] = 1;
 
-            var c = DB["finds"].Find(query, -1, 0, fields);
+            var c = DB["finds"].Find(query).Fields(fields);
             foreach(var result in c.Documents)
             {
                 Assert.IsNotNull(result);
@@ -195,7 +195,7 @@ namespace MongoDB.IntegrationTests
         
         [Test]
         public void TestFindAndModifyReturnsOldDocument() {
-            IMongoCollection collection = DB["find_and_modify"];
+            IMongoCollection<Document> collection = DB["find_and_modify"];
             Document person = new Document().Append("First", "Sally").Append("Last", "Simmons");
             collection.Insert(person);
             
@@ -207,7 +207,7 @@ namespace MongoDB.IntegrationTests
 
         [Test]
         public void TestFindAndModifyReturnsNewDocument() {
-            IMongoCollection collection = DB["find_and_modify"];
+            IMongoCollection<Document> collection = DB["find_and_modify"];
             Document person = new Document().Append("First", "Susie").Append("Last", "O'Hara");
             collection.Insert(person);
             
@@ -219,7 +219,7 @@ namespace MongoDB.IntegrationTests
 
         [Test]
         public void TestFindAndModifySortsResults() {
-            IMongoCollection collection = DB["find_and_modify"];
+            IMongoCollection<Document> collection = DB["find_and_modify"];
             Document doc1 = new Document().Append("handled", false).Append("priority", 1).Append("value", "Test 1");
             Document doc2 = new Document().Append("handled", false).Append("priority", 2).Append("value", "Test 2");
             collection.Insert(doc1);
@@ -237,7 +237,7 @@ namespace MongoDB.IntegrationTests
 
         [Test]
         public void TestFindAndModifyReturnNullForNoRecordFound() {
-            IMongoCollection collection = DB["find_and_modify"];
+            IMongoCollection<Document> collection = DB["find_and_modify"];
             Document spec = new Document().Append("FirstName", "Noone");
             Document loaded = collection.FindAndModify(new Document().Append("First", "Darlene"), spec, true);
             

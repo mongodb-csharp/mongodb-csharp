@@ -10,7 +10,7 @@ namespace MongoDB.IntegrationTests.Linq
         }
 
         protected IMongoCollection<Person> Collection;
-        protected IMongoCollection DocumentCollection;
+        protected IMongoCollection<Document> DocumentCollection;
 
         [SetUp]
         public virtual void TestSetup()

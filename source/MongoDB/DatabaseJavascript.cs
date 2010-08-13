@@ -10,7 +10,7 @@ namespace MongoDB
     /// </summary>
     public class DatabaseJavascript : ICollection<Document>
     {
-        private readonly IMongoCollection _collection;
+        private readonly IMongoCollection<Document> _collection;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref = "DatabaseJavascript" /> class.

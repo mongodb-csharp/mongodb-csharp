@@ -85,7 +85,7 @@ namespace MongoDB
         ///   Gets the <see cref = "MongoDB.IMongoCollection" /> with the specified name.
         /// </summary>
         /// <value></value>
-        public IMongoCollection this[String name]
+        public IMongoCollection<Document> this[String name]
         {
             get { return GetCollection(name); }
         }
@@ -107,9 +107,9 @@ namespace MongoDB
         /// </summary>
         /// <param name = "name">The name.</param>
         /// <returns></returns>
-        public IMongoCollection GetCollection(string name)
+        public IMongoCollection<Document> GetCollection(string name)
         {
-            return new MongoCollection(_configuration, _connection, Name, name);
+            return new MongoCollection<Document>(_configuration, _connection, Name, name);
         }
 
         /// <summary>

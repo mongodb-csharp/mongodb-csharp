@@ -83,18 +83,18 @@ namespace MongoDB
         public T FindOne(string javascriptWhere)
         {
             var spec = new Document { { "$where", new Code(javascriptWhere) } };
-            using(var cursor = Find(spec, -1, 0, null))
+            using(var cursor = Find(spec).Limit(-1))
                 return cursor.Documents.FirstOrDefault();
         }
 
         /// <summary>
         /// Finds and returns the first document in a query.
         /// </summary>
-        /// <param name="spec">The spec.</param>
+        /// <param name="selector">The spec.</param>
         /// <returns></returns>
-        public T FindOne(Document spec)
+        public T FindOne(Document selector)
         {
-            using (var cursor = Find(spec, -1, 0, null))
+            using (var cursor = Find(selector).Limit(1))
                 return cursor.Documents.FirstOrDefault();
         }
 
@@ -106,8 +106,9 @@ namespace MongoDB
         /// <returns>
         /// A <see cref="Document"/> from the collection.
         /// </returns>
-        public T FindOneByExample<TExample>(TExample spec) {
-            return FindOne(ObjectToDocumentConverter.Convert(spec));
+        public T FindOneByExample<TExample>(TExample selector)
+        {
+            return FindOne(ObjectToDocumentConverter.Convert(selector));
         }
 
         /// <summary>
@@ -116,7 +117,7 @@ namespace MongoDB
         /// <returns></returns>
         public ICursor<T> FindAll(){
             var spec = new Document();
-            return Find(spec, 0, 0, null);
+            return Find(spec);
         }
 
         /// <summary>
@@ -124,53 +125,30 @@ namespace MongoDB
         /// </summary>
         /// <param name="javascriptWhere">The where.</param>
         /// <returns></returns>
-        public ICursor<T> Find(string javascriptWhere){
+        public ICursor<T> Find(string javascriptWhere)
+        {
             var spec = new Document { { "$where", new Code(javascriptWhere) } };
-            return Find(spec, 0, 0, null);
+            return Find(spec);
         }
 
         /// <summary>
-        /// Finds the specified spec.
+        /// Queries the collection using the query selector.
         /// </summary>
-        /// <param name="spec">The spec.</param>
+        /// <param name="selector">The selector.</param>
         /// <returns></returns>
-        public ICursor<T> Find(object spec){
-            return Find(spec, 0, 0, null);
+        public ICursor<T> Find(Document selector) 
+        {
+            return new Cursor<T>(_configuration.SerializationFactory, _configuration.MappingStore, _connection, DatabaseName, Name).Spec(selector);
         }
 
         /// <summary>
         /// Finds the specified spec.
         /// </summary>
-        /// <param name="spec">The spec.</param>
-        /// <param name="fields"></param>
-        /// <returns>A <see cref="ICursor"/></returns>
-        public ICursor<T> Find(object spec, object fields){
-            return Find(spec, 0, 0, fields);
-        }
-
-        /// <summary>
-        /// Finds the specified spec.
-        /// </summary>
-        /// <param name="spec">The spec.</param>
-        /// <param name="limit">The limit.</param>
-        /// <param name="skip">The skip.</param>
+        /// <param name="selector">The spec.</param>
         /// <returns></returns>
-        public ICursor<T> Find(object spec, int limit, int skip){
-            return Find(spec, limit, skip, null);
-        }
-
-        /// <summary>
-        /// Finds the specified spec.
-        /// </summary>
-        /// <param name="spec">The spec.</param>
-        /// <param name="limit">The limit.</param>
-        /// <param name="skip">The skip.</param>
-        /// <param name="fields">The fields.</param>
-        /// <returns></returns>
-        public ICursor<T> Find(object spec, int limit, int skip, object fields){
-            if (spec == null)
-                spec = new Document();
-            return new Cursor<T>(_configuration.SerializationFactory, _configuration.MappingStore, _connection, DatabaseName, Name, spec, limit, skip, fields);
+        public ICursor<T> FindByExample<TExample>(TExample selector)
+        {
+            return Find(ObjectToDocumentConverter.Convert(selector));
         }
 
         /// <summary>

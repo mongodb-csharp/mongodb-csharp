@@ -292,14 +292,10 @@
     <Compile Include="Exceptions\MongoException.cs" />
     <Compile Include="Exceptions\MongoMapReduceException.cs" />
     <Compile Include="Exceptions\MongoOperationException.cs" />
-    <Compile Include="Obsolete\ICursor.cs" />
     <Compile Include="IMongo.cs" />
-    <Compile Include="Obsolete\IMongoCollection.cs" />
     <Compile Include="IndexOrder.cs" />
     <Compile Include="Mongo.cs" />
     <Compile Include="Bson\BsonReader.cs" />
-    <Compile Include="Obsolete\Cursor.cs" />
-    <Compile Include="Obsolete\MongoCollection.cs" />
     <Compile Include="MongoCollection_1.cs" />
     <Compile Include="MongoConnectionStringBuilder.cs" />
     <Compile Include="MongoDatabase.cs" />

@@ -176,7 +176,7 @@ namespace MongoDB.IntegrationTests
         public void TestFindAttributeLimit(){
             var query = new {Index = 10};
             var fields = new {x = 1};
-            var c = DB.GetCollection<FindsEntity>("finds").Find(query, -1, 0, fields);
+            var c = DB.GetCollection<FindsEntity>("finds").FindByExample(query).Fields(fields);
             foreach(var result in c.Documents)
             {
                 Assert.IsNotNull(result);
@@ -188,7 +188,7 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestFindGTRange(){
             var query = new {Index = Op.GreaterThan(20)};
-            var c = DB.GetCollection<FindsEntity>("finds").Find(query);
+            var c = DB.GetCollection<FindsEntity>("finds").FindByExample(query);
             foreach(var result in c.Documents)
             {
                 Assert.IsNotNull(result);
@@ -236,7 +236,7 @@ namespace MongoDB.IntegrationTests
             var func = new CodeWScope("function() { return this.j < 5; }", new Document());
             var funcDoc = new Document().Add("$where", func);
 
-            Assert.AreEqual(4, col.Find(lt).Documents.Count(), "Basic find didn't return 4 docs");
+            Assert.AreEqual(4, col.FindByExample(lt).Documents.Count(), "Basic find didn't return 4 docs");
             Assert.AreEqual(4, col.Find(where).Documents.Count(), "String where didn't return 4 docs");
             Assert.AreEqual(4, col.Find(explicitWhere).Documents.Count(), "Explicit where didn't return 4 docs");
             Assert.AreEqual(4, col.Find(funcDoc).Documents.Count(), "Function where didn't return 4 docs");
@@ -303,14 +303,14 @@ namespace MongoDB.IntegrationTests
             updates.Insert(new CountsEntity {Last = "Cordr", First = "Sam3"});
 
             var selector = new {Last = "Cordr"};
-            var results = updates.Find(selector);
+            var results = updates.FindByExample(selector);
             Assert.AreEqual(3, results.Documents.Count(), "Didn't find all Documents inserted for TestUpdateMany with Selector");
 
             var updateData = new {Last = "Cordr2"};
             updates.UpdateAll(updateData, selector);
 
             selector = new {Last = "Cordr2"};
-            results = updates.Find(selector);
+            results = updates.FindByExample(selector);
             var count = 0;
             foreach(var doc in results.Documents)
             {

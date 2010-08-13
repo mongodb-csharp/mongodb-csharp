@@ -6,7 +6,7 @@ namespace MongoDB.IntegrationTests
     [TestFixture]
     public class TestMapReduce : MongoTestBase
     {
-        private IMongoCollection _collection;
+        private IMongoCollection<Document> _collection;
 
         private const string MapFunc = "function(){\n" +
                                        "   this.tags.forEach(\n" +

@@ -52,9 +52,9 @@ namespace MongoDB
         /// <summary>
         /// Finds and returns the first document in a selector query.
         /// </summary>
-        /// <param name="document">The document.</param>
+        /// <param name="selector">The selector.</param>
         /// <returns></returns>
-        T FindOne(Document document);
+        T FindOne(Document selector);
 
         /// <summary>
         /// Finds and returns the first document in a selector query.
@@ -86,37 +86,16 @@ namespace MongoDB
         /// Queries the collection using the query selector.
         /// </summary>
         /// <param name="selector">The selector.</param>
-        /// <returns>A <see cref="ICursor"/></returns>
-        ICursor<T> Find(object selector);
-
-        /// <summary>
-        /// Queries the collection using the specification and only returns a subset of fields.
-        /// </summary>
-        /// <param name="selector">The selector.</param>
-        /// <param name="fields">The fields.</param>
-        /// <returns>A <see cref="ICursor"/></returns>
-        ICursor<T> Find(object selector, object fields);
-
-        /// <summary>
-        /// Deprecated.  Use the fluent interface on the cursor to specify a limit and skip value.
-        /// </summary>
-        /// <param name="selector">The selector.</param>
-        /// <param name="limit">The limit.</param>
-        /// <param name="skip">The skip.</param>
         /// <returns></returns>
-        [Obsolete("Use the fluent interface on ICursor for specifying limit and skip Find.Skip(x).Limit(y)")]
-        ICursor<T> Find(object selector, int limit, int skip);
+        ICursor<T> Find(Document selector);
 
         /// <summary>
-        /// Queries the collection using the specification and only returns a subset of fields
+        /// Queries the collection using the query selector.
         /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
         /// <param name="selector">The selector.</param>
-        /// <param name="limit">The limit.</param>
-        /// <param name="skip">The skip.</param>
-        /// <param name="fields">The fields.</param>
         /// <returns></returns>
-        [Obsolete("Use the fluent interface on ICursor for specifying limit and skip Find.Skip(x).Limit(y)")]
-        ICursor<T> Find(object selector, int limit, int skip, object fields);
+        ICursor<T> FindByExample<TExample>(TExample selector);
 
         /// <summary>
         /// Executes a query and atomically applies a modifier operation to the first document returning the original document

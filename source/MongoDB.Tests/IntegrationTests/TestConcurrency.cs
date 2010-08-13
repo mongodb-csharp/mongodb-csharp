@@ -21,7 +21,7 @@ namespace MongoDB.IntegrationTests
         }
         
         public override void OnInit (){
-            var col = (IMongoCollection)DB["threadsmallreads"];
+            var col = (IMongoCollection<Document>)DB["threadsmallreads"];
             for(int j = 0; j < 4; j++){
                 col.Insert(new Document(){{"x", 4},{"j", j}});
             }
@@ -33,7 +33,7 @@ namespace MongoDB.IntegrationTests
             Mongo db = new Mongo();
             db.Connect();
 
-            IMongoCollection col = DB["threadinserts"];
+            IMongoCollection<Document> col = DB["threadinserts"];
             
             List<string> identifiers = new List<string>{"A", "B", "C", "D"};
             List<Thread> threads = new List<Thread>();
@@ -90,7 +90,7 @@ namespace MongoDB.IntegrationTests
             Mongo db = new Mongo();
             db.Connect();
 
-            IMongoCollection col = DB["threadreadinserts"];
+            IMongoCollection<Document> col = DB["threadreadinserts"];
             
             List<string> identifiers = new List<string>{"A", "B", "C", "D"};
             List<string> colnames = new List<string>{"threadsmallreads", "threadsmallreads",
@@ -146,7 +146,7 @@ namespace MongoDB.IntegrationTests
         public int Iterations{get; set;}
         public int Count{get;set;}
         public String Identifier{get; set;}
-        public IMongoCollection Collection { get; set; }
+        public IMongoCollection<Document> Collection { get; set; }
         
         public void DoInserts(){
             for(int x = 0; x < this.Iterations; x++){
@@ -164,12 +164,12 @@ namespace MongoDB.IntegrationTests
     public class Reader{
         public int Iterations{get; set;}
         public int Count{get;set;}
-        public IMongoCollection Collection { get; set; }
+        public IMongoCollection<Document> Collection { get; set; }
         
         public void DoReads(){
             for(int x = 0; x < this.Iterations; x++){
                 try{
-                    using(ICursor c = this.Collection.FindAll())
+                    using(ICursor<Document> c = this.Collection.FindAll())
                     {
                         //Just read one and do nothing with the Document.
                         foreach(Document d in c.Documents){

@@ -39,7 +39,7 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestCanReadAndKillCursor()
         {
-            var c = (Cursor)DB["reads"].FindAll();
+            var c = (Cursor<Document>)DB["reads"].FindAll();
 
             Assert.IsNotNull(c, "Cursor shouldn't be null");
             c.Documents.Any();
@@ -50,7 +50,7 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestCanReadMore()
         {
-            var c = (Cursor)DB["reads"].FindAll();
+            var c = (Cursor<Document>)DB["reads"].FindAll();
 
             Assert.IsNotNull(c, "Cursor shouldn't be null");
             var reads = 0;
@@ -74,7 +74,7 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestCanReuseCursor()
         {
-            var c = (Cursor)DB["reads"].FindAll();
+            var c = (Cursor<Document>)DB["reads"].FindAll();
 
             Assert.IsNotNull(c, "Cursor shouldn't be null");
 

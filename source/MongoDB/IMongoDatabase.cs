@@ -30,7 +30,7 @@ namespace MongoDB
         /// Gets the <see cref="MongoDB.IMongoCollection"/> with the specified name.
         /// </summary>
         /// <value></value>
-        IMongoCollection this[string name] { get; }
+        IMongoCollection<Document> this[string name] { get; }
 
         /// <summary>
         /// Gets the collection names.
@@ -43,7 +43,7 @@ namespace MongoDB
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        IMongoCollection GetCollection(string name);
+        IMongoCollection<Document> GetCollection(string name);
 
         /// <summary>
         /// Gets the collection.
