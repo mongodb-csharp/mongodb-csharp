@@ -13,7 +13,7 @@ namespace MongoDB.IntegrationTests.Linq
         {
             base.TestSetup();
 
-            Collection.Delete(new {}, true);
+            Collection.Remove(new {}, true);
             Collection.Insert(
                 new Person
                 {

@@ -103,7 +103,7 @@ namespace MongoDB.IntegrationTests
             DB.ResetError();
             Assert.AreEqual(null, DB.GetLastError()["err"]);
 
-            col.Insert(docs);
+            col.InsertMany(docs);
             var error = DB.GetLastError();
 
             Assert.IsFalse(null == error["err"]);

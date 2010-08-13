@@ -110,7 +110,7 @@ namespace MongoDB.IntegrationTests
             var indoc1 = new {Song = "The Axe", Artist = "Tinsley Ellis", Year = 2006};
             var indoc2 = new {Song = "The Axe2", Artist = "Tinsley Ellis2", Year = 2008};
 
-            inserts.Insert(new[] {indoc1, indoc2});
+            inserts.InsertManyByExample(new[] {indoc1, indoc2});
 
             var result = inserts.FindOneByExample(new Document().Add("Song", "The Axe"));
             Assert.IsNotNull(result);
@@ -159,7 +159,7 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestDelete(){
             var deletes = DB.GetCollection<DeletesEntity>("deletes");
-            deletes.Insert(new {x = 2, y = 1});
+            deletes.InsertByExample(new {x = 2, y = 1});
 
             var selector = new {x = 2};
 
@@ -167,7 +167,7 @@ namespace MongoDB.IntegrationTests
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.y);
 
-            deletes.Delete(selector);
+            deletes.Remove(selector);
             result = deletes.FindOneByExample(selector);
             Assert.IsNull(result, "Shouldn't have been able to find a document that was deleted");
         }
@@ -252,7 +252,7 @@ namespace MongoDB.IntegrationTests
                 var docs = from i in Enumerable.Range(1, 10)
                            select new {Song = "Bulk", bin = b, Year = i};
 
-                inserts.Insert(docs, true);
+                inserts.InsertManyByExample(docs, true);
                 var count = inserts.Count(new Document("Song", "Bulk"));
                 Assert.AreEqual(docs.Count(), count, "Wrong number of documents inserted");
             }
@@ -357,7 +357,7 @@ namespace MongoDB.IntegrationTests
             Assert.IsNotNull(doc.Id);
 
             doc.First = "Matt";
-            updates.Update(doc);
+            updates.Save(doc);
 
             var result = updates.FindOneByExample(selector);
             Assert.IsNotNull(result);
@@ -369,7 +369,7 @@ namespace MongoDB.IntegrationTests
             var updates = DB.GetCollection<CountsEntity>("updates");
             var doc = new CountsEntity {First = "Sam", Last = "CorderNE"};
 
-            updates.Update(doc);
+            updates.Save(doc);
             var result = updates.FindOneByExample(new {Last = "CorderNE"});
             Assert.IsNotNull(result);
             Assert.AreEqual("Sam", result.First);

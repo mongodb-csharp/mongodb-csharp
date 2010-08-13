@@ -16,7 +16,7 @@ namespace MongoDB.IntegrationTests
 
         public override void OnInit()
         {
-            DB["system.js"].Delete(new Document());
+            DB["system.js"].Remove(new Document());
             _javascript = DB.Javascript;
 
             var jsreads = DB["jsreads"];

@@ -45,7 +45,7 @@ namespace MongoDB.IntegrationTests
             indoc2["artist"] = "Tinsley Ellis2";
             indoc2["year"] = 2008;
 
-            inserts.Insert(new[] {indoc1, indoc2});
+            inserts.InsertMany(new[] {indoc1, indoc2});
 
             var result = inserts.FindOne(new Document().Add("song", "The Axe"));
             Assert.IsNotNull(result);
@@ -102,7 +102,7 @@ namespace MongoDB.IntegrationTests
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result["y"]);
 
-            deletes.Delete(selector);
+            deletes.Remove(selector);
             result = deletes.FindOne(selector);
             Assert.IsNull(result, "Shouldn't have been able to find a document that was deleted");
         }
@@ -255,7 +255,7 @@ namespace MongoDB.IntegrationTests
                 //6MB+ of documents
                 for(var x = 0; x < docs.Length; x++)
                     docs[x] = new Document {{"name", "bulk"}, {"b", b}, {"x", x}};
-                inserts.Insert(docs, true);
+                inserts.InsertMany(docs, true);
                 var count = inserts.Count(new Document {{"name", "bulk"}});
                 Assert.AreEqual(docs.Length, count, "Wrong number of documents inserted");
             }
@@ -375,7 +375,7 @@ namespace MongoDB.IntegrationTests
         public void TestSaveInsertDocumentIfExists()
         {
             var saves = DB["updates"];
-            saves.Delete(new Document());
+            saves.Remove(new Document());
 
             var document1 = new Document("name", "Alien1");
             saves.Insert(document1);
@@ -397,7 +397,7 @@ namespace MongoDB.IntegrationTests
         public void TestSaveInsertDocumentIfNotExists()
         {
             var saves = DB["updates"];
-            saves.Delete(new Document());
+            saves.Remove(new Document());
 
             saves.Save(new Document("name", "Sam"));
             saves.Save(new Document("name", "Steve"));
@@ -501,7 +501,7 @@ namespace MongoDB.IntegrationTests
             Assert.IsNotNull(doc["_id"]);
 
             doc["First"] = "Matt";
-            updates.Update(doc);
+            updates.Save(doc);
 
             var result = updates.FindOne(selector);
             Assert.IsNotNull(result);
@@ -516,7 +516,7 @@ namespace MongoDB.IntegrationTests
             doc["First"] = "Sam";
             doc["Last"] = "CorderNE";
 
-            updates.Update(doc);
+            updates.Save(doc);
             var selector = new Document().Add("Last", "CorderNE");
             var result = updates.FindOne(selector);
             Assert.IsNotNull(result);

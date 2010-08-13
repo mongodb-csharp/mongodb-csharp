@@ -71,6 +71,9 @@ namespace MongoDB.Util
             if (type == typeof(byte[]))
                 return true;
 
+            if (type == typeof(Binary))
+                return true;
+
             return false;
         }
     }

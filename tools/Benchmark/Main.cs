@@ -171,7 +171,7 @@ namespace MongoDB.Driver.Benchmark
                     doc.CopyTo(ins);
                     docs[f] = ins;
                 }
-                db[col].Insert(docs);
+                db[col].InsertMany(docs);
             }
         }
 

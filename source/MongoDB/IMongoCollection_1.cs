@@ -1,8 +1,28 @@
 using System;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace MongoDB
 {
+    internal interface IMongoCollection
+    {
+        long Count();
+
+        long Count(object selector);
+
+        void Insert(object document);
+
+        void Insert(object document, bool safemode);
+
+        void InsertMany(IEnumerable documents);
+
+        void InsertMany(IEnumerable documents, bool safemode);
+
+        void Save(object document);
+
+        void Save(object document, bool safemode);
+    }
+
     /// <summary>
     ///   A collection is a storage unit for a group of <see cref = "Document" />s.  The documents do not all have to 
     ///   contain the same schema but for efficiency they should all be similar.
@@ -169,41 +189,83 @@ namespace MongoDB
         long CountByExample<TExample>(TExample selector);
 
         /// <summary>
+        /// Inserts the specified document.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        void Insert(Document document);
+
+        /// <summary>
+        /// Inserts the specified document.
+        /// </summary>
+        /// <param name="document">The doc.</param>
+        void Insert(T document);
+
+        /// <summary>
+        /// Inserts the specified example.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="example">The example.</param>
+        void InsertByExample<TExample>(TExample example);
+
+        /// <summary>
         ///   Inserts the Document into the collection.
         /// </summary>
-        void Insert(object document, bool safemode);
+        void Insert(Document document, bool safemode);
 
         /// <summary>
-        ///   Inserts the specified doc.
+        /// Inserts the specified document.
         /// </summary>
-        /// <param name = "document">The doc.</param>
-        void Insert(object document);
+        /// <param name="document">The document.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        void Insert(T document, bool safemode);
 
         /// <summary>
-        ///   Bulk inserts the specified documents into the database.
+        /// Inserts the by example.
         /// </summary>
-        /// <remarks>
-        ///   See the safemode description in the class description
-        /// </remarks>
-        void Insert<TElement>(IEnumerable<TElement> documents, bool safemode);
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="example">The example.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        void InsertByExample<TExample>(TExample example, bool safemode);
+
+        /// <summary>
+        /// Inserts the specified documents.
+        /// </summary>
+        /// <param name="documents">The documents.</param>
+        void InsertMany(IEnumerable<Document> documents);
+
+        /// <summary>
+        /// Inserts the specified documents.
+        /// </summary>
+        /// <param name="documents">The documents.</param>
+        void InsertMany(IEnumerable<T> documents);
 
         /// <summary>
         ///   Bulk inserts the specified documents into the database.
         /// </summary>
         /// <param name = "documents">The documents.</param>
-        void Insert<TElement>(IEnumerable<TElement> documents);
+        void InsertManyByExample<TExample>(IEnumerable<TExample> examples);
 
         /// <summary>
-        ///   Deletes documents from the collection according to the selector.
+        /// Inserts the specified documents.
         /// </summary>
-        /// <param name = "selector">The selector.</param>
-        /// <param name = "safemode">if set to <c>true</c> [safemode].</param>
-        /// <remarks>
-        ///   An empty document will match all documents in the collection and effectively truncate it.
-        ///   See the safemode description in the class description
-        /// </remarks>
-        [Obsolete("Use Remove instead")]
-        void Delete(object selector, bool safemode);
+        /// <param name="documents">The documents.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        void InsertMany(IEnumerable<Document> documents, bool safemode);
+
+        /// <summary>
+        /// Inserts the specified documents.
+        /// </summary>
+        /// <param name="documents">The documents.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        void InsertMany(IEnumerable<T> documents, bool safemode);
+
+        /// <summary>
+        /// Inserts the specified documents.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="examples">The examples.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        void InsertManyByExample<TExample>(IEnumerable<TExample> examples, bool safemode);
 
         /// <summary>
         ///   Remove documents from the collection according to the selector.
@@ -215,16 +277,6 @@ namespace MongoDB
         ///   See the safemode description in the class description
         /// </remarks>
         void Remove(object selector, bool safemode);
-
-        /// <summary>
-        ///   Deletes documents from the collection according to the selector.
-        /// </summary>
-        /// <param name = "selector">The selector.</param>
-        /// <remarks>
-        ///   An empty document will match all documents in the collection and effectively truncate it.
-        /// </remarks>
-        [Obsolete("Use Remove instead")]
-        void Delete(object selector);
 
         /// <summary>
         /// Remove documents from the collection according to the selector.
@@ -240,20 +292,53 @@ namespace MongoDB
         ///   generated and an upsert sent.  Otherwise the document matching the _id of the document will be updated.
         /// </summary>
         /// <param name = "document">The document.</param>
-        /// <param name = "safemode">if set to <c>true</c> [safemode].</param>
         /// <remarks>
-        ///   See the safemode description in the class description
+        ///   The document will contain the _id that is saved to the database.
         /// </remarks>
-        [Obsolete("Use Save instead")]
-        void Update(object document, bool safemode);
+        void Save(Document document);
 
         /// <summary>
         ///   Inserts or updates a document in the database.  If the document does not contain an _id one will be
         ///   generated and an upsert sent.  Otherwise the document matching the _id of the document will be updated.
         /// </summary>
-        /// <param name = "document">The document.</param>
-        [Obsolete("Use Save instead")]
-        void Update(object document);
+        /// <param name="document">The document.</param>
+        void Save(T document);
+
+        /// <summary>
+        ///   Inserts or updates a document in the database.  If the document does not contain an _id one will be
+        ///   generated and an upsert sent.  Otherwise the document matching the _id of the document will be updated.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="example">The example.</param>
+        void SaveByExample<TExample>(TExample example);
+
+        /// <summary>
+        /// Inserts or updates a document in the database.  If the document does not contain an _id one will be
+        /// generated and an upsert sent.  Otherwise the document matching the _id of the document will be updated.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        /// <remarks>
+        /// The document will contain the _id that is saved to the database.
+        /// </remarks>
+        void Save(Document document, bool safemode);
+
+        /// <summary>
+        /// Inserts or updates a document in the database.  If the document does not contain an _id one will be
+        /// generated and an upsert sent.  Otherwise the document matching the _id of the document will be updated.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        void Save(T document, bool safemode);
+
+        /// <summary>
+        /// Inserts or updates a document in the database.  If the document does not contain an _id one will be
+        /// generated and an upsert sent.  Otherwise the document matching the _id of the document will be updated.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="example">The example.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        void SaveByExample<TExample>(TExample example, bool safemode);
 
         /// <summary>
         ///   Updates the specified document with the current document.  In order to only do a partial update use a
@@ -316,22 +401,5 @@ namespace MongoDB
         ///   See the safemode description in the class description
         /// </remarks>
         void UpdateAll(object document, object selector, bool safemode);
-
-        /// <summary>
-        ///   Inserts or updates a document in the database.  If the document does not contain an _id one will be
-        ///   generated and an upsert sent.  Otherwise the document matching the _id of the document will be updated.
-        /// </summary>
-        /// <param name = "document">The document.</param>
-        /// <remarks>
-        ///   The document will contain the _id that is saved to the database.
-        /// </remarks>
-        void Save(object document);
-
-        /// <summary>
-        ///   Saves a document to the database using an upsert.
-        /// </summary>
-        /// <param name = "document">The document.</param>
-        /// <param name = "safemode">if set to <c>true</c> [safemode].</param>
-        void Save(object document, bool safemode);
     }
 }

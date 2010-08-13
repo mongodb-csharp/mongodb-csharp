@@ -8,13 +8,14 @@ using MongoDB.Protocol;
 using MongoDB.Results;
 using MongoDB.Util;
 using MongoDB.Configuration.Mapping.Model;
+using System.Collections;
 
 namespace MongoDB
 {
     /// <summary>
     /// 
     /// </summary>
-    public class MongoCollection<T> : IMongoCollection<T> where T : class
+    public class MongoCollection<T> : IMongoCollection<T>, IMongoCollection where T : class
     {
         private readonly MongoConfiguration _configuration;
         private readonly Connection _connection;
@@ -258,17 +259,7 @@ namespace MongoDB
         /// </remarks>
         public long Count(Document selector)
         {
-            try
-            {
-                var response = Database.SendCommand(typeof(T), new Document().Add("count", Name).Add("query", selector));
-                return Convert.ToInt64((double)response["n"]);
-            }
-            catch (MongoCommandException)
-            {
-                //FIXME This is an exception condition when the namespace is missing. 
-                //-1 might be better here but the console returns 0.
-                return 0;
-            }
+            return ((IMongoCollection)this).Count(selector);
         }
 
         public long CountByExample<TExample>(TExample selector)
@@ -276,81 +267,123 @@ namespace MongoDB
             return Count(ObjectToDocumentConverter.Convert(selector));
         }
 
-        /// <summary>
-        ///   Inserts the Document into the collection.
-        /// </summary>
-        public void Insert(object document, bool safemode)
-        {
-            Insert(document);
-            CheckError(safemode);
-        }
 
         /// <summary>
-        /// Inserts the specified doc.
+        /// Inserts the specified document.
         /// </summary>
         /// <param name="document">The doc.</param>
-        public void Insert(object document)
+        public void Insert(Document document)
         {
-            Insert(new[] { document });
+            InsertMany(new[] { document }, false);
         }
 
         /// <summary>
-        /// Inserts all.
+        /// Inserts the specified document.
         /// </summary>
-        /// <typeparam name="TElement">The type of the element.</typeparam>
-        /// <param name="documents">The documents.</param>
-        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        public void Insert<TElement>(IEnumerable<TElement> documents, bool safemode)
+        /// <param name="document">The document.</param>
+        public void Insert(T document)
         {
-            if (safemode)
-                Database.ResetError();
-            Insert(documents);
-            CheckPreviousError(safemode);
+            InsertMany(new[] { document }, false);
+        }
+
+        /// <summary>
+        /// Inserts the by example.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="example">The example.</param>
+        public void InsertByExample<TExample>(TExample example)
+        {
+            InsertManyByExample<TExample>(new[] { example }, false);
+        }
+
+        /// <summary>
+        /// Inserts the specified document.
+        /// </summary>
+        /// <param name="document">The doc.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        public void Insert(Document document, bool safemode)
+        {
+            InsertMany(new[] { document }, safemode);
+        }
+
+        /// <summary>
+        /// Inserts the specified document.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        public void Insert(T document, bool safemode)
+        {
+            InsertMany(new[] { document }, safemode);
+        }
+
+        /// <summary>
+        /// Inserts the by example.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="example">The example.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        public void InsertByExample<TExample>(TExample example, bool safemode)
+        {
+            InsertManyByExample(new[] { example }, safemode);
         }
 
         /// <summary>
         /// Inserts the specified documents.
         /// </summary>
         /// <param name="documents">The documents.</param>
-        public void Insert<TElement>(IEnumerable<TElement> documents)
+        public void InsertMany(IEnumerable<Document> documents)
         {
-            if (documents is Document)
-            {
-                Insert(new[] { (Document)documents });
-                return;
-            }
+            InsertMany(documents, false);
+        }
 
-            var rootType = typeof(T);
-            var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(rootType);
+        /// <summary>
+        /// Inserts the specified documents.
+        /// </summary>
+        /// <param name="documents">The documents.</param>
+        public void InsertMany(IEnumerable<T> documents)
+        {
+            InsertMany(documents, false);
+        }
 
-            var insertMessage = new InsertMessage(writerSettings)
-            {
-                FullCollectionName = FullName
-            };
+        /// <summary>
+        /// Inserts the by example.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="examples">The examples.</param>
+        public void InsertManyByExample<TExample>(IEnumerable<TExample> examples)
+        {
+            InsertManyByExample<TExample>(examples, false);
+        }
 
-            var descriptor = _configuration.SerializationFactory.GetObjectDescriptor(rootType);
-            var insertDocument = new List<object>();
+        /// <summary>
+        /// Inserts the specified documents.
+        /// </summary>
+        /// <param name="documents">The documents.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        public void InsertMany(IEnumerable<Document> documents, bool safemode)
+        {
+            ((IMongoCollection)this).InsertMany(documents, safemode);
+        }
 
-            foreach (var document in documents)
-            {
-                var id = descriptor.GetPropertyValue(document, "_id");
+        /// <summary>
+        /// Inserts the specified documents.
+        /// </summary>
+        /// <param name="documents">The documents.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        public void InsertMany(IEnumerable<T> documents, bool safemode)
+        {
+            ((IMongoCollection)this).InsertMany(documents, safemode);
+        }
 
-                if (id == null)
-                    descriptor.SetPropertyValue(document, "_id", descriptor.GenerateId(document));
-
-                insertDocument.Add(document);
-            }
-
-            insertMessage.Documents = insertDocument.ToArray();
-
-            try
-            {
-                _connection.SendMessage(insertMessage, DatabaseName);
-            }
-            catch (IOException exception)
-            {
-                throw new MongoConnectionException("Could not insert document, communication failure", _connection, exception);
-            }
+        /// <summary>
+        /// Inserts all.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="examples">The documents.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        public void InsertManyByExample<TExample>(IEnumerable<TExample> examples, bool safemode)
+        {
+            InsertMany(examples.Select(x => ObjectToDocumentConverter.Convert(x)).ToArray(), safemode);
         }
 
         /// <summary>
@@ -438,32 +471,6 @@ namespace MongoDB
         /// Updates the specified document.
         /// </summary>
         /// <param name="document">The document.</param>
-        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        [Obsolete("Use Save instead")]
-        public void Update(object document, bool safemode)
-        {
-            Save(document, safemode);
-        }
-
-        /// <summary>
-        /// Updates a document with the data in doc as found by the selector.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <remarks>
-        /// _id will be used in the document to create a selector.  If it isn't in
-        /// the document then it is assumed that the document is new and an upsert is sent to the database
-        /// instead.
-        /// </remarks>
-        [Obsolete("Use Save(Document)")]
-        public void Update(object document)
-        {
-            Save(document);
-        }
-
-        /// <summary>
-        /// Updates the specified document.
-        /// </summary>
-        /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         public void Update(object document, object selector, bool safemode)
@@ -545,47 +552,34 @@ namespace MongoDB
             CheckPreviousError(safemode);
         }
 
-        /// <summary>
-        /// Saves a document to the database using an upsert.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <remarks>
-        /// The document will contain the _id that is saved to the database.  This is really just an alias
-        /// to Update(Document) to maintain consistency between drivers.
-        /// </remarks>
-        public void Save(object document)
+        public void Save(Document document)
         {
-            //Try to generate a selector using _id for an existing document.
-            //otherwise just set the upsert flag to 1 to insert and send onward.
-
-            var descriptor = _configuration.SerializationFactory.GetObjectDescriptor(typeof(T));
-
-            var value = descriptor.GetPropertyValue(document, "_id");
-
-            if (value == null)
-            {
-                //Likely a new document
-                descriptor.SetPropertyValue(document, "_id", descriptor.GenerateId(value));
-
-                Insert(document);
-            }
-            else
-                Update(document, new Document("_id", value), UpdateFlags.Upsert);
+            Save(document, false);
         }
 
-        /// <summary>
-        /// Saves a document to the database using an upsert.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        /// <remarks>
-        /// The document will contain the _id that is saved to the database.  This is really just an alias
-        /// to Update(Document) to maintain consistency between drivers.
-        /// </remarks>
-        public void Save(object document, bool safemode)
+        public void Save(T document)
         {
-            Save(document);
-            CheckError(safemode);
+            Save(document, false);
+        }
+
+        public void SaveByExample<TExample>(TExample example)
+        {
+            SaveByExample(example, false);
+        }
+
+        public void Save(Document document, bool safemode)
+        {
+            ((IMongoCollection)this).Save(document, safemode);
+        }
+
+        public void Save(T document, bool safemode)
+        {
+            ((IMongoCollection)this).Save(document, safemode);
+        }
+
+        public void SaveByExample<TExample>(TExample example, bool safemode)
+        {
+            ((IMongoCollection)this).Save(ObjectToDocumentConverter.Convert(example), safemode);
         }
 
         /// <summary>
@@ -637,6 +631,105 @@ namespace MongoDB
             }
 
             return document;
+        }
+
+        long IMongoCollection.Count()
+        {
+            return Count();
+        }
+
+        long IMongoCollection.Count(object selector)
+        {
+            try
+            {
+                var response = Database.SendCommand(typeof(T), new Document().Add("count", Name).Add("query", selector));
+                return Convert.ToInt64((double)response["n"]);
+            }
+            catch (MongoCommandException)
+            {
+                //FIXME This is an exception condition when the namespace is missing. 
+                //-1 might be better here but the console returns 0.
+                return 0;
+            }
+        }
+
+        void IMongoCollection.Insert(object document)
+        {
+            ((IMongoCollection)this).Insert(document, false);
+        }
+
+        void IMongoCollection.Insert(object document, bool safemode)
+        {
+            ((IMongoCollection)this).InsertMany(new[] { document }, safemode);
+        }
+
+        void IMongoCollection.InsertMany(IEnumerable documents)
+        {
+            ((IMongoCollection)this).InsertMany(documents, false);
+        }
+
+        void IMongoCollection.InsertMany(IEnumerable documents, bool safemode)
+        {
+            if (safemode)
+                Database.ResetError();
+
+            var rootType = typeof(T);
+            var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(rootType);
+
+            var insertMessage = new InsertMessage(writerSettings)
+            {
+                FullCollectionName = FullName
+            };
+
+            var descriptor = _configuration.SerializationFactory.GetObjectDescriptor(rootType);
+            var insertDocument = new ArrayList();
+
+            foreach (var document in documents)
+            {
+                var id = descriptor.GetPropertyValue(document, "_id");
+
+                if (id == null)
+                    descriptor.SetPropertyValue(document, "_id", descriptor.GenerateId(document));
+
+                insertDocument.Add(document);
+            }
+
+            insertMessage.Documents = insertDocument.ToArray();
+
+            try
+            {
+                _connection.SendMessage(insertMessage, DatabaseName);
+                CheckPreviousError(safemode);
+            }
+            catch (IOException exception)
+            {
+                throw new MongoConnectionException("Could not insert document, communication failure", _connection, exception);
+            }
+        }
+
+        void IMongoCollection.Save(object document)
+        {
+            ((IMongoCollection)this).Save(document, false);
+        }
+
+        void IMongoCollection.Save(object document, bool safemode)
+        {
+            //Try to generate a selector using _id for an existing document.
+            //otherwise just set the upsert flag to 1 to insert and send onward.
+
+            var descriptor = _configuration.SerializationFactory.GetObjectDescriptor(typeof(T));
+
+            var value = descriptor.GetPropertyValue(document, "_id");
+
+            if (value == null)
+            {
+                //Likely a new document
+                descriptor.SetPropertyValue(document, "_id", descriptor.GenerateId(value));
+
+                ((IMongoCollection)this).Insert(document, safemode);
+            }
+            else
+                Update(document, new Document("_id", value), UpdateFlags.Upsert);
         }
     }
 }

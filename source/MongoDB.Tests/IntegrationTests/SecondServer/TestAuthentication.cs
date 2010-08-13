@@ -109,7 +109,7 @@ namespace MongoDB.IntegrationTests.SecondServer
 	    private static void TryInsertData(Mongo mongo)
 	    {
             var collection = mongo[TestDatabaseName]["testCollection"];
-            collection.Delete(new Document(),true);
+            collection.Remove(new Document(),true);
             collection.Insert(new Document().Add("value", 84),true);
             
             var value = collection.FindOne(new Document().Add("value", 84));
