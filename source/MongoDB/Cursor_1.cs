@@ -399,49 +399,18 @@ namespace MongoDB
 
         private Document ConvertFieldSelectorToDocument(object document)
         {
-            Document doc;
             if (document == null)
-                doc = new Document();
-            else
-                doc = ConvertExampleToDocument(document) as Document;
+                return null;
 
-            if (doc == null)
+            if(!(document is Document) && typeof(T).IsAssignableFrom(document.GetType()))
                 throw new NotSupportedException("An entity type is not supported in field selection. Use either a document or an anonymous type.");
 
+            var doc = ObjectToDocumentConverter.Convert(document);
             var classMap = _mappingStore.GetClassMap(typeof(T));
             if (doc.Count > 0 && (classMap.IsPolymorphic || classMap.IsSubClass))
                 doc[classMap.DiscriminatorAlias] = true;
 
             return doc.Count == 0 ? null : doc;
-        }
-
-        private object ConvertExampleToDocument(object document)
-        {
-            if (document == null)
-                return null;
-
-            Document doc = document as Document;
-            if (doc != null)
-                return doc;
-
-            doc = new Document();
-
-            if (!(document is T)) //some type that is being used as an example
-            {
-                foreach (var prop in document.GetType().GetProperties())
-                {
-                    if (!prop.CanRead)
-                        continue;
-
-                    object value = prop.GetValue(document, null);
-                    if (!TypeHelper.IsNativeToMongo(prop.PropertyType))
-                        value = ConvertExampleToDocument(value);
-
-                    doc[prop.Name] = value;
-                }
-            }
-
-            return doc;
         }
     }
 }
