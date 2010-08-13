@@ -151,14 +151,22 @@ namespace MongoDB
         long Count();
 
         /// <summary>
-        ///   Count all items in a collection that match the query selector.
+        /// Counts the specified selector.
         /// </summary>
-        /// <param name = "selector">The selector.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
+        long Count(Document selector);
+
+        /// <summary>
+        /// Count all items in a collection that match the query selector.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="selector">The selector.</param>
         /// <returns></returns>
         /// <remarks>
-        ///   It will return 0 if the collection doesn't exist yet.
+        /// It will return 0 if the collection doesn't exist yet.
         /// </remarks>
-        long Count(object selector);
+        long CountByExample<TExample>(TExample selector);
 
         /// <summary>
         ///   Inserts the Document into the collection.

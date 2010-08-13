@@ -151,9 +151,9 @@ namespace MongoDB.IntegrationTests
             counts.Insert(new CountsEntity {Last = "Cordr", First = "Sam", Coolness = 2});
             counts.Insert(new CountsEntity {Last = "Corder", First = "Sam", Coolness = 3});
 
-            Assert.AreEqual(2, counts.Count(new {Last = "Cordr"}));
-            Assert.AreEqual(1, counts.Count(new {Last = "Corder"}));
-            Assert.AreEqual(0, counts.Count(new {Last = "Brown"}));
+            Assert.AreEqual(2, counts.CountByExample(new { Last = "Cordr" }));
+            Assert.AreEqual(1, counts.CountByExample(new { Last = "Corder" }));
+            Assert.AreEqual(0, counts.CountByExample(new { Last = "Brown" }));
         }
 
         [Test]
@@ -199,7 +199,7 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestFindNulls(){
             var query = new {Text = (string)null};
-            var numnulls = DB.GetCollection<FindsEntity>("finds").Count(query);
+            var numnulls = DB.GetCollection<FindsEntity>("finds").CountByExample(query);
             Assert.AreEqual(5, numnulls);
         }
 

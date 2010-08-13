@@ -222,7 +222,7 @@ namespace MongoDB.Linq
             if (queryObject.Query == null)
                 return Convert.ToInt32(collection.GetType().GetMethod("Count", Type.EmptyTypes).Invoke(collection, null));
 
-            return Convert.ToInt32(collection.GetType().GetMethod("Count", new[] { typeof(object) }).Invoke(collection, new[] { queryObject.Query }));
+            return Convert.ToInt32(collection.GetType().GetMethod("Count", new[] { typeof(Document) }).Invoke(collection, new[] { queryObject.Query }));
         }
 
         private object ExecuteFind(MongoQueryObject queryObject)

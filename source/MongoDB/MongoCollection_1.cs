@@ -20,7 +20,7 @@ namespace MongoDB
         private readonly Connection _connection;
         private MongoDatabase _database;
         private CollectionMetadata _metadata;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MongoCollection&lt;T&gt;"/> class.
         /// </summary>
@@ -41,7 +41,8 @@ namespace MongoDB
         /// Gets the database.
         /// </summary>
         /// <value>The database.</value>
-        public IMongoDatabase Database {
+        public IMongoDatabase Database
+        {
             get { return _database ?? (_database = new MongoDatabase(_configuration, _connection, DatabaseName)); }
         }
 
@@ -61,7 +62,8 @@ namespace MongoDB
         /// Gets the full name including database name.
         /// </summary>
         /// <value>The full name.</value>
-        public string FullName {
+        public string FullName
+        {
             get { return DatabaseName + "." + Name; }
         }
 
@@ -69,7 +71,8 @@ namespace MongoDB
         /// Gets the meta data.
         /// </summary>
         /// <value>The meta data.</value>
-        public CollectionMetadata Metadata {
+        public CollectionMetadata Metadata
+        {
             get { return _metadata ?? (_metadata = new CollectionMetadata(_configuration, DatabaseName, Name, _connection)); }
         }
 
@@ -83,7 +86,7 @@ namespace MongoDB
         public T FindOne(string javascriptWhere)
         {
             var spec = new Document { { "$where", new Code(javascriptWhere) } };
-            using(var cursor = Find(spec).Limit(-1))
+            using (var cursor = Find(spec).Limit(-1))
                 return cursor.Documents.FirstOrDefault();
         }
 
@@ -115,7 +118,8 @@ namespace MongoDB
         /// Finds all.
         /// </summary>
         /// <returns></returns>
-        public ICursor<T> FindAll(){
+        public ICursor<T> FindAll()
+        {
             var spec = new Document();
             return Find(spec);
         }
@@ -136,7 +140,7 @@ namespace MongoDB
         /// </summary>
         /// <param name="selector">The selector.</param>
         /// <returns></returns>
-        public ICursor<T> Find(Document selector) 
+        public ICursor<T> Find(Document selector)
         {
             return new Cursor<T>(_configuration.SerializationFactory, _configuration.MappingStore, _connection, DatabaseName, Name).Spec(selector);
         }
@@ -158,7 +162,8 @@ namespace MongoDB
         /// <param name="document">The document.</param>
         /// <param name="spec"><see cref="Document"/> to find the document.</param>
         /// <returns>A <see cref="Document"/></returns>
-        public T FindAndModify(object document, object spec){
+        public T FindAndModify(object document, object spec)
+        {
             return FindAndModify(document, spec, false);
         }
 
@@ -171,7 +176,8 @@ namespace MongoDB
         /// <param name="sort"><see cref="Document"/> containing the names of columns to sort on with the values being the</param>
         /// <returns>A <see cref="Document"/></returns>
         /// <see cref="IndexOrder"/>
-        public T FindAndModify(object document, object spec, object sort){
+        public T FindAndModify(object document, object spec, object sort)
+        {
             return FindAndModify(document, spec, sort);
         }
 
@@ -183,7 +189,8 @@ namespace MongoDB
         /// <param name="spec"><see cref="Document"/> to find the document.</param>
         /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <returns>A <see cref="Document"/></returns>
-        public T FindAndModify(object document, object spec, bool returnNew){
+        public T FindAndModify(object document, object spec, bool returnNew)
+        {
             return FindAndModify(document, spec, new Document(), returnNew);
         }
 
@@ -197,7 +204,8 @@ namespace MongoDB
         /// <see cref="IndexOrder"/></param>
         /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <returns>A <see cref="Document"/></returns>
-        public T FindAndModify(object document, object spec, object sort, bool returnNew){
+        public T FindAndModify(object document, object spec, object sort, bool returnNew)
+        {
             try
             {
                 var command = new Document
@@ -216,7 +224,7 @@ namespace MongoDB
 
                 return response.Value;
             }
-            catch(MongoCommandException)
+            catch (MongoCommandException)
             {
                 // This is when there is no document to operate on
                 return null;
@@ -227,40 +235,52 @@ namespace MongoDB
         /// Entrypoint into executing a map/reduce query against the collection.
         /// </summary>
         /// <returns>A <see cref="MapReduce"/></returns>
-        public MapReduce MapReduce(){
+        public MapReduce MapReduce()
+        {
             return new MapReduce(Database, Name, typeof(T));
         }
 
         ///<summary>
         ///  Count all items in the collection.
         ///</summary>
-        public long Count(){
+        public long Count()
+        {
             return Count(new Document());
         }
 
         /// <summary>
         /// Count all items in a collection that match the query spec.
         /// </summary>
-        /// <param name="spec">The spec.</param>
+        /// <param name="selector">The spec.</param>
         /// <returns></returns>
         /// <remarks>
         /// It will return 0 if the collection doesn't exist yet.
         /// </remarks>
-        public long Count(object spec){
-            try {
-                var response = Database.SendCommand(typeof(T),new Document().Add("count", Name).Add("query", spec));
+        public long Count(Document selector)
+        {
+            try
+            {
+                var response = Database.SendCommand(typeof(T), new Document().Add("count", Name).Add("query", selector));
                 return Convert.ToInt64((double)response["n"]);
-            } catch (MongoCommandException) {
+            }
+            catch (MongoCommandException)
+            {
                 //FIXME This is an exception condition when the namespace is missing. 
                 //-1 might be better here but the console returns 0.
                 return 0;
             }
         }
 
+        public long CountByExample<TExample>(TExample selector)
+        {
+            return Count(ObjectToDocumentConverter.Convert(selector));
+        }
+
         /// <summary>
         ///   Inserts the Document into the collection.
         /// </summary>
-        public void Insert(object document, bool safemode){
+        public void Insert(object document, bool safemode)
+        {
             Insert(document);
             CheckError(safemode);
         }
@@ -269,7 +289,8 @@ namespace MongoDB
         /// Inserts the specified doc.
         /// </summary>
         /// <param name="document">The doc.</param>
-        public void Insert(object document){
+        public void Insert(object document)
+        {
             Insert(new[] { document });
         }
 
@@ -279,7 +300,8 @@ namespace MongoDB
         /// <typeparam name="TElement">The type of the element.</typeparam>
         /// <param name="documents">The documents.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        public void Insert<TElement>(IEnumerable<TElement> documents, bool safemode){
+        public void Insert<TElement>(IEnumerable<TElement> documents, bool safemode)
+        {
             if (safemode)
                 Database.ResetError();
             Insert(documents);
@@ -290,10 +312,11 @@ namespace MongoDB
         /// Inserts the specified documents.
         /// </summary>
         /// <param name="documents">The documents.</param>
-        public void Insert<TElement>(IEnumerable<TElement> documents){
-            if(documents is Document)
+        public void Insert<TElement>(IEnumerable<TElement> documents)
+        {
+            if (documents is Document)
             {
-                Insert(new[]{(Document)documents});
+                Insert(new[] { (Document)documents });
                 return;
             }
 
@@ -307,21 +330,25 @@ namespace MongoDB
 
             var descriptor = _configuration.SerializationFactory.GetObjectDescriptor(rootType);
             var insertDocument = new List<object>();
-            
-            foreach (var document in documents) {
+
+            foreach (var document in documents)
+            {
                 var id = descriptor.GetPropertyValue(document, "_id");
-                
+
                 if (id == null)
                     descriptor.SetPropertyValue(document, "_id", descriptor.GenerateId(document));
-                
+
                 insertDocument.Add(document);
             }
-            
+
             insertMessage.Documents = insertDocument.ToArray();
-            
-            try {
-                _connection.SendMessage(insertMessage,DatabaseName);
-            } catch (IOException exception) {
+
+            try
+            {
+                _connection.SendMessage(insertMessage, DatabaseName);
+            }
+            catch (IOException exception)
+            {
                 throw new MongoConnectionException("Could not insert document, communication failure", _connection, exception);
             }
         }
@@ -350,7 +377,8 @@ namespace MongoDB
         /// An empty document will match all documents in the collection and effectively truncate it.
         /// See the safemode description in the class description
         /// </remarks>
-        public void Remove(object selector, bool safemode){
+        public void Remove(object selector, bool safemode)
+        {
             Remove(selector);
             CheckError(safemode);
         }
@@ -363,16 +391,20 @@ namespace MongoDB
         /// An empty document will match all documents in the collection and effectively truncate it.
         /// </remarks>
         [Obsolete("Use Remove instead")]
-        public void Delete(object selector){
+        public void Delete(object selector)
+        {
             var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(typeof(T));
 
-            try {
+            try
+            {
                 _connection.SendMessage(new DeleteMessage(writerSettings)
                 {
                     FullCollectionName = FullName,
                     Selector = selector
-                },DatabaseName);
-            } catch (IOException exception) {
+                }, DatabaseName);
+            }
+            catch (IOException exception)
+            {
                 throw new MongoConnectionException("Could not delete document, communication failure", _connection, exception);
             }
         }
@@ -384,7 +416,8 @@ namespace MongoDB
         /// <remarks>
         /// An empty document will match all documents in the collection and effectively truncate it.
         /// </remarks>
-        public void Remove(object selector){
+        public void Remove(object selector)
+        {
             var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(typeof(T));
 
             try
@@ -395,7 +428,7 @@ namespace MongoDB
                     Selector = selector
                 }, DatabaseName);
             }
-            catch(IOException exception)
+            catch (IOException exception)
             {
                 throw new MongoConnectionException("Could not delete document, communication failure", _connection, exception);
             }
@@ -422,7 +455,8 @@ namespace MongoDB
         /// instead.
         /// </remarks>
         [Obsolete("Use Save(Document)")]
-        public void Update(object document){
+        public void Update(object document)
+        {
             Save(document);
         }
 
@@ -432,7 +466,8 @@ namespace MongoDB
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        public void Update(object document, object selector, bool safemode){
+        public void Update(object document, object selector, bool safemode)
+        {
             Update(document, selector, 0, safemode);
         }
 
@@ -441,7 +476,8 @@ namespace MongoDB
         /// </summary>
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
-        public void Update(object document, object selector){
+        public void Update(object document, object selector)
+        {
             Update(document, selector, 0);
         }
 
@@ -452,7 +488,8 @@ namespace MongoDB
         /// <param name="selector">The selector.</param>
         /// <param name="flags">The flags.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        public void Update(object document, object selector, UpdateFlags flags, bool safemode){
+        public void Update(object document, object selector, UpdateFlags flags, bool safemode)
+        {
             Update(document, selector, flags);
             CheckError(safemode);
         }
@@ -463,10 +500,12 @@ namespace MongoDB
         /// <param name="document">The <see cref="Document"/> to update with</param>
         /// <param name="selector">The query spec to find the document to update.</param>
         /// <param name="flags"><see cref="UpdateFlags"/></param>
-        public void Update(object document, object selector, UpdateFlags flags){
+        public void Update(object document, object selector, UpdateFlags flags)
+        {
             var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(typeof(T));
 
-            try {
+            try
+            {
                 _connection.SendMessage(new UpdateMessage(writerSettings)
                 {
                     FullCollectionName = FullName,
@@ -474,7 +513,9 @@ namespace MongoDB
                     Document = document,
                     Flags = (int)flags
                 }, DatabaseName);
-            } catch (IOException exception) {
+            }
+            catch (IOException exception)
+            {
                 throw new MongoConnectionException("Could not update document, communication failure", _connection, exception);
             }
         }
@@ -485,7 +526,8 @@ namespace MongoDB
         /// </summary>
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
-        public void UpdateAll(object document, object selector){
+        public void UpdateAll(object document, object selector)
+        {
             Update(EnsureUpdateDocument(document), selector, UpdateFlags.MultiUpdate);
         }
 
@@ -495,7 +537,8 @@ namespace MongoDB
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        public void UpdateAll(object document, object selector, bool safemode){
+        public void UpdateAll(object document, object selector, bool safemode)
+        {
             if (safemode)
                 Database.ResetError();
             UpdateAll(document, selector);
@@ -510,7 +553,8 @@ namespace MongoDB
         /// The document will contain the _id that is saved to the database.  This is really just an alias
         /// to Update(Document) to maintain consistency between drivers.
         /// </remarks>
-        public void Save(object document){
+        public void Save(object document)
+        {
             //Try to generate a selector using _id for an existing document.
             //otherwise just set the upsert flag to 1 to insert and send onward.
 
@@ -518,7 +562,7 @@ namespace MongoDB
 
             var value = descriptor.GetPropertyValue(document, "_id");
 
-            if(value == null)
+            if (value == null)
             {
                 //Likely a new document
                 descriptor.SetPropertyValue(document, "_id", descriptor.GenerateId(value));
@@ -548,12 +592,13 @@ namespace MongoDB
         /// Checks the error.
         /// </summary>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        private void CheckError(bool safemode){
+        private void CheckError(bool safemode)
+        {
             if (!safemode)
                 return;
-            
+
             var lastError = Database.GetLastError();
-            
+
             if (ErrorTranslator.IsError(lastError))
                 throw ErrorTranslator.Translate(lastError);
         }
@@ -562,12 +607,13 @@ namespace MongoDB
         /// Checks the previous error.
         /// </summary>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        private void CheckPreviousError(bool safemode){
+        private void CheckPreviousError(bool safemode)
+        {
             if (!safemode)
                 return;
-            
+
             var previousError = Database.GetPreviousError();
-            
+
             if (ErrorTranslator.IsError(previousError))
                 throw ErrorTranslator.Translate(previousError);
         }
@@ -584,7 +630,7 @@ namespace MongoDB
             var foundOp = descriptor.GetMongoPropertyNames(document)
                 .Any(name => name.IndexOf('$') == 0);
 
-            if(foundOp == false)
+            if (foundOp == false)
             {
                 //wrap document in a $set.
                 return new Document().Add("$set", document);

@@ -92,7 +92,7 @@ namespace Simple
                     Console.WriteLine("Count by LINQ on typed collection: {0}", collection.Linq().Count(x => x.Corners > 1));
                     Console.WriteLine("Count by LINQ on typed collection2: {0}", db.GetCollection<SubClass>().Linq().Count(x => x.Corners > 1));
                     //Console.WriteLine("Count by LINQ on typed collection3: {0}", db.GetCollection<SubClass>().Count(new { Corners = Op.GreaterThan(1) }));
-                    Console.WriteLine("Count on typed collection: {0}", collection.Count(new { Corners = Op.GreaterThan(1) }));
+                    Console.WriteLine("Count on typed collection: {0}", collection.CountByExample(new { Corners = Op.GreaterThan(1) }));
 
                     var coll = db.GetCollection("MyClass");
                     var count = coll.Count(new Document("Corners", Op.GreaterThan(1)));
