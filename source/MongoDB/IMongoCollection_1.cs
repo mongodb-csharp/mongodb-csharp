@@ -10,15 +10,11 @@ namespace MongoDB
 
         long Count(object selector);
 
-        void Insert(object document);
-
         void Insert(object document, bool safemode);
-
-        void InsertMany(IEnumerable documents);
 
         void InsertMany(IEnumerable documents, bool safemode);
 
-        void Save(object document);
+        void Remove(object selector, bool safemode);
 
         void Save(object document, bool safemode);
     }
@@ -268,6 +264,25 @@ namespace MongoDB
         void InsertManyByExample<TExample>(IEnumerable<TExample> examples, bool safemode);
 
         /// <summary>
+        /// Remove documents from the collection according to the selector.
+        /// </summary>
+        /// <param name="selector">The selector.</param>
+        /// <remarks>
+        /// An empty document will match all documents in the collection and effectively truncate it.
+        /// </remarks>
+        void Remove(Document selector);
+
+        /// <summary>
+        /// Remove documents from the collection according to the selector.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="example">The example.</param>
+        /// <remarks>
+        /// An empty document will match all documents in the collection and effectively truncate it.
+        /// </remarks>
+        void RemoveByExample<TExample>(TExample example);
+
+        /// <summary>
         ///   Remove documents from the collection according to the selector.
         /// </summary>
         /// <param name = "selector">The selector.</param>
@@ -276,16 +291,15 @@ namespace MongoDB
         ///   An empty document will match all documents in the collection and effectively truncate it.
         ///   See the safemode description in the class description
         /// </remarks>
-        void Remove(object selector, bool safemode);
+        void Remove(Document selector, bool safemode);
 
         /// <summary>
-        /// Remove documents from the collection according to the selector.
+        ///   Remove documents from the collection according to the selector.
         /// </summary>
-        /// <param name="selector">The selector.</param>
-        /// <remarks>
-        /// An empty document will match all documents in the collection and effectively truncate it.
-        /// </remarks>
-        void Remove(object selector);
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="example">The example.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        void RemoveByExample<TExample>(TExample example, bool safemode);
 
         /// <summary>
         ///   Inserts or updates a document in the database.  If the document does not contain an _id one will be

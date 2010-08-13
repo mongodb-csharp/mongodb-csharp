@@ -17,7 +17,7 @@ namespace MongoDB.IntegrationTests.Linq
         {
             base.TestSetup();
 
-            Collection.Remove(new { }, true);
+            Collection.RemoveByExample(new { }, true);
             Collection.Insert(
                 new Person
                 {

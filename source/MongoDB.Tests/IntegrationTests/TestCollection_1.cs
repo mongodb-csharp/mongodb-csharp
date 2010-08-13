@@ -167,7 +167,7 @@ namespace MongoDB.IntegrationTests
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.y);
 
-            deletes.Remove(selector);
+            deletes.RemoveByExample(selector);
             result = deletes.FindOneByExample(selector);
             Assert.IsNull(result, "Shouldn't have been able to find a document that was deleted");
         }

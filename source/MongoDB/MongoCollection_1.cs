@@ -387,18 +387,28 @@ namespace MongoDB
         }
 
         /// <summary>
-        /// Deletes documents from the collection according to the spec.
+        /// Remove documents from the collection according to the selector.
         /// </summary>
         /// <param name="selector">The selector.</param>
-        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         /// <remarks>
         /// An empty document will match all documents in the collection and effectively truncate it.
         /// </remarks>
-        [Obsolete("Use Remove instead")]
-        public void Delete(object selector, bool safemode)
+        public void Remove(Document selector)
         {
-            Delete(selector);
-            CheckError(safemode);
+            Remove(selector, false);
+        }
+
+        /// <summary>
+        /// Remove documents from the collection according to the selector.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="example">The example.</param>
+        /// <remarks>
+        /// An empty document will match all documents in the collection and effectively truncate it.
+        /// </remarks>
+        public void RemoveByExample<TExample>(TExample example)
+        {
+            RemoveByExample(example, false);
         }
 
         /// <summary>
@@ -410,61 +420,81 @@ namespace MongoDB
         /// An empty document will match all documents in the collection and effectively truncate it.
         /// See the safemode description in the class description
         /// </remarks>
-        public void Remove(object selector, bool safemode)
+        public void Remove(Document selector, bool safemode)
         {
-            Remove(selector);
-            CheckError(safemode);
-        }
-
-        /// <summary>
-        /// Deletes documents from the collection according to the spec.
-        /// </summary>
-        /// <param name="selector">The selector.</param>
-        /// <remarks>
-        /// An empty document will match all documents in the collection and effectively truncate it.
-        /// </remarks>
-        [Obsolete("Use Remove instead")]
-        public void Delete(object selector)
-        {
-            var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(typeof(T));
-
-            try
-            {
-                _connection.SendMessage(new DeleteMessage(writerSettings)
-                {
-                    FullCollectionName = FullName,
-                    Selector = selector
-                }, DatabaseName);
-            }
-            catch (IOException exception)
-            {
-                throw new MongoConnectionException("Could not delete document, communication failure", _connection, exception);
-            }
+            ((IMongoCollection)this).Remove(selector, safemode);
         }
 
         /// <summary>
         /// Remove documents from the collection according to the selector.
         /// </summary>
-        /// <param name="selector">The selector.</param>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="example">The example.</param>
         /// <remarks>
         /// An empty document will match all documents in the collection and effectively truncate it.
         /// </remarks>
-        public void Remove(object selector)
+        public void RemoveByExample<TExample>(TExample example, bool safemode)
         {
-            var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(typeof(T));
+            Remove(ObjectToDocumentConverter.Convert(example), false);
+        }
 
-            try
-            {
-                _connection.SendMessage(new DeleteMessage(writerSettings)
-                {
-                    FullCollectionName = FullName,
-                    Selector = selector
-                }, DatabaseName);
-            }
-            catch (IOException exception)
-            {
-                throw new MongoConnectionException("Could not delete document, communication failure", _connection, exception);
-            }
+        /// <summary>
+        /// Saves the specified document.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        public void Save(Document document)
+        {
+            Save(document, false);
+        }
+
+        /// <summary>
+        /// Saves the specified document.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        public void Save(T document)
+        {
+            Save(document, false);
+        }
+
+        /// <summary>
+        /// Saves the specified document.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="example">The example.</param>
+        public void SaveByExample<TExample>(TExample example)
+        {
+            SaveByExample(example, false);
+        }
+
+        /// <summary>
+        /// Saves the specified document.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        public void Save(Document document, bool safemode)
+        {
+            ((IMongoCollection)this).Save(document, safemode);
+        }
+
+        /// <summary>
+        /// Saves the specified document.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        public void Save(T document, bool safemode)
+        {
+            ((IMongoCollection)this).Save(document, safemode);
+        }
+
+        /// <summary>
+        /// Saves the specified document.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="example">The example.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        public void SaveByExample<TExample>(TExample example, bool safemode)
+        {
+            ((IMongoCollection)this).Save(ObjectToDocumentConverter.Convert(example), safemode);
         }
 
         /// <summary>
@@ -552,36 +582,6 @@ namespace MongoDB
             CheckPreviousError(safemode);
         }
 
-        public void Save(Document document)
-        {
-            Save(document, false);
-        }
-
-        public void Save(T document)
-        {
-            Save(document, false);
-        }
-
-        public void SaveByExample<TExample>(TExample example)
-        {
-            SaveByExample(example, false);
-        }
-
-        public void Save(Document document, bool safemode)
-        {
-            ((IMongoCollection)this).Save(document, safemode);
-        }
-
-        public void Save(T document, bool safemode)
-        {
-            ((IMongoCollection)this).Save(document, safemode);
-        }
-
-        public void SaveByExample<TExample>(TExample example, bool safemode)
-        {
-            ((IMongoCollection)this).Save(ObjectToDocumentConverter.Convert(example), safemode);
-        }
-
         /// <summary>
         /// Checks the error.
         /// </summary>
@@ -653,19 +653,9 @@ namespace MongoDB
             }
         }
 
-        void IMongoCollection.Insert(object document)
-        {
-            ((IMongoCollection)this).Insert(document, false);
-        }
-
         void IMongoCollection.Insert(object document, bool safemode)
         {
             ((IMongoCollection)this).InsertMany(new[] { document }, safemode);
-        }
-
-        void IMongoCollection.InsertMany(IEnumerable documents)
-        {
-            ((IMongoCollection)this).InsertMany(documents, false);
         }
 
         void IMongoCollection.InsertMany(IEnumerable documents, bool safemode)
@@ -707,9 +697,22 @@ namespace MongoDB
             }
         }
 
-        void IMongoCollection.Save(object document)
+        void IMongoCollection.Remove(object selector, bool safemode)
         {
-            ((IMongoCollection)this).Save(document, false);
+            var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(typeof(T));
+
+            try
+            {
+                _connection.SendMessage(new DeleteMessage(writerSettings)
+                {
+                    FullCollectionName = FullName,
+                    Selector = selector
+                }, DatabaseName);
+            }
+            catch (IOException exception)
+            {
+                throw new MongoConnectionException("Could not remove document, communication failure", _connection, exception);
+            }
         }
 
         void IMongoCollection.Save(object document, bool safemode)
@@ -731,5 +734,8 @@ namespace MongoDB
             else
                 Update(document, new Document("_id", value), UpdateFlags.Upsert);
         }
+
+
+        
     }
 }
