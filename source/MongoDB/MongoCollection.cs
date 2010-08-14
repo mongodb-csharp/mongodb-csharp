@@ -147,7 +147,7 @@ namespace MongoDB
         }
 
         /// <summary>
-        /// Finds the specified spec.
+        /// Finds the specified document.
         /// </summary>
         /// <param name="selector">The spec.</param>
         /// <returns></returns>
@@ -161,75 +161,34 @@ namespace MongoDB
         /// by default.
         /// </summary>
         /// <param name="document">The document.</param>
-        /// <param name="spec"><see cref="Document"/> to find the document.</param>
-        /// <returns>A <see cref="Document"/></returns>
-        public T FindAndModify(object document, object spec)
-        {
-            return FindAndModify(document, spec, false);
-        }
-
-        /// <summary>
-        /// Executes a query and atomically applies a modifier operation to the first document returning the original document
-        /// by default.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="spec"><see cref="Document"/> to find the document.</param>
-        /// <param name="sort"><see cref="Document"/> containing the names of columns to sort on with the values being the</param>
-        /// <returns>A <see cref="Document"/></returns>
-        /// <see cref="IndexOrder"/>
-        public T FindAndModify(object document, object spec, object sort)
-        {
-            return FindAndModify(document, spec, sort);
-        }
-
-        /// <summary>
-        /// Executes a query and atomically applies a modifier operation to the first document returning the original document
-        /// by default.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="spec"><see cref="Document"/> to find the document.</param>
+        /// <param name="selector">The selector.</param>
+        /// <param name="sort">The sort.</param>
         /// <param name="returnNew">if set to <c>true</c> [return new].</param>
-        /// <returns>A <see cref="Document"/></returns>
-        public T FindAndModify(object document, object spec, bool returnNew)
+        /// <returns></returns>
+        public T FindAndModify(Document document, Document selector, Document sort, bool returnNew)
         {
-            return FindAndModify(document, spec, new Document(), returnNew);
+            return (T)((IMongoCollection)this).FindAndModify(document, selector, sort, returnNew);
         }
 
         /// <summary>
         /// Executes a query and atomically applies a modifier operation to the first document returning the original document
         /// by default.
         /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="spec"><see cref="Document"/> to find the document.</param>
-        /// <param name="sort"><see cref="Document"/> containing the names of columns to sort on with the values being the
-        /// <see cref="IndexOrder"/></param>
+        /// <typeparam name="TExample1">The type of the example1.</typeparam>
+        /// <typeparam name="TExample2">The type of the example2.</typeparam>
+        /// <typeparam name="TExample3">The type of the example3.</typeparam>
+        /// <param name="documentExample">The document example.</param>
+        /// <param name="selectorExample">The selector example.</param>
+        /// <param name="sortExample">The sort example.</param>
         /// <param name="returnNew">if set to <c>true</c> [return new].</param>
-        /// <returns>A <see cref="Document"/></returns>
-        public T FindAndModify(object document, object spec, object sort, bool returnNew)
+        /// <returns></returns>
+        public T FindAndModifyByExample<TExample1, TExample2, TExample3>(TExample1 documentExample, TExample2 selectorExample, TExample3 sortExample, bool returnNew)
         {
-            try
-            {
-                var command = new Document
-                {
-                    {"findandmodify", Name},
-                    {"query", spec},
-                    {"update", EnsureUpdateDocument(document)},
-                    {"sort", sort},
-                    {"new", returnNew}
-                };
-
-                var response = _connection.SendCommand<FindAndModifyResult<T>>(_configuration.SerializationFactory,
-                    DatabaseName,
-                    typeof(T),
-                    command);
-
-                return response.Value;
-            }
-            catch (MongoCommandException)
-            {
-                // This is when there is no document to operate on
-                return null;
-            }
+            return (T)((IMongoCollection)this).FindAndModify(
+                ObjectToDocumentConverter.Convert(documentExample), 
+                ObjectToDocumentConverter.Convert(selectorExample), 
+                ObjectToDocumentConverter.Convert(sortExample), 
+                returnNew);
         }
 
         /// <summary>
@@ -502,6 +461,33 @@ namespace MongoDB
                 //FIXME This is an exception condition when the namespace is missing. 
                 //-1 might be better here but the console returns 0.
                 return 0;
+            }
+        }
+
+        object IMongoCollection.FindAndModify(object document, object selector, object sort, bool returnNew)
+        {
+            try
+            {
+                var command = new Document
+                {
+                    {"findandmodify", Name},
+                    {"query", selector},
+                    {"update", EnsureUpdateDocument(document)},
+                    {"sort", sort},
+                    {"new", returnNew}
+                };
+
+                var response = _connection.SendCommand<FindAndModifyResult<T>>(_configuration.SerializationFactory,
+                    DatabaseName,
+                    typeof(T),
+                    command);
+
+                return response.Value;
+            }
+            catch (MongoCommandException)
+            {
+                // This is when there is no document to operate on
+                return null;
             }
         }
 

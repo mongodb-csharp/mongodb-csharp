@@ -10,6 +10,8 @@ namespace MongoDB
 
         long Count(object selector);
 
+        object FindAndModify(object document, object selector, object sort, bool returnNew);
+
         void Insert(object document, bool safemode);
 
         void InsertMany(IEnumerable documents, bool safemode);
@@ -121,41 +123,24 @@ namespace MongoDB
         /// </summary>
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
-        /// <returns>A <see cref="Document"/></returns>
-        T FindAndModify(object document, object selector);
-
-        /// <summary>
-        /// Executes a query and atomically applies a modifier operation to the first document returning the original document
-        /// by default.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="selector">The selector.</param>
-        /// <param name="sort"><see cref="Document"/> containing the names of columns to sort on with the values being the</param>
-        /// <returns>A <see cref="Document"/></returns>
-        /// <see cref="IndexOrder"/>
-        T FindAndModify(object document, object selector, object sort);
-
-        /// <summary>
-        /// Executes a query and atomically applies a modifier operation to the first document returning the original document
-        /// by default.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="selector">The selector.</param>
-        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
-        /// <returns>A <see cref="Document"/></returns>
-        T FindAndModify(object document, object selector, bool returnNew);
-
-        /// <summary>
-        /// Executes a query and atomically applies a modifier operation to the first document returning the original document
-        /// by default.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="selector">The selector.</param>
         /// <param name="sort"><see cref="Document"/> containing the names of columns to sort on with the values being the
         /// <see cref="IndexOrder"/></param>
         /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <returns>A <see cref="Document"/></returns>
-        T FindAndModify(object document, object selector, object sort, bool returnNew);
+        T FindAndModify(Document document, Document selector, Document sort, bool returnNew);
+
+        /// <summary>
+        /// Finds the and modify by example.
+        /// </summary>
+        /// <typeparam name="TExample1">The type of the example1.</typeparam>
+        /// <typeparam name="TExample2">The type of the example2.</typeparam>
+        /// <typeparam name="TExample3">The type of the example3.</typeparam>
+        /// <param name="documentExample">The document example.</param>
+        /// <param name="selectorExample">The selector example.</param>
+        /// <param name="sortExample">The sort example.</param>
+        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
+        /// <returns></returns>
+        T FindAndModifyByExample<TExample1, TExample2, TExample3>(TExample1 documentExample, TExample2 selectorExample, TExample3 sortExample, bool returnNew);
 
         /// <summary>
         ///   Entrypoint into executing a map/reduce query against the collection.

@@ -55,7 +55,7 @@ namespace MongoDB.IntegrationTests.Linq
         [Test]
         public void Delete()
         {
-            personCollection.Delete(p => true);
+            personCollection.Remove(p => true);
 
             Assert.AreEqual(0, personCollection.Count());
         }

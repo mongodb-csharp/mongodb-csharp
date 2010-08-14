@@ -11,6 +11,96 @@ namespace MongoDB
     public static class IMongoCollectionExtensions
     {
         /// <summary>
+        /// Executes a query and atomically applies a modifier operation to the first document returning the original document
+        /// by default.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns>A <see cref="Document"/></returns>
+        public static T FindAndModify<T>(this IMongoCollection<T> collection, Document document, Document selector) where T : class
+        {
+            return collection.FindAndModify(document, selector, new Document(), false);
+        }
+
+        /// <summary>
+        /// Executes a query and atomically applies a modifier operation to the first document returning the original document
+        /// by default.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns>A <see cref="Document"/></returns>
+        public static T FindAndModify<T>(this IMongoCollection<T> collection, Document document, Document selector, Document sort) where T : class
+        {
+            return collection.FindAndModify(document, selector, sort, false);
+        }
+
+        /// <summary>
+        /// Executes a query and atomically applies a modifier operation to the first document returning the original document
+        /// by default.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="selector">The selector.</param>
+        /// <returns>A <see cref="Document"/></returns>
+        public static T FindAndModify<T>(this IMongoCollection<T> collection, Document document, Document selector, bool returnNew) where T : class
+        {
+            return collection.FindAndModify(document, selector, new Document(), returnNew);
+        }
+
+        /// <summary>
+        /// Finds the and modify by example.
+        /// </summary>
+        /// <typeparam name="TExample1">The type of the example1.</typeparam>
+        /// <typeparam name="TExample2">The type of the example2.</typeparam>
+        /// <typeparam name="TExample3">The type of the example3.</typeparam>
+        /// <param name="documentExample">The document example.</param>
+        /// <param name="selectorExample">The selector example.</param>
+        /// <param name="sortExample">The sort example.</param>
+        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
+        /// <returns></returns>
+        public static T FindAndModifyByExample<T, TExample1, TExample2>(this IMongoCollection<T> collection, TExample1 documentExample, TExample2 selectorExample) where T : class
+        {
+            return collection.FindAndModifyByExample(documentExample, selectorExample, new { }, false);
+        }
+
+        /// <summary>
+        /// Finds the and modify by example.
+        /// </summary>
+        /// <typeparam name="TExample1">The type of the example1.</typeparam>
+        /// <typeparam name="TExample2">The type of the example2.</typeparam>
+        /// <typeparam name="TExample3">The type of the example3.</typeparam>
+        /// <param name="documentExample">The document example.</param>
+        /// <param name="selectorExample">The selector example.</param>
+        /// <param name="sortExample">The sort example.</param>
+        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
+        /// <returns></returns>
+        public static T FindAndModifyByExample<T, TExample1, TExample2, TExample3>(this IMongoCollection<T> collection, TExample1 documentExample, TExample2 selectorExample, TExample3 sortExample) where T : class
+        {
+            return collection.FindAndModifyByExample(documentExample, selectorExample, sortExample, false);
+        }
+
+        /// <summary>
+        /// Finds the and modify by example.
+        /// </summary>
+        /// <typeparam name="TExample1">The type of the example1.</typeparam>
+        /// <typeparam name="TExample2">The type of the example2.</typeparam>
+        /// <typeparam name="TExample3">The type of the example3.</typeparam>
+        /// <param name="documentExample">The document example.</param>
+        /// <param name="selectorExample">The selector example.</param>
+        /// <param name="sortExample">The sort example.</param>
+        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
+        /// <returns></returns>
+        public static T FindAndModifyByExample<T, TExample1, TExample2>(this IMongoCollection<T> collection, TExample1 documentExample, TExample2 selectorExample, bool returnNew) where T : class
+        {
+            return collection.FindAndModifyByExample(documentExample, selectorExample, new { }, returnNew);
+        }
+
+        /// <summary>
         /// Inserts the specified document.
         /// </summary>
         /// <typeparam name="T"></typeparam>

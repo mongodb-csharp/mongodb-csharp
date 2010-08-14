@@ -297,7 +297,7 @@
     <Compile Include="IndexOrder.cs" />
     <Compile Include="Mongo.cs" />
     <Compile Include="Bson\BsonReader.cs" />
-    <Compile Include="MongoCollection_1.cs" />
+    <Compile Include="MongoCollection.cs" />
     <Compile Include="MongoConnectionStringBuilder.cs" />
     <Compile Include="MongoDatabase.cs" />
     <Compile Include="MongoMaxKey.cs" />
@@ -336,9 +336,9 @@
     <Compile Include="Configuration\MongoConfigurationSection.cs" />
     <Compile Include="Configuration\Section\ConnectionElement.cs" />
     <Compile Include="Configuration\Section\ConnectionCollection.cs" />
-    <Compile Include="Cursor_1.cs" />
-    <Compile Include="ICursor_1.cs" />
-    <Compile Include="IMongoCollection_1.cs" />
+    <Compile Include="Cursor.cs" />
+    <Compile Include="ICursor.cs" />
+    <Compile Include="IMongoCollection.cs" />
     <Compile Include="Util\MongoHash.cs" />
     <Compile Include="Util\ReflectionExtensions.cs" />
     <Compile Include="MongoSymbol.cs" />
