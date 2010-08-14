@@ -267,35 +267,6 @@ namespace MongoDB
             return Count(ObjectToDocumentConverter.Convert(selector));
         }
 
-
-        /// <summary>
-        /// Inserts the specified document.
-        /// </summary>
-        /// <param name="document">The doc.</param>
-        public void Insert(Document document)
-        {
-            InsertMany(new[] { document }, false);
-        }
-
-        /// <summary>
-        /// Inserts the specified document.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        public void Insert(T document)
-        {
-            InsertMany(new[] { document }, false);
-        }
-
-        /// <summary>
-        /// Inserts the by example.
-        /// </summary>
-        /// <typeparam name="TExample">The type of the example.</typeparam>
-        /// <param name="example">The example.</param>
-        public void InsertByExample<TExample>(TExample example)
-        {
-            InsertManyByExample<TExample>(new[] { example }, false);
-        }
-
         /// <summary>
         /// Inserts the specified document.
         /// </summary>
@@ -325,34 +296,6 @@ namespace MongoDB
         public void InsertByExample<TExample>(TExample example, bool safemode)
         {
             InsertManyByExample(new[] { example }, safemode);
-        }
-
-        /// <summary>
-        /// Inserts the specified documents.
-        /// </summary>
-        /// <param name="documents">The documents.</param>
-        public void InsertMany(IEnumerable<Document> documents)
-        {
-            InsertMany(documents, false);
-        }
-
-        /// <summary>
-        /// Inserts the specified documents.
-        /// </summary>
-        /// <param name="documents">The documents.</param>
-        public void InsertMany(IEnumerable<T> documents)
-        {
-            InsertMany(documents, false);
-        }
-
-        /// <summary>
-        /// Inserts the by example.
-        /// </summary>
-        /// <typeparam name="TExample">The type of the example.</typeparam>
-        /// <param name="examples">The examples.</param>
-        public void InsertManyByExample<TExample>(IEnumerable<TExample> examples)
-        {
-            InsertManyByExample<TExample>(examples, false);
         }
 
         /// <summary>
@@ -390,31 +333,6 @@ namespace MongoDB
         /// Remove documents from the collection according to the selector.
         /// </summary>
         /// <param name="selector">The selector.</param>
-        /// <remarks>
-        /// An empty document will match all documents in the collection and effectively truncate it.
-        /// </remarks>
-        public void Remove(Document selector)
-        {
-            Remove(selector, false);
-        }
-
-        /// <summary>
-        /// Remove documents from the collection according to the selector.
-        /// </summary>
-        /// <typeparam name="TExample">The type of the example.</typeparam>
-        /// <param name="example">The example.</param>
-        /// <remarks>
-        /// An empty document will match all documents in the collection and effectively truncate it.
-        /// </remarks>
-        public void RemoveByExample<TExample>(TExample example)
-        {
-            RemoveByExample(example, false);
-        }
-
-        /// <summary>
-        /// Remove documents from the collection according to the selector.
-        /// </summary>
-        /// <param name="selector">The selector.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         /// <remarks>
         /// An empty document will match all documents in the collection and effectively truncate it.
@@ -436,34 +354,6 @@ namespace MongoDB
         public void RemoveByExample<TExample>(TExample example, bool safemode)
         {
             Remove(ObjectToDocumentConverter.Convert(example), false);
-        }
-
-        /// <summary>
-        /// Saves the specified document.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        public void Save(Document document)
-        {
-            Save(document, false);
-        }
-
-        /// <summary>
-        /// Saves the specified document.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        public void Save(T document)
-        {
-            Save(document, false);
-        }
-
-        /// <summary>
-        /// Saves the specified document.
-        /// </summary>
-        /// <typeparam name="TExample">The type of the example.</typeparam>
-        /// <param name="example">The example.</param>
-        public void SaveByExample<TExample>(TExample example)
-        {
-            SaveByExample(example, false);
         }
 
         /// <summary>
@@ -498,37 +388,15 @@ namespace MongoDB
         }
 
         /// <summary>
-        /// Updates the specified document.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="selector">The selector.</param>
-        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        public void Update(object document, object selector, bool safemode)
-        {
-            Update(document, selector, 0, safemode);
-        }
-
-        /// <summary>
         /// Updates a document with the data in doc as found by the selector.
         /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="selector">The selector.</param>
-        public void Update(object document, object selector)
-        {
-            Update(document, selector, 0);
-        }
-
-        /// <summary>
-        /// Updates the specified document.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="selector">The selector.</param>
-        /// <param name="flags">The flags.</param>
+        /// <param name="document">The <see cref="Document"/> to update with</param>
+        /// <param name="selector">The query spec to find the document to update.</param>
+        /// <param name="flags"><see cref="UpdateFlags"/></param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        public void Update(object document, object selector, UpdateFlags flags, bool safemode)
+        public void Update(Document document, Document selector, UpdateFlags flags, bool safemode)
         {
-            Update(document, selector, flags);
-            CheckError(safemode);
+            ((IMongoCollection)this).Update(document, selector, flags, safemode);
         }
 
         /// <summary>
@@ -537,24 +405,10 @@ namespace MongoDB
         /// <param name="document">The <see cref="Document"/> to update with</param>
         /// <param name="selector">The query spec to find the document to update.</param>
         /// <param name="flags"><see cref="UpdateFlags"/></param>
-        public void Update(object document, object selector, UpdateFlags flags)
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        public void UpdateByExample<TExample1, TExample2>(TExample1 documentExample, TExample2 selectorExample, UpdateFlags flags, bool safemode)
         {
-            var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(typeof(T));
-
-            try
-            {
-                _connection.SendMessage(new UpdateMessage(writerSettings)
-                {
-                    FullCollectionName = FullName,
-                    Selector = selector,
-                    Document = document,
-                    Flags = (int)flags
-                }, DatabaseName);
-            }
-            catch (IOException exception)
-            {
-                throw new MongoConnectionException("Could not update document, communication failure", _connection, exception);
-            }
+            ((IMongoCollection)this).Update(ObjectToDocumentConverter.Convert(documentExample), ObjectToDocumentConverter.Convert(selectorExample), flags, safemode);
         }
 
         /// <summary>
@@ -563,9 +417,10 @@ namespace MongoDB
         /// </summary>
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
-        public void UpdateAll(object document, object selector)
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        public void UpdateAll(Document document, Document selector, bool safemode)
         {
-            Update(EnsureUpdateDocument(document), selector, UpdateFlags.MultiUpdate);
+            Update((Document)EnsureUpdateDocument(document), selector, UpdateFlags.MultiUpdate, safemode);
         }
 
         /// <summary>
@@ -574,12 +429,9 @@ namespace MongoDB
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        public void UpdateAll(object document, object selector, bool safemode)
+        public void UpdateAllByExample<TExample1, TExample2>(TExample1 documentExample, TExample2 selectorExample, bool safemode)
         {
-            if (safemode)
-                Database.ResetError();
-            UpdateAll(document, selector);
-            CheckPreviousError(safemode);
+            UpdateAll(ObjectToDocumentConverter.Convert(documentExample), ObjectToDocumentConverter.Convert(selectorExample), safemode);
         }
 
         /// <summary>
@@ -708,6 +560,7 @@ namespace MongoDB
                     FullCollectionName = FullName,
                     Selector = selector
                 }, DatabaseName);
+                CheckPreviousError(safemode);
             }
             catch (IOException exception)
             {
@@ -732,10 +585,28 @@ namespace MongoDB
                 ((IMongoCollection)this).Insert(document, safemode);
             }
             else
-                Update(document, new Document("_id", value), UpdateFlags.Upsert);
+                ((IMongoCollection)this).Update(document, new Document("_id", value), UpdateFlags.Upsert, safemode);
         }
 
+        void IMongoCollection.Update(object document, object selector, UpdateFlags flags, bool safemode)
+        {
+            var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(typeof(T));
 
-        
+            try
+            {
+                _connection.SendMessage(new UpdateMessage(writerSettings)
+                {
+                    FullCollectionName = FullName,
+                    Selector = selector,
+                    Document = document,
+                    Flags = (int)flags
+                }, DatabaseName);
+                CheckPreviousError(safemode);
+            }
+            catch (IOException exception)
+            {
+                throw new MongoConnectionException("Could not update document, communication failure", _connection, exception);
+            }
+        }
     }
 }

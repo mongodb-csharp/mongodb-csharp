@@ -132,6 +132,7 @@
     <Compile Include="Configuration\Mapping\Auto\OverridableAutoMappingProfile.cs" />
     <Compile Include="Configuration\Mapping\Conventions\MemberFinderBase.cs" />
     <Compile Include="Configuration\MongoConfiguration.cs" />
+    <Compile Include="IMongoCollectionExtensions.cs" />
     <Compile Include="IMongoDatabase.cs" />
     <Compile Include="Linq\ExecutionBuilder.cs" />
     <Compile Include="Linq\Expressions\Alias.cs" />

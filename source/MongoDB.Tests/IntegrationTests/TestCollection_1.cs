@@ -307,7 +307,7 @@ namespace MongoDB.IntegrationTests
             Assert.AreEqual(3, results.Documents.Count(), "Didn't find all Documents inserted for TestUpdateMany with Selector");
 
             var updateData = new {Last = "Cordr2"};
-            updates.UpdateAll(updateData, selector);
+            updates.UpdateAllByExample(updateData, selector);
 
             selector = new {Last = "Cordr2"};
             results = updates.FindByExample(selector);
@@ -328,7 +328,7 @@ namespace MongoDB.IntegrationTests
             var coolness = 5;
             var einstein = new CountsEntity {Last = "Einstein", First = "Albret", Coolness = coolness++};
             updates.Insert(einstein);
-            var selector = new {Last = "Einstein"};
+            var selector = new Document("Last", "Einstein");
 
             updates.Update(new Document {{"$inc", new Document("cnt", 1)}}, selector);
             Assert.AreEqual(coolness++, Convert.ToInt32(updates.FindOneByExample(selector).Coolness), "Coolness field not incremented", true);

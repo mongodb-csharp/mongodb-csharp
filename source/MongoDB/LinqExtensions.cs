@@ -97,7 +97,7 @@ namespace MongoDB
         /// <param name="collection">The collection.</param>
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
-        public static void Update<T>(this IMongoCollection<T> collection, object document, Expression<Func<T, bool>> selector) where T : class
+        public static void Update<T>(this IMongoCollection<T> collection, Document document, Expression<Func<T, bool>> selector) where T : class
         {
             collection.Update(document, GetQuery(collection, selector));
         }
@@ -110,7 +110,7 @@ namespace MongoDB
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
         /// <param name="safeMode">if set to <c>true</c> [safe mode].</param>
-        public static void Update<T>(this IMongoCollection<T> collection, object document, Expression<Func<T, bool>> selector, bool safeMode) where T : class
+        public static void Update<T>(this IMongoCollection<T> collection, Document document, Expression<Func<T, bool>> selector, bool safeMode) where T : class
         {
             collection.Update(document, GetQuery(collection, selector), safeMode);
         }
@@ -123,7 +123,7 @@ namespace MongoDB
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
         /// <param name="flags">The flags.</param>
-        public static void Update<T>(this IMongoCollection<T> collection, object document, Expression<Func<T, bool>> selector, UpdateFlags flags) where T : class
+        public static void Update<T>(this IMongoCollection<T> collection, Document document, Expression<Func<T, bool>> selector, UpdateFlags flags) where T : class
         {
             collection.Update(document, GetQuery(collection, selector), flags);
         }
@@ -137,7 +137,7 @@ namespace MongoDB
         /// <param name="selector">The selector.</param>
         /// <param name="flags">The flags.</param>
         /// <param name="safeMode">if set to <c>true</c> [safe mode].</param>
-        public static void Update<T>(this IMongoCollection<T> collection, object document, Expression<Func<T, bool>> selector, UpdateFlags flags, bool safeMode) where T : class
+        public static void Update<T>(this IMongoCollection<T> collection, Document document, Expression<Func<T, bool>> selector, UpdateFlags flags, bool safeMode) where T : class
         {
             collection.Update(document, GetQuery(collection, selector), flags, safeMode);
         }
@@ -149,7 +149,7 @@ namespace MongoDB
         /// <param name="collection">The collection.</param>
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
-        public static void UpdateAll<T>(this IMongoCollection<T> collection, object document, Expression<Func<T, bool>> selector) where T : class
+        public static void UpdateAll<T>(this IMongoCollection<T> collection, Document document, Expression<Func<T, bool>> selector) where T : class
         {
             collection.UpdateAll(document, GetQuery(collection, selector));
         }
@@ -162,7 +162,7 @@ namespace MongoDB
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
         /// <param name="safeMode">if set to <c>true</c> [safe mode].</param>
-        public static void UpdateAll<T>(this IMongoCollection<T> collection, object document, Expression<Func<T, bool>> selector, bool safeMode) where T : class
+        public static void UpdateAll<T>(this IMongoCollection<T> collection, Document document, Expression<Func<T, bool>> selector, bool safeMode) where T : class
         {
             collection.UpdateAll(document, GetQuery(collection, selector), safeMode);
         }

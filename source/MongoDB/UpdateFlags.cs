@@ -8,7 +8,11 @@
     /// </remarks>
     public enum UpdateFlags {
         /// <summary>
-        /// Default none.
+        /// Default is None.
+        /// </summary>
+        Default = 0,
+        /// <summary>
+        /// None.
         /// </summary>
         None = 0,
         /// <summary>

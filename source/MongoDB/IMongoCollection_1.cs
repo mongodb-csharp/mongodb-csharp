@@ -17,6 +17,8 @@ namespace MongoDB
         void Remove(object selector, bool safemode);
 
         void Save(object document, bool safemode);
+
+        void Update(object document, object selector, UpdateFlags flags, bool safemode);
     }
 
     /// <summary>
@@ -185,25 +187,6 @@ namespace MongoDB
         long CountByExample<TExample>(TExample selector);
 
         /// <summary>
-        /// Inserts the specified document.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        void Insert(Document document);
-
-        /// <summary>
-        /// Inserts the specified document.
-        /// </summary>
-        /// <param name="document">The doc.</param>
-        void Insert(T document);
-
-        /// <summary>
-        /// Inserts the specified example.
-        /// </summary>
-        /// <typeparam name="TExample">The type of the example.</typeparam>
-        /// <param name="example">The example.</param>
-        void InsertByExample<TExample>(TExample example);
-
-        /// <summary>
         ///   Inserts the Document into the collection.
         /// </summary>
         void Insert(Document document, bool safemode);
@@ -222,24 +205,6 @@ namespace MongoDB
         /// <param name="example">The example.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void InsertByExample<TExample>(TExample example, bool safemode);
-
-        /// <summary>
-        /// Inserts the specified documents.
-        /// </summary>
-        /// <param name="documents">The documents.</param>
-        void InsertMany(IEnumerable<Document> documents);
-
-        /// <summary>
-        /// Inserts the specified documents.
-        /// </summary>
-        /// <param name="documents">The documents.</param>
-        void InsertMany(IEnumerable<T> documents);
-
-        /// <summary>
-        ///   Bulk inserts the specified documents into the database.
-        /// </summary>
-        /// <param name = "documents">The documents.</param>
-        void InsertManyByExample<TExample>(IEnumerable<TExample> examples);
 
         /// <summary>
         /// Inserts the specified documents.
@@ -264,25 +229,6 @@ namespace MongoDB
         void InsertManyByExample<TExample>(IEnumerable<TExample> examples, bool safemode);
 
         /// <summary>
-        /// Remove documents from the collection according to the selector.
-        /// </summary>
-        /// <param name="selector">The selector.</param>
-        /// <remarks>
-        /// An empty document will match all documents in the collection and effectively truncate it.
-        /// </remarks>
-        void Remove(Document selector);
-
-        /// <summary>
-        /// Remove documents from the collection according to the selector.
-        /// </summary>
-        /// <typeparam name="TExample">The type of the example.</typeparam>
-        /// <param name="example">The example.</param>
-        /// <remarks>
-        /// An empty document will match all documents in the collection and effectively truncate it.
-        /// </remarks>
-        void RemoveByExample<TExample>(TExample example);
-
-        /// <summary>
         ///   Remove documents from the collection according to the selector.
         /// </summary>
         /// <param name = "selector">The selector.</param>
@@ -300,31 +246,6 @@ namespace MongoDB
         /// <param name="example">The example.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void RemoveByExample<TExample>(TExample example, bool safemode);
-
-        /// <summary>
-        ///   Inserts or updates a document in the database.  If the document does not contain an _id one will be
-        ///   generated and an upsert sent.  Otherwise the document matching the _id of the document will be updated.
-        /// </summary>
-        /// <param name = "document">The document.</param>
-        /// <remarks>
-        ///   The document will contain the _id that is saved to the database.
-        /// </remarks>
-        void Save(Document document);
-
-        /// <summary>
-        ///   Inserts or updates a document in the database.  If the document does not contain an _id one will be
-        ///   generated and an upsert sent.  Otherwise the document matching the _id of the document will be updated.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        void Save(T document);
-
-        /// <summary>
-        ///   Inserts or updates a document in the database.  If the document does not contain an _id one will be
-        ///   generated and an upsert sent.  Otherwise the document matching the _id of the document will be updated.
-        /// </summary>
-        /// <typeparam name="TExample">The type of the example.</typeparam>
-        /// <param name="example">The example.</param>
-        void SaveByExample<TExample>(TExample example);
 
         /// <summary>
         /// Inserts or updates a document in the database.  If the document does not contain an _id one will be
@@ -355,65 +276,43 @@ namespace MongoDB
         void SaveByExample<TExample>(TExample example, bool safemode);
 
         /// <summary>
-        ///   Updates the specified document with the current document.  In order to only do a partial update use a
-        ///   document containing modifier operations ($set, $unset, $inc, etc.)
+        /// Updates a document with the data in doc as found by the selector.
         /// </summary>
-        /// <param name = "document">The document.</param>
-        /// <param name = "selector">The selector.</param>
-        /// <param name = "safemode">if set to <c>true</c> [safemode].</param>
+        /// <param name="document">The document.</param>
+        /// <param name="selector">The selector.</param>
+        /// <param name="flags">The flags.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        void Update(Document document, Document selector, UpdateFlags flags, bool safemode);
+
+
+        /// <summary>
+        /// Updates a document with the data in doc as found by the selector.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="selector">The selector.</param>
+        void UpdateByExample<TExample1, TExample2>(TExample1 document, TExample2 selector, UpdateFlags flags, bool safemode);
+
+        /// <summary>
+        /// Runs a multiple update query against the database.  It will wrap any
+        /// doc with $set if the passed in doc doesn't contain any '$' modifier ops.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="selector">The selector.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         /// <remarks>
-        ///   See the safemode description in the class description
+        /// See the safemode description in the class description
         /// </remarks>
-        void Update(object document, object selector, bool safemode);
+        void UpdateAll(Document document, Document selector, bool safemode);
 
         /// <summary>
-        ///   Updates the specified document with the current document.  In order to only do a partial update use a 
-        ///   document containing modifier operations ($set, $unset, $inc, etc.)
+        /// Runs a multiple update query against the database.  It will wrap any
+        /// doc with $set if the passed in doc doesn't contain any '$' modifier ops.
         /// </summary>
-        /// <param name = "document">The document.</param>
-        /// <param name = "selector">The selector.</param>
-        void Update(object document, object selector);
-
-        /// <summary>
-        ///   Updates the specified document with the current document.  In order to only do a partial update use a
-        ///   document containing modifier operations ($set, $unset, $inc, etc.)
-        /// </summary>
-        /// <param name = "document">The document.</param>
-        /// <param name = "selector">The selector.</param>
-        /// <param name = "flags">The flags.</param>
-        /// <param name = "safemode">if set to <c>true</c> [safemode].</param>
-        /// <remarks>
-        ///   See the safemode description in the class description
-        /// </remarks>
-        void Update(object document, object selector, UpdateFlags flags, bool safemode);
-
-        /// <summary>
-        ///   Updates the specified document with the current document.  In order to only do a partial update use a 
-        ///   document containing modifier operations ($set, $unset, $inc, etc.)
-        /// </summary>
-        /// <param name = "document">The <see cref = "Document" /> to update with</param>
-        /// <param name = "selector">The query selector to find the document to update.</param>
-        /// <param name = "flags"><see cref = "UpdateFlags" /></param>
-        void Update(object document, object selector, UpdateFlags flags);
-
-        /// <summary>
-        ///   Runs a multiple update query against the database.  It will wrap any
-        ///   doc with $set if the passed in doc doesn't contain any '$' modifier ops.
-        /// </summary>
-        /// <param name = "document">The document.</param>
-        /// <param name = "selector">The selector.</param>
-        void UpdateAll(object document, object selector);
-
-        /// <summary>
-        ///   Runs a multiple update query against the database.  It will wrap any
-        ///   doc with $set if the passed in doc doesn't contain any '$' modifier ops.
-        /// </summary>
-        /// <param name = "document">The document.</param>
-        /// <param name = "selector">The selector.</param>
-        /// <param name = "safemode">if set to <c>true</c> [safemode].</param>
-        /// <remarks>
-        ///   See the safemode description in the class description
-        /// </remarks>
-        void UpdateAll(object document, object selector, bool safemode);
+        /// <typeparam name="TExample1">The type of the example1.</typeparam>
+        /// <typeparam name="TExample2">The type of the example2.</typeparam>
+        /// <param name="documentExample">The document example.</param>
+        /// <param name="selectorExample">The selector example.</param>
+        /// <param name="safeMode">if set to <c>true</c> [safe mode].</param>
+        void UpdateAllByExample<TExample1, TExample2>(TExample1 documentExample, TExample2 selectorExample, bool safeMode);
     }
 }
