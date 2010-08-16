@@ -196,7 +196,7 @@ namespace MongoDB
         /// <returns>A <see cref="MapReduce"/></returns>
         public MapReduce MapReduce()
         {
-            return new MapReduce(Database, Name, typeof(T));
+            return ((IMongoCollection)this).MapReduce();
         }
 
         ///<summary>
@@ -545,6 +545,11 @@ namespace MongoDB
             {
                 throw new MongoConnectionException("Could not insert document, communication failure", _connection, exception);
             }
+        }
+
+        MapReduce IMongoCollection.MapReduce()
+        {
+            return new MapReduce(Database, Name, typeof(T));
         }
 
         void IMongoCollection.Remove(object selector, bool safemode)

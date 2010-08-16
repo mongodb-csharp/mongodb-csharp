@@ -88,8 +88,7 @@ namespace MongoDB.Linq.Translators
             {
                 case MongoExpressionType.Collection:
                     var collection = (CollectionExpression)source;
-                    _queryObject.CollectionName = collection.CollectionName;
-                    _queryObject.Database = collection.Database;
+                    _queryObject.Collection = collection.Collection;
                     _queryObject.DocumentType = collection.DocumentType;
                     break;
                 case MongoExpressionType.Select:

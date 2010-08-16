@@ -20,6 +20,8 @@ namespace MongoDB
 
         void InsertMany(IEnumerable documents, bool safemode);
 
+        MapReduce MapReduce();
+
         void Remove(object selector, bool safemode);
 
         void Save(object document, bool safemode);

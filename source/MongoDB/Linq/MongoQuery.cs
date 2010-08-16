@@ -43,18 +43,9 @@ namespace MongoDB.Linq
         /// Gets the name of the collection.
         /// </summary>
         /// <value>The name of the collection.</value>
-        string IMongoQueryable.CollectionName
+        IMongoCollection IMongoQueryable.Collection
         {
-            get { return _provider.CollectionName; }
-        }
-
-        /// <summary>
-        /// Gets the database.
-        /// </summary>
-        /// <value>The database.</value>
-        IMongoDatabase IMongoQueryable.Database
-        {
-            get { return _provider.Database; }
+            get { return _provider.Collection; }
         }
 
         /// <summary>

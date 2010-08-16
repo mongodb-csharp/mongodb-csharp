@@ -502,7 +502,7 @@ namespace MongoDB
             }
         }
 
-        void ICursor.Options(QueryOptions options)
+                void ICursor.Options(QueryOptions options)
         {
             TryModify();
             _options = options;
