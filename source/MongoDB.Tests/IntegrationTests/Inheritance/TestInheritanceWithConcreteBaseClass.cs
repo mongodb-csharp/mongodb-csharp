@@ -165,7 +165,7 @@ namespace MongoDB.IntegrationTests.Inheritance
             animalCollection.Save(new Animal() { Age = 20, Name = "Jim" });
             animalCollection.Save(new Tiger() { Age = 19, Name = "Bob" });
 
-            var animals = animalCollection.FindAll().Fields(new { Age = true }).Sort("Age", IndexOrder.Ascending).Documents.ToList();
+            var animals = animalCollection.FindAll().FieldsByExample(new { Age = true }).Sort("Age", IndexOrder.Ascending).Documents.ToList();
 
             Assert.AreEqual(2, animals.Count);
             Assert.IsInstanceOfType(typeof(Tiger), animals[0]);
@@ -203,7 +203,7 @@ namespace MongoDB.IntegrationTests.Inheritance
 
             var catCollection = DB.GetCollection<Cat>();
 
-            var cats = catCollection.FindAll().Fields(new { Age = true }).Sort("Age", IndexOrder.Ascending).Documents.ToList();
+            var cats = catCollection.FindAll().FieldsByExample(new { Age = true }).Sort("Age", IndexOrder.Ascending).Documents.ToList();
 
             Assert.AreEqual(1, cats.Count);
             Assert.IsInstanceOfType(typeof(Tiger), cats[0]);
