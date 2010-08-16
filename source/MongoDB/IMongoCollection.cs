@@ -10,6 +10,10 @@ namespace MongoDB
 
         long Count(object selector);
 
+        ICursor FindAll();
+
+        ICursor Find(object spec);
+
         object FindAndModify(object document, object selector, object sort, bool returnNew);
 
         void Insert(object document, bool safemode);

@@ -121,8 +121,7 @@ namespace MongoDB
         /// <returns></returns>
         public ICursor<T> FindAll()
         {
-            var spec = new Document();
-            return Find(spec);
+            return (ICursor<T>)((IMongoCollection)this).FindAll();
         }
 
         /// <summary>
@@ -143,7 +142,7 @@ namespace MongoDB
         /// <returns></returns>
         public ICursor<T> Find(Document selector)
         {
-            return new Cursor<T>(_configuration.SerializationFactory, _configuration.MappingStore, _connection, DatabaseName, Name).Spec(selector);
+            return (ICursor<T>)((IMongoCollection)this).Find(selector);
         }
 
         /// <summary>
@@ -462,6 +461,19 @@ namespace MongoDB
                 //-1 might be better here but the console returns 0.
                 return 0;
             }
+        }
+
+        ICursor IMongoCollection.FindAll()
+        {
+            var spec = new Document();
+            return ((IMongoCollection)this).Find(spec);
+        }
+
+        ICursor IMongoCollection.Find(object selector)
+        {
+            var cursor = (ICursor)new Cursor<T>(_configuration.SerializationFactory, _configuration.MappingStore, _connection, DatabaseName, Name);
+            cursor.Spec(selector);
+            return cursor;
         }
 
         object IMongoCollection.FindAndModify(object document, object selector, object sort, bool returnNew)
