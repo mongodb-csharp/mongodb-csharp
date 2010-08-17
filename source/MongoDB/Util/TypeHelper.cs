@@ -29,33 +29,33 @@ namespace MongoDB.Util
             return null;
         }
 
-        internal static Type GetSequenceType(Type elementType)
+        private static Type GetSequenceType(Type elementType)
         {
             return typeof(IEnumerable<>).MakeGenericType(elementType);
         }
 
-        internal static Type GetElementType(Type seqType)
+        public static Type GetElementType(Type seqType)
         {
             var ienum = FindIEnumerable(seqType);
             return ienum == null ? seqType : ienum.GetGenericArguments()[0];
         }
 
-        internal static bool IsNullableType(Type type)
+        private static bool IsNullableType(Type type)
         {
             return type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
-        internal static bool IsNullAssignable(Type type)
+        private static bool IsNullAssignable(Type type)
         {
             return !type.IsValueType || IsNullableType(type);
         }
 
-        internal static Type GetNonNullableType(Type type)
+        private static Type GetNonNullableType(Type type)
         {
             return IsNullableType(type) ? type.GetGenericArguments()[0] : type;
         }
 
-        internal static bool IsNativeToMongo(Type type)
+        public static bool IsNativeToMongo(Type type)
         {
             var typeCode = Type.GetTypeCode(type);
 
