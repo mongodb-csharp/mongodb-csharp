@@ -20,8 +20,8 @@ namespace MongoDB.Util
                         return ienum;
                 }
             var ifaces = seqType.GetInterfaces();
-            if(ifaces != null && ifaces.Length > 0)
-                foreach(var ienum in ifaces.Select(iface => FindIEnumerable(iface))
+            if(ifaces.Length > 0)
+                foreach(var ienum in ifaces.Select(FindIEnumerable)
                     .Where(ienum => ienum != null))
                     return ienum;
             if(seqType.BaseType != null && seqType.BaseType != typeof(object))
@@ -59,19 +59,19 @@ namespace MongoDB.Util
         {
             var typeCode = Type.GetTypeCode(type);
 
-            if (typeCode != TypeCode.Object)
+            if(typeCode != TypeCode.Object)
                 return true;
 
-            if (type == typeof(Guid))
+            if(type == typeof(Guid))
                 return true;
 
-            if (type == typeof(Oid))
+            if(type == typeof(Oid))
                 return true;
 
-            if (type == typeof(byte[]))
+            if(type == typeof(byte[]))
                 return true;
 
-            if (type == typeof(Binary))
+            if(type == typeof(Binary))
                 return true;
 
             return false;
