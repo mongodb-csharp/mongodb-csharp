@@ -7,7 +7,6 @@ using MongoDB.Connections;
 using MongoDB.Protocol;
 using MongoDB.Results;
 using MongoDB.Util;
-using MongoDB.Configuration.Mapping.Model;
 using System.Collections;
 
 namespace MongoDB
