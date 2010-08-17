@@ -106,7 +106,7 @@ namespace MongoDB
         /// Finds and returns the first document in a query.
         /// </summary>
         /// <typeparam name="TExample">The type of the example.</typeparam>
-        /// <param name="spec">A <see cref="Document"/> representing the query.</param>
+        /// <param name="selector">The selector.</param>
         /// <returns>
         /// A <see cref="Document"/> from the collection.
         /// </returns>
@@ -220,6 +220,12 @@ namespace MongoDB
             return ((IMongoCollection)this).Count(selector);
         }
 
+        /// <summary>
+        /// Counts the by example.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         public long CountByExample<TExample>(TExample selector)
         {
             return Count(ObjectToDocumentConverter.Convert(selector));
@@ -306,6 +312,7 @@ namespace MongoDB
         /// </summary>
         /// <typeparam name="TExample">The type of the example.</typeparam>
         /// <param name="example">The example.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         /// <remarks>
         /// An empty document will match all documents in the collection and effectively truncate it.
         /// </remarks>
@@ -360,8 +367,10 @@ namespace MongoDB
         /// <summary>
         /// Updates a document with the data in doc as found by the selector.
         /// </summary>
-        /// <param name="document">The <see cref="Document"/> to update with</param>
-        /// <param name="selector">The query spec to find the document to update.</param>
+        /// <typeparam name="TExample1">The type of the example1.</typeparam>
+        /// <typeparam name="TExample2">The type of the example2.</typeparam>
+        /// <param name="documentExample">The document example.</param>
+        /// <param name="selectorExample">The selector example.</param>
         /// <param name="flags"><see cref="UpdateFlags"/></param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         public void UpdateByExample<TExample1, TExample2>(TExample1 documentExample, TExample2 selectorExample, UpdateFlags flags, bool safemode)
@@ -384,8 +393,10 @@ namespace MongoDB
         /// <summary>
         /// Updates all.
         /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="selector">The selector.</param>
+        /// <typeparam name="TExample1">The type of the example1.</typeparam>
+        /// <typeparam name="TExample2">The type of the example2.</typeparam>
+        /// <param name="documentExample">The document example.</param>
+        /// <param name="selectorExample">The selector example.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         public void UpdateAllByExample<TExample1, TExample2>(TExample1 documentExample, TExample2 selectorExample, bool safemode)
         {
@@ -434,20 +445,23 @@ namespace MongoDB
             var foundOp = descriptor.GetMongoPropertyNames(document)
                 .Any(name => name.IndexOf('$') == 0);
 
-            if (foundOp == false)
-            {
-                //wrap document in a $set.
-                return new Document().Add("$set", document);
-            }
-
-            return document;
+            return foundOp == false ? new Document().Add("$set", document) : document;
         }
 
+        /// <summary>
+        /// Counts this instance.
+        /// </summary>
+        /// <returns></returns>
         long IMongoCollection.Count()
         {
             return Count();
         }
 
+        /// <summary>
+        /// Counts the specified selector.
+        /// </summary>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         long IMongoCollection.Count(object selector)
         {
             try
@@ -463,12 +477,21 @@ namespace MongoDB
             }
         }
 
+        /// <summary>
+        /// Finds all.
+        /// </summary>
+        /// <returns></returns>
         ICursor IMongoCollection.FindAll()
         {
             var spec = new Document();
             return ((IMongoCollection)this).Find(spec);
         }
 
+        /// <summary>
+        /// Finds the specified selector.
+        /// </summary>
+        /// <param name="selector">The selector.</param>
+        /// <returns></returns>
         ICursor IMongoCollection.Find(object selector)
         {
             var cursor = (ICursor)new Cursor<T>(_configuration.SerializationFactory, _configuration.MappingStore, _connection, DatabaseName, Name);
@@ -476,6 +499,14 @@ namespace MongoDB
             return cursor;
         }
 
+        /// <summary>
+        /// Finds the and modify.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="selector">The selector.</param>
+        /// <param name="sort">The sort.</param>
+        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
+        /// <returns></returns>
         object IMongoCollection.FindAndModify(object document, object selector, object sort, bool returnNew)
         {
             try
@@ -503,11 +534,21 @@ namespace MongoDB
             }
         }
 
+        /// <summary>
+        /// Inserts the specified document.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void IMongoCollection.Insert(object document, bool safemode)
         {
             ((IMongoCollection)this).InsertMany(new[] { document }, safemode);
         }
 
+        /// <summary>
+        /// Inserts the many.
+        /// </summary>
+        /// <param name="documents">The documents.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void IMongoCollection.InsertMany(IEnumerable documents, bool safemode)
         {
             if (safemode)
@@ -547,11 +588,20 @@ namespace MongoDB
             }
         }
 
+        /// <summary>
+        /// Maps the reduce.
+        /// </summary>
+        /// <returns></returns>
         MapReduce IMongoCollection.MapReduce()
         {
             return new MapReduce(Database, Name, typeof(T));
         }
 
+        /// <summary>
+        /// Removes the specified selector.
+        /// </summary>
+        /// <param name="selector">The selector.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void IMongoCollection.Remove(object selector, bool safemode)
         {
             var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(typeof(T));
@@ -571,6 +621,11 @@ namespace MongoDB
             }
         }
 
+        /// <summary>
+        /// Saves the specified document.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void IMongoCollection.Save(object document, bool safemode)
         {
             //Try to generate a selector using _id for an existing document.
@@ -591,6 +646,13 @@ namespace MongoDB
                 ((IMongoCollection)this).Update(document, new Document("_id", value), UpdateFlags.Upsert, safemode);
         }
 
+        /// <summary>
+        /// Updates the specified document.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="selector">The selector.</param>
+        /// <param name="flags">The flags.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void IMongoCollection.Update(object document, object selector, UpdateFlags flags, bool safemode)
         {
             var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(typeof(T));

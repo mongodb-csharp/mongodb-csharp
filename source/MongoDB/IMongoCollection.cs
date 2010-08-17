@@ -279,8 +279,12 @@ namespace MongoDB
         /// <summary>
         /// Updates a document with the data in doc as found by the selector.
         /// </summary>
+        /// <typeparam name="TExample1">The type of the example1.</typeparam>
+        /// <typeparam name="TExample2">The type of the example2.</typeparam>
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
+        /// <param name="flags">The flags.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void UpdateByExample<TExample1, TExample2>(TExample1 document, TExample2 selector, UpdateFlags flags, bool safemode);
 
         /// <summary>

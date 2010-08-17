@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace MongoDB
 {
@@ -32,6 +29,7 @@ namespace MongoDB
         /// <param name="collection">The collection.</param>
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
+        /// <param name="sort">The sort.</param>
         /// <returns>A <see cref="Document"/></returns>
         public static T FindAndModify<T>(this IMongoCollection<T> collection, Document document, Document selector, Document sort) where T : class
         {
@@ -46,6 +44,7 @@ namespace MongoDB
         /// <param name="collection">The collection.</param>
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
+        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <returns>A <see cref="Document"/></returns>
         public static T FindAndModify<T>(this IMongoCollection<T> collection, Document document, Document selector, bool returnNew) where T : class
         {
@@ -55,13 +54,12 @@ namespace MongoDB
         /// <summary>
         /// Finds the and modify by example.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <typeparam name="TExample1">The type of the example1.</typeparam>
         /// <typeparam name="TExample2">The type of the example2.</typeparam>
-        /// <typeparam name="TExample3">The type of the example3.</typeparam>
+        /// <param name="collection">The collection.</param>
         /// <param name="documentExample">The document example.</param>
         /// <param name="selectorExample">The selector example.</param>
-        /// <param name="sortExample">The sort example.</param>
-        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <returns></returns>
         public static T FindAndModifyByExample<T, TExample1, TExample2>(this IMongoCollection<T> collection, TExample1 documentExample, TExample2 selectorExample) where T : class
         {
@@ -71,13 +69,14 @@ namespace MongoDB
         /// <summary>
         /// Finds the and modify by example.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <typeparam name="TExample1">The type of the example1.</typeparam>
         /// <typeparam name="TExample2">The type of the example2.</typeparam>
         /// <typeparam name="TExample3">The type of the example3.</typeparam>
+        /// <param name="collection">The collection.</param>
         /// <param name="documentExample">The document example.</param>
         /// <param name="selectorExample">The selector example.</param>
         /// <param name="sortExample">The sort example.</param>
-        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <returns></returns>
         public static T FindAndModifyByExample<T, TExample1, TExample2, TExample3>(this IMongoCollection<T> collection, TExample1 documentExample, TExample2 selectorExample, TExample3 sortExample) where T : class
         {
@@ -87,12 +86,12 @@ namespace MongoDB
         /// <summary>
         /// Finds the and modify by example.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <typeparam name="TExample1">The type of the example1.</typeparam>
         /// <typeparam name="TExample2">The type of the example2.</typeparam>
-        /// <typeparam name="TExample3">The type of the example3.</typeparam>
+        /// <param name="collection">The collection.</param>
         /// <param name="documentExample">The document example.</param>
         /// <param name="selectorExample">The selector example.</param>
-        /// <param name="sortExample">The sort example.</param>
         /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <returns></returns>
         public static T FindAndModifyByExample<T, TExample1, TExample2>(this IMongoCollection<T> collection, TExample1 documentExample, TExample2 selectorExample, bool returnNew) where T : class
@@ -137,6 +136,7 @@ namespace MongoDB
         /// <summary>
         /// Inserts the specified documents.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="documents">The documents.</param>
         public static void InsertMany<T>(this IMongoCollection<T> collection, IEnumerable<Document> documents) where T : class
@@ -147,6 +147,7 @@ namespace MongoDB
         /// <summary>
         /// Inserts the specified documents.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="documents">The documents.</param>
         public static void InsertMany<T>(this IMongoCollection<T> collection, IEnumerable<T> documents) where T : class
@@ -157,6 +158,7 @@ namespace MongoDB
         /// <summary>
         /// Bulk inserts the specified documents into the database.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <typeparam name="TExample">The type of the example.</typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="examples">The examples.</param>
@@ -168,6 +170,7 @@ namespace MongoDB
         /// <summary>
         /// Remove documents from the collection according to the selector.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="selector">The selector.</param>
         /// <remarks>
@@ -181,6 +184,7 @@ namespace MongoDB
         /// <summary>
         /// Remove documents from the collection according to the selector.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <typeparam name="TExample">The type of the example.</typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="example">The example.</param>
@@ -196,6 +200,7 @@ namespace MongoDB
         /// Inserts or updates a document in the database.  If the document does not contain an _id one will be
         /// generated and an upsert sent.  Otherwise the document matching the _id of the document will be updated.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="document">The document.</param>
         /// <remarks>
@@ -210,6 +215,7 @@ namespace MongoDB
         /// Inserts or updates a document in the database.  If the document does not contain an _id one will be
         /// generated and an upsert sent.  Otherwise the document matching the _id of the document will be updated.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="document">The document.</param>
         public static void Save<T>(this IMongoCollection<T> collection, T document) where T : class
@@ -221,6 +227,7 @@ namespace MongoDB
         /// Inserts or updates a document in the database.  If the document does not contain an _id one will be
         /// generated and an upsert sent.  Otherwise the document matching the _id of the document will be updated.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <typeparam name="TExample">The type of the example.</typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="example">The example.</param>
@@ -232,6 +239,7 @@ namespace MongoDB
         /// <summary>
         /// Updates a document with the data in doc as found by the selector.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
@@ -243,6 +251,7 @@ namespace MongoDB
         /// <summary>
         /// Updates a document with the data in doc as found by the selector.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
@@ -255,6 +264,7 @@ namespace MongoDB
         /// <summary>
         /// Updates a document with the data in doc as found by the selector.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
@@ -267,8 +277,10 @@ namespace MongoDB
         /// <summary>
         /// Updates a document with the data in doc as found by the selector.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <typeparam name="TExample1">The type of the example1.</typeparam>
         /// <typeparam name="TExample2">The type of the example2.</typeparam>
+        /// <param name="collection">The collection.</param>
         /// <param name="documentExample">The document example.</param>
         /// <param name="selectorExample">The selector example.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
@@ -280,8 +292,10 @@ namespace MongoDB
         /// <summary>
         /// Updates the by example.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <typeparam name="TExample1">The type of the example1.</typeparam>
         /// <typeparam name="TExample2">The type of the example2.</typeparam>
+        /// <param name="collection">The collection.</param>
         /// <param name="documentExample">The document example.</param>
         /// <param name="selectorExample">The selector example.</param>
         /// <param name="flags">The flags.</param>

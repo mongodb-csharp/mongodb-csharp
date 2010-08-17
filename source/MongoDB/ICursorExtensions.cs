@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace MongoDB
+﻿namespace MongoDB
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class ICursorExtensions
     {
         /// <summary>
-        ///   Sorts the specified field.
+        /// Sorts the specified field.
         /// </summary>
-        /// <param name = "field">The field.</param>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cursor">The cursor.</param>
+        /// <param name="field">The field.</param>
         /// <returns></returns>
         public static ICursor<T> Sort<T>(this ICursor<T> cursor, string field) where T : class
         {
@@ -18,10 +18,12 @@ namespace MongoDB
         }
 
         /// <summary>
-        ///   Sorts the specified field.
+        /// Sorts the specified field.
         /// </summary>
-        /// <param name = "field">The field.</param>
-        /// <param name = "order">The order.</param>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cursor">The cursor.</param>
+        /// <param name="field">The field.</param>
+        /// <param name="order">The order.</param>
         /// <returns></returns>
         public static ICursor<T> Sort<T>(this ICursor<T> cursor, string field, IndexOrder order) where T : class
         {

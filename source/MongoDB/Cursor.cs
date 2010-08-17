@@ -35,10 +35,15 @@ namespace MongoDB
         /// Initializes a new instance of the <see cref="Cursor&lt;T&gt;"/> class.
         /// </summary>
         /// <param name="serializationFactory">The serialization factory.</param>
+        /// <param name="mappingStore">The mapping store.</param>
         /// <param name="connection">The conn.</param>
         /// <param name="databaseName">Name of the database.</param>
         /// <param name="collectionName">Name of the collection.</param>
-        internal Cursor(ISerializationFactory serializationFactory, IMappingStore mappingStore, Connection connection, string databaseName, string collectionName)
+        internal Cursor(ISerializationFactory serializationFactory, 
+            IMappingStore mappingStore, 
+            Connection connection, 
+            string databaseName, 
+            string collectionName)
         {
             //Todo: add public constrcutor for users to call
             IsModifiable = true;
@@ -53,6 +58,7 @@ namespace MongoDB
         /// Initializes a new instance of the <see cref="Cursor&lt;T&gt;"/> class.
         /// </summary>
         /// <param name="serializationFactory">The serialization factory.</param>
+        /// <param name="mappingStore">The mapping store.</param>
         /// <param name="connection">The conn.</param>
         /// <param name="databaseName">Name of the database.</param>
         /// <param name="collectionName">Name of the collection.</param>
@@ -60,7 +66,15 @@ namespace MongoDB
         /// <param name="limit">The limit.</param>
         /// <param name="skip">The skip.</param>
         /// <param name="fields">The fields.</param>
-        internal Cursor(ISerializationFactory serializationFactory, IMappingStore mappingStore, Connection connection, string databaseName, string collectionName, object spec, int limit, int skip, object fields)
+        internal Cursor(ISerializationFactory serializationFactory, 
+            IMappingStore mappingStore, 
+            Connection connection, 
+            string databaseName, 
+            string collectionName, 
+            object spec, 
+            int limit, 
+            int skip, 
+            object fields)
             : this(serializationFactory, mappingStore, connection, databaseName, collectionName)
         {
             //Todo: add public constrcutor for users to call
