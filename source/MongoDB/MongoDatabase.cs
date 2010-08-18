@@ -162,22 +162,28 @@ namespace MongoDB
         }
 
         /// <summary>
-        ///   Most operations do not have a return code in order to save the client from having to wait for results.
-        ///   GetLastError can be called to retrieve the return code if clients want one.
+        /// Retrieves the last error.
         /// </summary>
         /// <returns></returns>
+        /// <remarks>
+        /// Most operations do not have a return code in order to save the client from having to wait for results.
+        /// GetLastError can be called to retrieve the return code if clients want one.
+        /// </remarks>
         public Document GetLastError()
         {
             return SendCommand("getlasterror");
         }
 
         /// <summary>
-        ///   Retrieves the last error and forces the database to fsync all files before returning.
+        /// Retrieves the last error and forces the database to fsync all files before returning.
         /// </summary>
-        /// <param name = "fsync">if set to <c>true</c> [fsync].</param>
+        /// <param name="fsync">if set to <c>true</c> [fsync].</param>
         /// <returns></returns>
         /// <remarks>
-        ///   Server version 1.3+
+        /// Most operations do not have a return code in order to save the client from having to wait for results.
+        /// GetLastError can be called to retrieve the return code if clients want one.
+        /// 
+        /// Server version 1.3+
         /// </remarks>
         public Document GetLastError(bool fsync)
         {
@@ -185,7 +191,7 @@ namespace MongoDB
         }
 
         /// <summary>
-        ///   Call after sending a bulk operation to the database.
+        ///   Retrieves all errors since the last ResetError call.
         /// </summary>
         /// <returns></returns>
         public Document GetPreviousError()
