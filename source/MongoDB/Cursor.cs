@@ -14,7 +14,7 @@ namespace MongoDB
     /// <summary>
     /// </summary>
     /// <typeparam name = "T"></typeparam>
-    public class Cursor<T> : ICursor<T>, ICursor
+    public class Cursor<T> : ICursor<T>, IUntypedCursor
         where T : class
     {
         private readonly Connection _connection;
@@ -106,54 +106,54 @@ namespace MongoDB
             }
         }
 
-        void ICursor.Spec(object spec)
+        void IUntypedCursor.Spec(object spec)
         {
             TryModify();
             _spec = spec;
         }
 
-        void ICursor.Hint(object index)
+        void IUntypedCursor.Hint(object index)
         {
             TryModify();
             AddOrRemoveSpecOpt("$hint", index);
         }
 
-        void ICursor.Limit(int limit)
+        void IUntypedCursor.Limit(int limit)
         {
             TryModify();
             _limit = limit;
         }
 
-        void ICursor.Skip(int skip)
+        void IUntypedCursor.Skip(int skip)
         {
             TryModify();
             _skip = skip;
         }
 
-        void ICursor.Fields(object fields)
+        void IUntypedCursor.Fields(object fields)
         {
             TryModify();
             _fields = fields;
         }
 
-        void ICursor.Sort(object fields)
+        void IUntypedCursor.Sort(object fields)
         {
             TryModify();
             AddOrRemoveSpecOpt("$orderby", fields);
         }
 
-        void ICursor.KeepCursor(bool value)
+        void IUntypedCursor.KeepCursor(bool value)
         {
             _keepCursor = value;
         }
 
-        void ICursor.Snapshot()
+        void IUntypedCursor.Snapshot()
         {
             TryModify();
             AddOrRemoveSpecOpt("$snapshot", true);
         }
 
-        IEnumerable ICursor.Documents
+        IEnumerable IUntypedCursor.Documents
         {
             get
             {
@@ -174,7 +174,7 @@ namespace MongoDB
             }
         }
 
-        void ICursor.Options(QueryOptions options)
+        void IUntypedCursor.Options(QueryOptions options)
         {
             TryModify();
             _options = options;
@@ -193,7 +193,7 @@ namespace MongoDB
         /// <returns></returns>
         public ICursor<T> Spec(Document spec)
         {
-            ( (ICursor)this ).Spec(spec);
+            ( (IUntypedCursor)this ).Spec(spec);
             return this;
         }
 
@@ -215,7 +215,7 @@ namespace MongoDB
         /// <returns></returns>
         public ICursor<T> Limit(int limit)
         {
-            ( (ICursor)this ).Limit(limit);
+            ( (IUntypedCursor)this ).Limit(limit);
             return this;
         }
 
@@ -226,7 +226,7 @@ namespace MongoDB
         /// <returns></returns>
         public ICursor<T> Skip(int skip)
         {
-            ( (ICursor)this ).Skip(skip);
+            ( (IUntypedCursor)this ).Skip(skip);
             return this;
         }
 
@@ -237,7 +237,7 @@ namespace MongoDB
         /// <returns></returns>
         public ICursor<T> Fields(Document fields)
         {
-            ( (ICursor)this ).Fields(fields);
+            ( (IUntypedCursor)this ).Fields(fields);
             return this;
         }
 
@@ -259,7 +259,7 @@ namespace MongoDB
         /// <returns></returns>
         public ICursor<T> Sort(Document fields)
         {
-            ( (ICursor)this ).Sort(fields);
+            ( (IUntypedCursor)this ).Sort(fields);
             return this;
         }
 
@@ -280,7 +280,7 @@ namespace MongoDB
         /// <returns></returns>
         public ICursor<T> Hint(Document index)
         {
-            ( (ICursor)this ).Hint(index);
+            ( (IUntypedCursor)this ).Hint(index);
             return this;
         }
 
@@ -306,7 +306,7 @@ namespace MongoDB
         /// </remarks>
         public ICursor<T> KeepCursor(bool value)
         {
-            ( (ICursor)this ).KeepCursor(value);
+            ( (IUntypedCursor)this ).KeepCursor(value);
             return this;
         }
 
@@ -315,7 +315,7 @@ namespace MongoDB
         /// </summary>
         public ICursor<T> Snapshot()
         {
-            ( (ICursor)this ).Snapshot();
+            ( (IUntypedCursor)this ).Snapshot();
             return this;
         }
 
@@ -357,7 +357,7 @@ namespace MongoDB
         /// <value>The documents.</value>
         public IEnumerable<T> Documents
         {
-            get { return ( (ICursor)this ).Documents.OfType<T>(); }
+            get { return ( (IUntypedCursor)this ).Documents.OfType<T>(); }
         }
 
         /// <summary>
@@ -367,7 +367,7 @@ namespace MongoDB
         /// <returns></returns>
         public ICursor<T> Options(QueryOptions options)
         {
-            ( (ICursor)this ).Options(options);
+            ( (IUntypedCursor)this ).Options(options);
             return this;
         }
 
@@ -391,7 +391,7 @@ namespace MongoDB
         /// </summary>
         public void Dispose()
         {
-            ( (ICursor)this ).Dispose();
+            ( (IUntypedCursor)this ).Dispose();
         }
 
         /// <summary>

@@ -136,6 +136,7 @@
     <Compile Include="IMongoCollectionExtensions.cs" />
     <Compile Include="IMongoDatabase.cs" />
     <Compile Include="IUntypedCollection.cs" />
+    <Compile Include="IUntypedCursor.cs" />
     <Compile Include="Linq\ExecutionBuilder.cs" />
     <Compile Include="Linq\Expressions\Alias.cs" />
     <Compile Include="Linq\Expressions\AliasedExpression.cs" />

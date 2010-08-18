@@ -8,9 +8,9 @@ namespace MongoDB
 
         long Count(object selector);
 
-        ICursor FindAll();
+        IUntypedCursor FindAll();
 
-        ICursor Find(object spec);
+        IUntypedCursor Find(object spec);
 
         object FindAndModify(object document, object selector, object sort, bool returnNew);
 

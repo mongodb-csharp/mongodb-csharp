@@ -511,7 +511,7 @@ namespace MongoDB
         /// Finds all.
         /// </summary>
         /// <returns></returns>
-        ICursor IUntypedCollection.FindAll()
+        IUntypedCursor IUntypedCollection.FindAll()
         {
             var spec = new Document();
             return ((IUntypedCollection)this).Find(spec);
@@ -522,9 +522,9 @@ namespace MongoDB
         /// </summary>
         /// <param name="selector">The selector.</param>
         /// <returns></returns>
-        ICursor IUntypedCollection.Find(object selector)
+        IUntypedCursor IUntypedCollection.Find(object selector)
         {
-            var cursor = (ICursor)new Cursor<T>(_configuration.SerializationFactory, _configuration.MappingStore, _connection, DatabaseName, Name);
+            var cursor = (IUntypedCursor)new Cursor<T>(_configuration.SerializationFactory, _configuration.MappingStore, _connection, DatabaseName, Name);
             cursor.Spec(selector);
             return cursor;
         }
