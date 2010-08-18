@@ -65,7 +65,7 @@ namespace MongoDB
         /// <returns></returns>
         public static IQueryable<T> Linq<T>(this IMongoCollection<T> collection) where T : class
         {
-            return new MongoQuery<T>(new MongoQueryProvider((IMongoCollection)collection));
+            return new MongoQuery<T>(new MongoQueryProvider((IUntypedCollection)collection));
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace MongoDB
         /// <returns></returns>
         public static IQueryable<Document> Linq(this IMongoCollection<Document> collection)
         {
-            return new MongoQuery<Document>(new MongoQueryProvider((IMongoCollection)collection));
+            return new MongoQuery<Document>(new MongoQueryProvider((IUntypedCollection)collection));
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace MongoDB
         /// <returns></returns>
         private static Document GetQuery<T>(IMongoCollection<T> collection, Expression<Func<T, bool>> selector) where T : class
         {
-            var query = new MongoQuery<T>(new MongoQueryProvider((IMongoCollection)collection))
+            var query = new MongoQuery<T>(new MongoQueryProvider((IUntypedCollection)collection))
                 .Where(selector);
             var queryObject = ((IMongoQueryable)query).GetQueryObject();
             return queryObject.Query;

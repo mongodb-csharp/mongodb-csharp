@@ -14,13 +14,13 @@ namespace MongoDB.Linq
     /// </summary>
     internal class MongoQueryProvider : IQueryProvider
     {
-        private readonly IMongoCollection _collection;
+        private readonly IUntypedCollection _collection;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref = "MongoQueryProvider" /> class.
         /// </summary>
         /// <param name = "collection">The collection.</param>
-        public MongoQueryProvider(IMongoCollection collection)
+        public MongoQueryProvider(IUntypedCollection collection)
         {
             if(collection == null)
                 throw new ArgumentNullException("collection");
@@ -32,7 +32,7 @@ namespace MongoDB.Linq
         ///   Gets the name of the collection.
         /// </summary>
         /// <value>The name of the collection.</value>
-        public IMongoCollection Collection
+        public IUntypedCollection Collection
         {
             get { return _collection; }
         }

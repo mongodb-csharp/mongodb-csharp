@@ -4,7 +4,7 @@ namespace MongoDB.Linq
 {
     internal interface IMongoQueryable : IQueryable
     {
-        IMongoCollection Collection { get; }
+        IUntypedCollection Collection { get; }
 
         MongoQueryObject GetQueryObject();
     }

@@ -27,7 +27,7 @@ namespace MongoDB
         DatabaseJavascript Javascript { get; }
 
         /// <summary>
-        /// Gets the <see cref="MongoDB.IMongoCollection"/> with the specified name.
+        /// Gets the <see cref="Document"/> with the specified name.
         /// </summary>
         /// <value></value>
         IMongoCollection<Document> this[string name] { get; }

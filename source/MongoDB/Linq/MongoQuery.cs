@@ -43,7 +43,7 @@ namespace MongoDB.Linq
         /// Gets the name of the collection.
         /// </summary>
         /// <value>The name of the collection.</value>
-        IMongoCollection IMongoQueryable.Collection
+        IUntypedCollection IMongoQueryable.Collection
         {
             get { return _provider.Collection; }
         }

@@ -14,7 +14,7 @@ namespace MongoDB
     /// <summary>
     /// 
     /// </summary>
-    public class MongoCollection<T> : IMongoCollection<T>, IMongoCollection where T : class
+    public class MongoCollection<T> : IMongoCollection<T>, IUntypedCollection where T : class
     {
         private readonly MongoConfiguration _configuration;
         private readonly Connection _connection;
@@ -120,7 +120,7 @@ namespace MongoDB
         /// <returns></returns>
         public ICursor<T> FindAll()
         {
-            return (ICursor<T>)((IMongoCollection)this).FindAll();
+            return (ICursor<T>)((IUntypedCollection)this).FindAll();
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace MongoDB
         /// <returns></returns>
         public ICursor<T> Find(Document selector)
         {
-            return (ICursor<T>)((IMongoCollection)this).Find(selector);
+            return (ICursor<T>)((IUntypedCollection)this).Find(selector);
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace MongoDB
         /// <returns></returns>
         public T FindAndModify(Document document, Document selector, Document sort, bool returnNew)
         {
-            return (T)((IMongoCollection)this).FindAndModify(document, selector, sort, returnNew);
+            return (T)((IUntypedCollection)this).FindAndModify(document, selector, sort, returnNew);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace MongoDB
         /// <returns></returns>
         public T FindAndModifyByExample<TExample1, TExample2, TExample3>(TExample1 documentExample, TExample2 selectorExample, TExample3 sortExample, bool returnNew)
         {
-            return (T)((IMongoCollection)this).FindAndModify(
+            return (T)((IUntypedCollection)this).FindAndModify(
                 ObjectToDocumentConverter.Convert(documentExample), 
                 ObjectToDocumentConverter.Convert(selectorExample), 
                 ObjectToDocumentConverter.Convert(sortExample), 
@@ -195,7 +195,7 @@ namespace MongoDB
         /// <returns>A <see cref="MapReduce"/></returns>
         public MapReduce MapReduce()
         {
-            return ((IMongoCollection)this).MapReduce();
+            return ((IUntypedCollection)this).MapReduce();
         }
 
         ///<summary>
@@ -216,7 +216,7 @@ namespace MongoDB
         /// </remarks>
         public long Count(Document selector)
         {
-            return ((IMongoCollection)this).Count(selector);
+            return ((IUntypedCollection)this).Count(selector);
         }
 
         /// <summary>
@@ -268,7 +268,7 @@ namespace MongoDB
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         public void InsertMany(IEnumerable<Document> documents, bool safemode)
         {
-            ((IMongoCollection)this).InsertMany(documents, safemode);
+            ((IUntypedCollection)this).InsertMany(documents, safemode);
         }
 
         /// <summary>
@@ -278,7 +278,7 @@ namespace MongoDB
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         public void InsertMany(IEnumerable<T> documents, bool safemode)
         {
-            ((IMongoCollection)this).InsertMany(documents, safemode);
+            ((IUntypedCollection)this).InsertMany(documents, safemode);
         }
 
         /// <summary>
@@ -303,7 +303,7 @@ namespace MongoDB
         /// </remarks>
         public void Remove(Document selector, bool safemode)
         {
-            ((IMongoCollection)this).Remove(selector, safemode);
+            ((IUntypedCollection)this).Remove(selector, safemode);
         }
 
         /// <summary>
@@ -317,7 +317,7 @@ namespace MongoDB
         /// </remarks>
         public void Remove(T document, bool safemode)
         {
-            ((IMongoCollection)this).Remove(document, safemode);
+            ((IUntypedCollection)this).Remove(document, safemode);
         }
 
         /// <summary>
@@ -341,7 +341,7 @@ namespace MongoDB
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         public void Save(Document document, bool safemode)
         {
-            ((IMongoCollection)this).Save(document, safemode);
+            ((IUntypedCollection)this).Save(document, safemode);
         }
 
         /// <summary>
@@ -351,7 +351,7 @@ namespace MongoDB
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         public void Save(T document, bool safemode)
         {
-            ((IMongoCollection)this).Save(document, safemode);
+            ((IUntypedCollection)this).Save(document, safemode);
         }
 
         /// <summary>
@@ -362,7 +362,7 @@ namespace MongoDB
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         public void SaveByExample<TExample>(TExample example, bool safemode)
         {
-            ((IMongoCollection)this).Save(ObjectToDocumentConverter.Convert(example), safemode);
+            ((IUntypedCollection)this).Save(ObjectToDocumentConverter.Convert(example), safemode);
         }
 
         /// <summary>
@@ -379,7 +379,7 @@ namespace MongoDB
             if(value==null)
                 return;
             
-            ((IMongoCollection)this).Update(document, new Document("_id", value), UpdateFlags.Upsert, safemode);
+            ((IUntypedCollection)this).Update(document, new Document("_id", value), UpdateFlags.Upsert, safemode);
         }
 
         /// <summary>
@@ -391,7 +391,7 @@ namespace MongoDB
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         public void Update(Document document, Document selector, UpdateFlags flags, bool safemode)
         {
-            ((IMongoCollection)this).Update(document, selector, flags, safemode);
+            ((IUntypedCollection)this).Update(document, selector, flags, safemode);
         }
 
         /// <summary>
@@ -405,7 +405,7 @@ namespace MongoDB
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         public void UpdateByExample<TExample1, TExample2>(TExample1 documentExample, TExample2 selectorExample, UpdateFlags flags, bool safemode)
         {
-            ((IMongoCollection)this).Update(ObjectToDocumentConverter.Convert(documentExample), ObjectToDocumentConverter.Convert(selectorExample), flags, safemode);
+            ((IUntypedCollection)this).Update(ObjectToDocumentConverter.Convert(documentExample), ObjectToDocumentConverter.Convert(selectorExample), flags, safemode);
         }
 
         /// <summary>
@@ -482,7 +482,7 @@ namespace MongoDB
         /// Counts this instance.
         /// </summary>
         /// <returns></returns>
-        long IMongoCollection.Count()
+        long IUntypedCollection.Count()
         {
             return Count();
         }
@@ -492,7 +492,7 @@ namespace MongoDB
         /// </summary>
         /// <param name="selector">The selector.</param>
         /// <returns></returns>
-        long IMongoCollection.Count(object selector)
+        long IUntypedCollection.Count(object selector)
         {
             try
             {
@@ -511,10 +511,10 @@ namespace MongoDB
         /// Finds all.
         /// </summary>
         /// <returns></returns>
-        ICursor IMongoCollection.FindAll()
+        ICursor IUntypedCollection.FindAll()
         {
             var spec = new Document();
-            return ((IMongoCollection)this).Find(spec);
+            return ((IUntypedCollection)this).Find(spec);
         }
 
         /// <summary>
@@ -522,7 +522,7 @@ namespace MongoDB
         /// </summary>
         /// <param name="selector">The selector.</param>
         /// <returns></returns>
-        ICursor IMongoCollection.Find(object selector)
+        ICursor IUntypedCollection.Find(object selector)
         {
             var cursor = (ICursor)new Cursor<T>(_configuration.SerializationFactory, _configuration.MappingStore, _connection, DatabaseName, Name);
             cursor.Spec(selector);
@@ -537,7 +537,7 @@ namespace MongoDB
         /// <param name="sort">The sort.</param>
         /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <returns></returns>
-        object IMongoCollection.FindAndModify(object document, object selector, object sort, bool returnNew)
+        object IUntypedCollection.FindAndModify(object document, object selector, object sort, bool returnNew)
         {
             try
             {
@@ -569,9 +569,9 @@ namespace MongoDB
         /// </summary>
         /// <param name="document">The document.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        void IMongoCollection.Insert(object document, bool safemode)
+        void IUntypedCollection.Insert(object document, bool safemode)
         {
-            ((IMongoCollection)this).InsertMany(new[] { document }, safemode);
+            ((IUntypedCollection)this).InsertMany(new[] { document }, safemode);
         }
 
         /// <summary>
@@ -579,7 +579,7 @@ namespace MongoDB
         /// </summary>
         /// <param name="documents">The documents.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        void IMongoCollection.InsertMany(IEnumerable documents, bool safemode)
+        void IUntypedCollection.InsertMany(IEnumerable documents, bool safemode)
         {
             if (safemode)
                 Database.ResetError();
@@ -622,7 +622,7 @@ namespace MongoDB
         /// Maps the reduce.
         /// </summary>
         /// <returns></returns>
-        MapReduce IMongoCollection.MapReduce()
+        MapReduce IUntypedCollection.MapReduce()
         {
             return new MapReduce(Database, Name, typeof(T));
         }
@@ -632,7 +632,7 @@ namespace MongoDB
         /// </summary>
         /// <param name="selector">The selector.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        void IMongoCollection.Remove(object selector, bool safemode)
+        void IUntypedCollection.Remove(object selector, bool safemode)
         {
             var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(typeof(T));
 
@@ -656,7 +656,7 @@ namespace MongoDB
         /// </summary>
         /// <param name="document">The document.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        void IMongoCollection.Save(object document, bool safemode)
+        void IUntypedCollection.Save(object document, bool safemode)
         {
             //Try to generate a selector using _id for an existing document.
             //otherwise just set the upsert flag to 1 to insert and send onward.
@@ -670,10 +670,10 @@ namespace MongoDB
                 //Likely a new document
                 descriptor.SetPropertyValue(document, "_id", descriptor.GenerateId(value));
 
-                ((IMongoCollection)this).Insert(document, safemode);
+                ((IUntypedCollection)this).Insert(document, safemode);
             }
             else
-                ((IMongoCollection)this).Update(document, new Document("_id", value), UpdateFlags.Upsert, safemode);
+                ((IUntypedCollection)this).Update(document, new Document("_id", value), UpdateFlags.Upsert, safemode);
         }
 
         /// <summary>
@@ -683,7 +683,7 @@ namespace MongoDB
         /// <param name="selector">The selector.</param>
         /// <param name="flags">The flags.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        void IMongoCollection.Update(object document, object selector, UpdateFlags flags, bool safemode)
+        void IUntypedCollection.Update(object document, object selector, UpdateFlags flags, bool safemode)
         {            
             var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(typeof(T));
 

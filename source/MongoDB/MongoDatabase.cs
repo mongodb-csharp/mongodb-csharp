@@ -82,7 +82,7 @@ namespace MongoDB
         }
 
         /// <summary>
-        ///   Gets the <see cref = "MongoDB.IMongoCollection" /> with the specified name.
+        ///   Gets the <see cref = "IUntypedCollection" /> with the specified name.
         /// </summary>
         /// <value></value>
         public IMongoCollection<Document> this[String name]

@@ -15,7 +15,7 @@ namespace MongoDB.Linq
         /// Gets or sets the collection.
         /// </summary>
         /// <value>The collection.</value>
-        public IMongoCollection Collection { get; set; }
+        public IUntypedCollection Collection { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the document.
