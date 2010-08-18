@@ -99,13 +99,7 @@ namespace MongoDB.Connections
 
             try
             {
-                var reply = new ReplyMessage<T>(readerSettings);
-                lock(_connection)
-                {
-                    message.Write(_connection.GetStream());
-                    reply.Read(_connection.GetStream());
-                }
-                return reply;
+                return _connection.Send<T>(message,readerSettings);
             }
             catch(IOException)
             {
@@ -136,10 +130,7 @@ namespace MongoDB.Connections
 
             try
             {
-                lock(_connection)
-                {
-                    message.Write(_connection.GetStream());
-                }
+                _connection.Send(message);
             }
             catch(IOException)
             {

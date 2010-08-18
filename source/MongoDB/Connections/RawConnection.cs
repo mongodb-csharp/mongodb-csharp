@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net.Sockets;
+using MongoDB.Bson;
+using MongoDB.Protocol;
+using MongoDB.Serialization;
 
 namespace MongoDB.Connections
 {
@@ -116,6 +121,37 @@ namespace MongoDB.Connections
         {
             IsInvalid = true;
         }
+
+        /// <summary>
+        /// Sends the specified message.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="message">The message.</param>
+        /// <param name="readerSettings">The reader settings.</param>
+        /// <returns></returns>
+        internal ReplyMessage<T> Send<T>(IRequestMessage message, BsonReaderSettings readerSettings) where T : class
+        {
+            var reply = new ReplyMessage<T>(readerSettings);
+            lock(this)
+            {
+                message.Write(GetStream());
+                reply.Read(GetStream());
+            }
+            return reply;
+        }
+
+        /// <summary>
+        /// Sends the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        internal void Send(IRequestMessage message)
+        {
+            lock(this)
+            {
+                message.Write(GetStream());
+            }
+        }
+
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
