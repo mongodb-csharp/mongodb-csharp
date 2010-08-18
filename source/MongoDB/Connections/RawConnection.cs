@@ -190,6 +190,40 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
+        /// Sends the command.
+        /// </summary>
+        /// <param name="database">The database.</param>
+        /// <param name="command">The command.</param>
+        /// <returns></returns>
+        public Document SendCommand(string database, Document command)
+        {
+            var writerSettings = new BsonWriterSettings();
+
+            var query = new QueryMessage(writerSettings)
+            {
+                FullCollectionName = database + ".$cmd",
+                NumberToReturn = -1,
+                Query = command
+            };
+
+            var readerSettings = new BsonReaderSettings();
+
+            try
+            {
+                var reply = SendMessage<Document>(query, readerSettings);
+
+                if(reply.CursorId > 0)
+                    SendMessage(new KillCursorsMessage(reply.CursorId));
+
+                return reply.Documents.FirstOrDefault();
+            }
+            catch(IOException exception)
+            {
+                throw new MongoConnectionException("Could not read data, communication failure", EndPoint, exception);
+            }
+        }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
