@@ -201,7 +201,7 @@ namespace MongoDB.Connections
         {
             AuthenticateIfRequired(database);
 
-            var result = SendCommandCore<Document>(factory, database, rootType, command);
+            var result = _connection.SendCommand<Document>(factory, database, rootType, command);
 
             if(!Convert.ToBoolean(result["ok"]))
             {
@@ -230,29 +230,14 @@ namespace MongoDB.Connections
         {
             AuthenticateIfRequired(database);
 
-            var result = SendCommandCore<T>(factory, database, rootType, command);
+            var result = _connection.SendCommand<T>(factory, database, rootType, command);
 
             if(!result.Success)
                 throw new MongoCommandException(result.ErrorMessage, null, null);
 
             return result;
         }
-
-        /// <summary>
-        /// Sends the command core.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="factory">The factory.</param>
-        /// <param name="database">The database.</param>
-        /// <param name="rootType">Type of serialization root.</param>
-        /// <param name="command">The spec.</param>
-        /// <returns></returns>
-        private T SendCommandCore<T>(ISerializationFactory factory, string database, Type rootType, object command) 
-            where T : class
-        {
-            return _connection.SendCommand<T>(factory, database, rootType, command);
-        }
-
+        
         /// <summary>
         /// Authenticates the on first request.
         /// </summary>
@@ -273,8 +258,8 @@ namespace MongoDB.Connections
 
             var serializationFactory = MongoConfiguration.Default.SerializationFactory;
 
-            var document = new Document().Add("getnonce", 1.0);
-            var nonceResult = SendCommandCore<Document>(serializationFactory, databaseName, typeof(Document), document);
+            var document = new Document("getnonce", 1.0);
+            var nonceResult = _connection.SendCommand<Document>(serializationFactory, databaseName, typeof(Document), document);
             var nonce = (string)nonceResult["nonce"];
 
             if(nonce == null)
@@ -289,7 +274,7 @@ namespace MongoDB.Connections
             };
             try
             {
-                var result = SendCommandCore<Document>(serializationFactory, databaseName, typeof(Document), auth);
+                var result = _connection.SendCommand<Document>(serializationFactory, databaseName, typeof(Document), auth);
                 
                 if(!Convert.ToBoolean(result["ok"]))
                     throw new MongoException("Authentication faild for " + builder.Username);
