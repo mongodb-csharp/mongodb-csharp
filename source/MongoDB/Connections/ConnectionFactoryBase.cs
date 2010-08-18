@@ -5,17 +5,17 @@ using System.Threading;
 namespace MongoDB.Connections
 {
     /// <summary>
-    /// 
     /// </summary>
     internal abstract class ConnectionFactoryBase : IConnectionFactory
     {
         private int _endPointPointer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectionFactoryBase"/> class.
+        ///   Initializes a new instance of the <see cref = "ConnectionFactoryBase" /> class.
         /// </summary>
-        /// <param name="connectionString">The connection string.</param>
-        protected ConnectionFactoryBase(string connectionString){
+        /// <param name = "connectionString">The connection string.</param>
+        protected ConnectionFactoryBase(string connectionString)
+        {
             if(connectionString == null)
                 throw new ArgumentNullException("connectionString");
 
@@ -24,37 +24,45 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Gets or sets the builder.
+        ///   Gets or sets the builder.
         /// </summary>
         /// <value>The builder.</value>
         protected MongoConnectionStringBuilder Builder { get; private set; }
 
         /// <summary>
-        /// Opens a connection.
+        ///   Opens a connection.
         /// </summary>
         /// <returns></returns>
         public abstract RawConnection Open();
 
         /// <summary>
-        /// Closes the specified connection.
+        ///   Closes the specified connection.
         /// </summary>
-        /// <param name="connection">The connection.</param>
+        /// <param name = "connection">The connection.</param>
         public abstract void Close(RawConnection connection);
 
         /// <summary>
-        /// Gets or sets the connection string.
+        ///   Gets or sets the connection string.
         /// </summary>
         /// <value>The connection string.</value>
         public string ConnectionString { get; set; }
 
         /// <summary>
-        /// Cleanups this instance.
+        ///   Cleanups this instance.
         /// </summary>
-        public virtual void Cleanup(){
+        public virtual void Cleanup()
+        {
         }
 
         /// <summary>
-        /// Creates the raw connection.
+        ///   Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public virtual void Dispose()
+        {
+        }
+
+        /// <summary>
+        ///   Creates the raw connection.
         /// </summary>
         /// <returns></returns>
         protected RawConnection CreateRawConnection()
@@ -63,7 +71,9 @@ namespace MongoDB.Connections
             try
             {
                 return new RawConnection(endPoint, Builder.ConnectionTimeout);
-            }catch(SocketException exception){
+            }
+            catch(SocketException exception)
+            {
                 throw new MongoConnectionException("Failed to connect to server " + endPoint, ConnectionString, endPoint, exception);
             }
         }
@@ -86,12 +96,6 @@ namespace MongoDB.Connections
                 _endPointPointer = 0;
 
             return endPoint;
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public virtual void Dispose(){
         }
     }
 }
