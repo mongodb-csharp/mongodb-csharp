@@ -307,6 +307,20 @@ namespace MongoDB
         }
 
         /// <summary>
+        /// Remove documents from the collection.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        /// <remarks>
+        /// An empty document will match all documents in the collection and effectively truncate it.
+        /// See the safemode description in the class description
+        /// </remarks>
+        public void Remove(T document, bool safemode)
+        {
+            ((IMongoCollection)this).Remove(document, safemode);
+        }
+
+        /// <summary>
         /// Remove documents from the collection according to the selector.
         /// </summary>
         /// <typeparam name="TExample">The type of the example.</typeparam>
@@ -349,6 +363,23 @@ namespace MongoDB
         public void SaveByExample<TExample>(TExample example, bool safemode)
         {
             ((IMongoCollection)this).Save(ObjectToDocumentConverter.Convert(example), safemode);
+        }
+
+        /// <summary>
+        /// Updates a document with the data in doc if found.
+        /// </summary>
+        /// <param name="document">The <see cref="Document"/> to update with</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        public void Update(T document, bool safemode)
+        {
+            var descriptor = _configuration.SerializationFactory.GetObjectDescriptor(typeof(T));
+
+            var value = descriptor.GetPropertyValue(document, "_id");
+
+            if(value==null)
+                return;
+            
+            ((IMongoCollection)this).Update(document, new Document("_id", value), UpdateFlags.Upsert, safemode);
         }
 
         /// <summary>
@@ -653,7 +684,7 @@ namespace MongoDB
         /// <param name="flags">The flags.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void IMongoCollection.Update(object document, object selector, UpdateFlags flags, bool safemode)
-        {
+        {            
             var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(typeof(T));
 
             try

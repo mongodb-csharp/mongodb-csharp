@@ -182,6 +182,20 @@ namespace MongoDB
         }
 
         /// <summary>
+        /// Remove documents from the collection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="document">The document.</param>
+        /// <remarks>
+        /// An empty document will match all documents in the collection and effectively truncate it.
+        /// </remarks>
+        public static void Remove<T>(this IMongoCollection<T> collection, T document) where T : class
+        {
+            collection.Remove(document, false);
+        }
+
+        /// <summary>
         /// Remove documents from the collection according to the selector.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -234,6 +248,17 @@ namespace MongoDB
         public static void SaveByExample<T, TExample>(this IMongoCollection<T> collection, TExample example) where T : class
         {
             collection.SaveByExample(example, false);
+        }
+
+        /// <summary>
+        /// Updates a document with the data in doc if found.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="document">The <see cref="Document"/> to update with</param>
+        public static void Update<T>(this IMongoCollection<T> collection, T document) where T : class
+        {
+            collection.Update(document,  false);
         }
 
         /// <summary>

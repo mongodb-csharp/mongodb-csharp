@@ -30,8 +30,9 @@ namespace MongoDB
     }
 
     /// <summary>
-    ///   A collection is a storage unit for a group of <see cref = "Document" />s.  The documents do not all have to 
-    ///   contain the same schema but for efficiency they should all be similar.
+    ///   A collection is a storage unit for a group of <see cref = "Document" />s. 
+    ///   The documents do not all have to contain the same schema but for 
+    ///   efficiency they should all be similar.
     /// </summary>
     /// <remarks>
     ///   Safemode checks the database for any errors that may have occurred during 
@@ -198,21 +199,21 @@ namespace MongoDB
         void InsertByExample<TExample>(TExample example, bool safemode);
 
         /// <summary>
-        /// Inserts the specified documents.
+        /// Inserts the specified documents in one batch.
         /// </summary>
         /// <param name="documents">The documents.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void InsertMany(IEnumerable<Document> documents, bool safemode);
 
         /// <summary>
-        /// Inserts the specified documents.
+        /// Inserts the specified documents in one batch.
         /// </summary>
         /// <param name="documents">The documents.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void InsertMany(IEnumerable<T> documents, bool safemode);
 
         /// <summary>
-        /// Inserts the specified documents.
+        /// Inserts the specified documents in one batch.
         /// </summary>
         /// <typeparam name="TExample">The type of the example.</typeparam>
         /// <param name="examples">The examples.</param>
@@ -229,6 +230,17 @@ namespace MongoDB
         ///   See the safemode description in the class description
         /// </remarks>
         void Remove(Document selector, bool safemode);
+
+        /// <summary>
+        /// Remove documents from the collection.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        /// <remarks>
+        /// An empty document will match all documents in the collection and effectively truncate it.
+        /// See the safemode description in the class description
+        /// </remarks>
+        void Remove(T document, bool safemode);
 
         /// <summary>
         ///   Remove documents from the collection according to the selector.
@@ -267,6 +279,13 @@ namespace MongoDB
         void SaveByExample<TExample>(TExample example, bool safemode);
 
         /// <summary>
+        /// Updates a document with the data in doc if found.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        void Update(T document, bool safemode);
+
+        /// <summary>
         /// Updates a document with the data in doc as found by the selector.
         /// </summary>
         /// <param name="document">The document.</param>
@@ -274,7 +293,6 @@ namespace MongoDB
         /// <param name="flags">The flags.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void Update(Document document, Document selector, UpdateFlags flags, bool safemode);
-
 
         /// <summary>
         /// Updates a document with the data in doc as found by the selector.
