@@ -62,44 +62,21 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Sends the two way message.
-        /// </summary>
-        /// <param name="message">The MSG.</param>
-        /// <param name="database">The database.</param>
-        /// <returns></returns>
-        public ReplyMessage<Document> SendTwoWayMessage(IRequestMessage message, string database){
-            return SendTwoWayMessage<Document>(message,new BsonReaderSettings(), database);
-        }
-
-        /// <summary>
-        /// Used for sending a message that gets a reply such as a query.
+        /// Sends the message.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="message">The message.</param>
         /// <param name="readerSettings">The reader settings.</param>
         /// <param name="database">The database.</param>
         /// <returns></returns>
-        /// <exception cref="IOException">A reconnect will be issued but it is up to the caller to handle the error.</exception>
-        public ReplyMessage<T> SendTwoWayMessage<T>(IRequestMessage message, BsonReaderSettings readerSettings, string database) where T:class {
+        public ReplyMessage<T> SendMessage<T>(IRequestMessage message, BsonReaderSettings readerSettings, string database) where T:class {
             AuthenticateIfRequired(database);
 
-            return SendTwoWayMessageCore<T>(message, readerSettings);
-        }
-
-        /// <summary>
-        /// Sends the two way message core.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="message">The message.</param>
-        /// <param name="readerSettings">The reader settings.</param>
-        /// <returns></returns>
-        internal ReplyMessage<T> SendTwoWayMessageCore<T>(IRequestMessage message, BsonReaderSettings readerSettings) where T : class
-        {
             EnsureOpenConnection();
 
             try
             {
-                return _connection.SendMessage<T>(message,readerSettings);
+                return _connection.SendMessage<T>(message, readerSettings);
             }
             catch(IOException)
             {
@@ -117,15 +94,6 @@ namespace MongoDB.Connections
         public void SendMessage(IRequestMessage message, string database){
             AuthenticateIfRequired(database);
 
-            SendMessageCore(message);
-        }
-
-        /// <summary>
-        /// Sends the message core.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        internal void SendMessageCore(IRequestMessage message)
-        {
             EnsureOpenConnection();
 
             try
