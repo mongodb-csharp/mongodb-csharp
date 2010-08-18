@@ -434,51 +434,6 @@ namespace MongoDB
         }
 
         /// <summary>
-        /// Checks the error.
-        /// </summary>
-        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        private void CheckError(bool safemode)
-        {
-            if (!safemode)
-                return;
-
-            var lastError = Database.GetLastError();
-
-            if (ErrorTranslator.IsError(lastError))
-                throw ErrorTranslator.Translate(lastError);
-        }
-
-        /// <summary>
-        /// Checks the previous error.
-        /// </summary>
-        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        private void CheckPreviousError(bool safemode)
-        {
-            if (!safemode)
-                return;
-
-            var previousError = Database.GetPreviousError();
-
-            if (ErrorTranslator.IsError(previousError))
-                throw ErrorTranslator.Translate(previousError);
-        }
-
-        /// <summary>
-        /// Ensures the update document.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <returns></returns>
-        private object EnsureUpdateDocument(object document)
-        {
-            var descriptor = _configuration.SerializationFactory.GetObjectDescriptor(typeof(T));
-
-            var foundOp = descriptor.GetMongoPropertyNames(document)
-                .Any(name => name.IndexOf('$') == 0);
-
-            return foundOp == false ? new Document().Add("$set", document) : document;
-        }
-
-        /// <summary>
         /// Counts this instance.
         /// </summary>
         /// <returns></returns>
@@ -581,9 +536,6 @@ namespace MongoDB
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void IUntypedCollection.InsertMany(IEnumerable documents, bool safemode)
         {
-            if (safemode)
-                Database.ResetError();
-
             var rootType = typeof(T);
             var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(rootType);
 
@@ -610,7 +562,7 @@ namespace MongoDB
             try
             {
                 _connection.SendMessage(insertMessage, DatabaseName);
-                CheckPreviousError(safemode);
+                CheckLastError(safemode);
             }
             catch (IOException exception)
             {
@@ -643,7 +595,8 @@ namespace MongoDB
                     FullCollectionName = FullName,
                     Selector = selector
                 }, DatabaseName);
-                CheckPreviousError(safemode);
+                
+                CheckLastError(safemode);
             }
             catch (IOException exception)
             {
@@ -696,12 +649,43 @@ namespace MongoDB
                     Document = document,
                     Flags = (int)flags
                 }, DatabaseName);
-                CheckPreviousError(safemode);
+                
+                CheckLastError(safemode);
             }
             catch (IOException exception)
             {
                 throw new MongoConnectionException("Could not update document, communication failure", _connection, exception);
             }
+        }
+
+        /// <summary>
+        /// Checks the last error.
+        /// </summary>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        private void CheckLastError(bool safemode)
+        {
+            if(!safemode)
+                return;
+
+            var lastError = Database.GetLastError();
+
+            if(ErrorTranslator.IsError(lastError))
+                throw ErrorTranslator.Translate(lastError);
+        }
+
+        /// <summary>
+        /// Ensures the update document.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <returns></returns>
+        private object EnsureUpdateDocument(object document)
+        {
+            var descriptor = _configuration.SerializationFactory.GetObjectDescriptor(typeof(T));
+
+            var foundOp = descriptor.GetMongoPropertyNames(document)
+                .Any(name => name.IndexOf('$') == 0);
+
+            return foundOp == false ? new Document().Add("$set", document) : document;
         }
     }
 }
