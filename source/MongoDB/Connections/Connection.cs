@@ -152,16 +152,6 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Just sends a simple message string to the database. 
-        /// </summary>
-        /// <param name="message">
-        /// A <see cref="System.String"/>
-        /// </param>
-        public void SendMsgMessage (String message){
-            SendMessageCore(new MsgMessage{Message = message});
-        }
-
-        /// <summary>
         /// Opens this instance.
         /// </summary>
         public void Open (){
