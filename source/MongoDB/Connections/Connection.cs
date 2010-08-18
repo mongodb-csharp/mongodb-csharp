@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Configuration;
 using MongoDB.Protocol;
@@ -11,12 +10,12 @@ using MongoDB.Util;
 namespace MongoDB.Connections
 {
     /// <summary>
-    /// Connection is a managment unit which uses a RawConnection from connection pool
-    /// to comunicate with the server.
-    /// <remarks>
-    /// If an connection error occure, the RawConnection is transparently replaced
-    /// by a new fresh connection.
-    /// </remarks>
+    ///   Connection is a managment unit which uses a RawConnection from connection pool
+    ///   to comunicate with the server.
+    ///   <remarks>
+    ///     If an connection error occure, the RawConnection is transparently replaced
+    ///     by a new fresh connection.
+    ///   </remarks>
     /// </summary>
     internal class Connection : IDisposable
     {
@@ -25,51 +24,75 @@ namespace MongoDB.Connections
         private bool _disposed;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Connection"/> class.
+        ///   Initializes a new instance of the <see cref = "Connection" /> class.
         /// </summary>
-        /// <param name="factory">The pool.</param>
+        /// <param name = "factory">The pool.</param>
         public Connection(IConnectionFactory factory)
         {
-            if (factory == null)
-                throw new ArgumentNullException ("factory");
-            
+            if(factory == null)
+                throw new ArgumentNullException("factory");
+
             _factory = factory;
         }
 
         /// <summary>
-        /// Releases unmanaged resources and performs other cleanup operations before the
-        /// <see cref="Connection"/> is reclaimed by garbage collection.
-        /// </summary>
-        ~Connection (){
-            // make sure the connection returns to pool if the user forget it.
-            Dispose (false);
-        }
-
-        /// <summary>
-        /// Gets the connection string.
+        ///   Gets the connection string.
         /// </summary>
         /// <value>The connection string.</value>
-        public string ConnectionString {
+        public string ConnectionString
+        {
             get { return _factory.ConnectionString; }
         }
 
         /// <summary>
-        /// Gets the end point.
+        ///   Gets the end point.
         /// </summary>
         /// <value>The end point.</value>
-        public MongoServerEndPoint EndPoint{
+        public MongoServerEndPoint EndPoint
+        {
             get { return _connection == null ? null : _connection.EndPoint; }
         }
 
         /// <summary>
-        /// Sends the message.
+        ///   Gets a value indicating whether this instance is connected.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="message">The message.</param>
-        /// <param name="readerSettings">The reader settings.</param>
-        /// <param name="database">The database.</param>
+        /// <value>
+        ///   <c>true</c> if this instance is connected; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsConnected
+        {
+            get { return _connection != null && _connection.IsConnected; }
+        }
+
+        /// <summary>
+        ///   Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        ///   Releases unmanaged resources and performs other cleanup operations before the
+        ///   <see cref = "Connection" /> is reclaimed by garbage collection.
+        /// </summary>
+        ~Connection()
+        {
+            // make sure the connection returns to pool if the user forget it.
+            Dispose(false);
+        }
+
+        /// <summary>
+        ///   Sends the message.
+        /// </summary>
+        /// <typeparam name = "T"></typeparam>
+        /// <param name = "message">The message.</param>
+        /// <param name = "readerSettings">The reader settings.</param>
+        /// <param name = "database">The database.</param>
         /// <returns></returns>
-        public ReplyMessage<T> SendMessage<T>(IRequestMessage message, BsonReaderSettings readerSettings, string database) where T:class {
+        public ReplyMessage<T> SendMessage<T>(IRequestMessage message, BsonReaderSettings readerSettings, string database) where T : class
+        {
             AuthenticateIfRequired(database);
 
             EnsureOpenConnection();
@@ -86,12 +109,13 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Used for sending a message that gets no reply such as insert or update.
+        ///   Used for sending a message that gets no reply such as insert or update.
         /// </summary>
-        /// <param name="message">The message.</param>
-        /// <param name="database">The database.</param>
-        /// <exception cref="IOException">A reconnect will be issued but it is up to the caller to handle the error.</exception>
-        public void SendMessage(IRequestMessage message, string database){
+        /// <param name = "message">The message.</param>
+        /// <param name = "database">The database.</param>
+        /// <exception cref = "IOException">A reconnect will be issued but it is up to the caller to handle the error.</exception>
+        public void SendMessage(IRequestMessage message, string database)
+        {
             AuthenticateIfRequired(database);
 
             EnsureOpenConnection();
@@ -109,28 +133,19 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Gets a value indicating whether this instance is connected.
+        ///   Opens this instance.
         /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this instance is connected; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsConnected
+        public void Open()
         {
-            get { return _connection != null && _connection.IsConnected; }
-        }
-
-        /// <summary>
-        /// Opens this instance.
-        /// </summary>
-        public void Open (){
             _connection = _factory.Open();
         }
 
         /// <summary>
-        /// Closes this instance.
+        ///   Closes this instance.
         /// </summary>
-        public void Close (){
-            if (_connection == null)
+        public void Close()
+        {
+            if(_connection == null)
                 return;
 
             _factory.Close(_connection);
@@ -138,32 +153,34 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Replaces the invalid connection.
+        ///   Replaces the invalid connection.
         /// </summary>
-        private void ReplaceInvalidConnection (){
-            if (_connection == null)
+        private void ReplaceInvalidConnection()
+        {
+            if(_connection == null)
                 return;
-            
-            _connection.MarkAsInvalid ();
-            _factory.Close (_connection);
+
+            _connection.MarkAsInvalid();
+            _factory.Close(_connection);
             _connection = _factory.Open();
         }
 
         /// <summary>
-        /// Gets the stream.
+        ///   Gets the stream.
         /// </summary>
         /// <returns></returns>
-        internal Stream GetStream (){
-            return _connection.GetStream ();
+        internal Stream GetStream()
+        {
+            return _connection.GetStream();
         }
 
         /// <summary>
-        /// Sends the command.
+        ///   Sends the command.
         /// </summary>
-        /// <param name="factory">The factory.</param>
-        /// <param name="database">The database.</param>
-        /// <param name="rootType">Type of the command.</param>
-        /// <param name="command">The command.</param>
+        /// <param name = "factory">The factory.</param>
+        /// <param name = "database">The database.</param>
+        /// <param name = "rootType">Type of the command.</param>
+        /// <param name = "command">The command.</param>
         /// <returns></returns>
         public Document SendCommand(ISerializationFactory factory, string database, Type rootType, Document command)
         {
@@ -180,20 +197,20 @@ namespace MongoDB.Connections
                     msg = (string)result["errmsg"];
                 throw new MongoCommandException(msg, result, command);
             }
-            
+
             return result;
         }
 
         /// <summary>
-        /// Sends the command.
+        ///   Sends the command.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="factory">The factory.</param>
-        /// <param name="database">The database.</param>
-        /// <param name="rootType">Type of serialization root.</param>
-        /// <param name="command">The spec.</param>
+        /// <typeparam name = "T"></typeparam>
+        /// <param name = "factory">The factory.</param>
+        /// <param name = "database">The database.</param>
+        /// <param name = "rootType">Type of serialization root.</param>
+        /// <param name = "command">The spec.</param>
         /// <returns></returns>
-        public T SendCommand<T>(ISerializationFactory factory, string database, Type rootType, object command) 
+        public T SendCommand<T>(ISerializationFactory factory, string database, Type rootType, object command)
             where T : CommandResultBase
         {
             AuthenticateIfRequired(database);
@@ -205,11 +222,11 @@ namespace MongoDB.Connections
 
             return result;
         }
-        
+
         /// <summary>
-        /// Authenticates the on first request.
+        ///   Authenticates the on first request.
         /// </summary>
-        /// <param name="databaseName">Name of the database.</param>
+        /// <param name = "databaseName">Name of the database.</param>
         private void AuthenticateIfRequired(string databaseName)
         {
             if(databaseName == null)
@@ -234,7 +251,8 @@ namespace MongoDB.Connections
                 throw new MongoException("Error retrieving nonce", null);
 
             var pwd = MongoHash.Generate(builder.Username + ":mongo:" + builder.Password);
-            var auth = new Document{
+            var auth = new Document
+            {
                 {"authenticate", 1.0},
                 {"user", builder.Username},
                 {"nonce", nonce},
@@ -243,7 +261,7 @@ namespace MongoDB.Connections
             try
             {
                 var result = _connection.SendCommand<Document>(serializationFactory, databaseName, typeof(Document), auth);
-                
+
                 if(!Convert.ToBoolean(result["ok"]))
                     throw new MongoException("Authentication faild for " + builder.Username);
             }
@@ -257,27 +275,17 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        ///   Releases unmanaged and - optionally - managed resources
         /// </summary>
-        public void Dispose (){
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources
-        /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        /// <param name = "disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if(_disposed)
                 return;
-            
-            if (disposing)
-            {
+
+            if(disposing)
                 // Cleanup Managed Resources Here
                 Close();
-            }
 
             // Cleanup Unmanaged Resources Here
 
@@ -286,13 +294,13 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Ensures the open connection.
+        ///   Ensures the open connection.
         /// </summary>
         private void EnsureOpenConnection()
         {
             if(IsConnected)
                 return;
-            
+
             throw new MongoConnectionException("Operation cannot be performed on a closed connection.", ConnectionString, null);
         }
     }
