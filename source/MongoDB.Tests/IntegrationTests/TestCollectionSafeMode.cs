@@ -64,13 +64,13 @@ namespace MongoDB.IntegrationTests
         {
             IMongoCollection<Document> col = InitCollection("safemupdate");
             Document newy = new Document() { { "y", 2 } };
-            col.UpdateAll(newy, new Document() { { "y", 1 } }, true);
+            col.UpdateMany(newy, new Document() { { "y", 1 } }, true);
             Assert.AreEqual(5, col.Count(newy));
 
             bool thrown = false;
             try
             {
-                col.UpdateAll(new Document { { "x", 1 } }, new Document { { "y", 2 } }, true);
+                col.UpdateMany(new Document { { "x", 1 } }, new Document { { "y", 2 } }, true);
             }
             catch (MongoDuplicateKeyUpdateException)
             {

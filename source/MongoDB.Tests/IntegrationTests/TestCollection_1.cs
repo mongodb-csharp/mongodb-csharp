@@ -307,7 +307,7 @@ namespace MongoDB.IntegrationTests
             Assert.AreEqual(3, results.Documents.Count(), "Didn't find all Documents inserted for TestUpdateMany with Selector");
 
             var updateData = new {Last = "Cordr2"};
-            updates.UpdateAllByExample(updateData, selector);
+            updates.UpdateManyByExample(updateData, selector);
 
             selector = new {Last = "Cordr2"};
             results = updates.FindByExample(selector);

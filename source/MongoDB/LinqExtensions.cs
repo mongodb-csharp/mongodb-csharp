@@ -139,7 +139,7 @@ namespace MongoDB
         /// <param name="selector">The selector.</param>
         public static void UpdateAll<T>(this IMongoCollection<T> collection, Document document, Expression<Func<T, bool>> selector) where T : class
         {
-            collection.UpdateAll(document, GetQuery(collection, selector));
+            collection.UpdateMany(document, GetQuery(collection, selector));
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace MongoDB
         /// <param name="safeMode">if set to <c>true</c> [safe mode].</param>
         public static void UpdateAll<T>(this IMongoCollection<T> collection, Document document, Expression<Func<T, bool>> selector, bool safeMode) where T : class
         {
-            collection.UpdateAll(document, GetQuery(collection, selector), safeMode);
+            collection.UpdateMany(document, GetQuery(collection, selector), safeMode);
         }
 
         /// <summary>

@@ -415,22 +415,23 @@ namespace MongoDB
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        public void UpdateAll(Document document, Document selector, bool safemode)
+        public void UpdateMany(Document document, Document selector, bool safemode)
         {
             Update((Document)EnsureUpdateDocument(document), selector, UpdateFlags.MultiUpdate, safemode);
         }
 
         /// <summary>
-        /// Updates all.
+        /// Runs a multiple update query against the database.  It will wrap any
+        /// doc with $set if the passed in doc doesn't contain any '$' ops.
         /// </summary>
         /// <typeparam name="TExample1">The type of the example1.</typeparam>
         /// <typeparam name="TExample2">The type of the example2.</typeparam>
         /// <param name="documentExample">The document example.</param>
         /// <param name="selectorExample">The selector example.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        public void UpdateAllByExample<TExample1, TExample2>(TExample1 documentExample, TExample2 selectorExample, bool safemode)
+        public void UpdateManyByExample<TExample1, TExample2>(TExample1 documentExample, TExample2 selectorExample, bool safemode)
         {
-            UpdateAll(ObjectToDocumentConverter.Convert(documentExample), ObjectToDocumentConverter.Convert(selectorExample), safemode);
+            UpdateMany(ObjectToDocumentConverter.Convert(documentExample), ObjectToDocumentConverter.Convert(selectorExample), safemode);
         }
 
         /// <summary>

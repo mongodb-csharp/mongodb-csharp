@@ -289,7 +289,7 @@ namespace MongoDB
         /// <remarks>
         /// See the safemode description in the class description
         /// </remarks>
-        void UpdateAll(Document document, Document selector, bool safemode);
+        void UpdateMany(Document document, Document selector, bool safemode);
 
         /// <summary>
         /// Runs a multiple update query against the database.  It will wrap any
@@ -300,6 +300,6 @@ namespace MongoDB
         /// <param name="documentExample">The document example.</param>
         /// <param name="selectorExample">The selector example.</param>
         /// <param name="safeMode">if set to <c>true</c> [safe mode].</param>
-        void UpdateAllByExample<TExample1, TExample2>(TExample1 documentExample, TExample2 selectorExample, bool safeMode);
+        void UpdateManyByExample<TExample1, TExample2>(TExample1 documentExample, TExample2 selectorExample, bool safeMode);
     }
 }

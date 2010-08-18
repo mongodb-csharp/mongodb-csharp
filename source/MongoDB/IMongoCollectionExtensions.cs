@@ -337,9 +337,9 @@ namespace MongoDB
         /// <param name="collection">The collection.</param>
         /// <param name="document">The document.</param>
         /// <param name="selector">The selector.</param>
-        public static void UpdateAll<T>(this IMongoCollection<T> collection, Document document, Document selector) where T : class
+        public static void UpdateMany<T>(this IMongoCollection<T> collection, Document document, Document selector) where T : class
         {
-            collection.UpdateAll(document, selector, false);
+            collection.UpdateMany(document, selector, false);
         }
 
         /// <summary>
@@ -352,9 +352,9 @@ namespace MongoDB
         /// <param name="collection">The collection.</param>
         /// <param name="documentExample">The document example.</param>
         /// <param name="selectorExample">The selector example.</param>
-        public static void UpdateAllByExample<T, TExample1, TExample2>(this IMongoCollection<T> collection, TExample1 documentExample, TExample2 selectorExample) where T : class
+        public static void UpdateManyByExample<T, TExample1, TExample2>(this IMongoCollection<T> collection, TExample1 documentExample, TExample2 selectorExample) where T : class
         {
-            collection.UpdateAllByExample(documentExample, selectorExample, false);
+            collection.UpdateManyByExample(documentExample, selectorExample, false);
         }
     }
 }

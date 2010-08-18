@@ -446,7 +446,7 @@ namespace MongoDB.IntegrationTests
 
             //Document updateData = new Document().Append("$set", new Document().Append("Last", "Corder2"));
             var updateData = new Document().Add("Last", "Corder2");
-            updates.UpdateAll(updateData, selector);
+            updates.UpdateMany(updateData, selector);
 
             selector["Last"] = "Corder2";
             Assert.AreEqual(3, updates.Count(selector), "Not all Cordr documents were updated");
