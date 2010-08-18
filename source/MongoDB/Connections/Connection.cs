@@ -99,7 +99,7 @@ namespace MongoDB.Connections
 
             try
             {
-                return _connection.Send<T>(message,readerSettings);
+                return _connection.SendMessage<T>(message,readerSettings);
             }
             catch(IOException)
             {
@@ -130,7 +130,7 @@ namespace MongoDB.Connections
 
             try
             {
-                _connection.Send(message);
+                _connection.SendMessage(message);
             }
             catch(IOException)
             {
@@ -250,30 +250,7 @@ namespace MongoDB.Connections
         private T SendCommandCore<T>(ISerializationFactory factory, string database, Type rootType, object command) 
             where T : class
         {
-            var writerSettings = factory.GetBsonWriterSettings(rootType);
-
-            var query = new QueryMessage(writerSettings)
-            {
-                FullCollectionName = database + ".$cmd",
-                NumberToReturn = -1,
-                Query = command
-            };
-
-            var readerSettings = factory.GetBsonReaderSettings(typeof(T));
-
-            try
-            {
-                var reply = SendTwoWayMessageCore<T>(query, readerSettings);
-
-                if(reply.CursorId > 0)
-                    SendMessage(new KillCursorsMessage(reply.CursorId),database);
-
-                return reply.Documents.FirstOrDefault();
-            }
-            catch(IOException exception)
-            {
-                throw new MongoConnectionException("Could not read data, communication failure", this, exception);
-            }
+            return _connection.SendCommand<T>(factory, database, rootType, command);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.Serialization;
 using MongoDB.Connections;
 
@@ -50,6 +51,18 @@ namespace MongoDB
         /// Initializes a new instance of the <see cref="MongoConnectionException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
+        /// <param name="endPoint">The end point.</param>
+        /// <param name="innerException">The inner exception.</param>
+        public MongoConnectionException(string message, MongoServerEndPoint endPoint, Exception innerException)
+            : base(message, innerException)
+        {
+            EndPoint = endPoint;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MongoConnectionException"/> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
         /// <param name="connection">The connection.</param>
         internal MongoConnectionException(string message, Connection connection)
             :this(message,connection,null){}
@@ -66,8 +79,8 @@ namespace MongoDB
                 throw new ArgumentNullException("connection");
             ConnectionString = connection.ConnectionString;
             EndPoint = connection.EndPoint;
-        }  
-        
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MongoConnectionException"/> class.
         /// </summary>
@@ -82,6 +95,6 @@ namespace MongoDB
         public MongoConnectionException(SerializationInfo info, StreamingContext context)
          : base(info, context)
         {
-        }     
+        }
     }
 }

@@ -129,7 +129,7 @@ namespace MongoDB.Connections
         /// <param name="message">The message.</param>
         /// <param name="readerSettings">The reader settings.</param>
         /// <returns></returns>
-        internal ReplyMessage<T> Send<T>(IRequestMessage message, BsonReaderSettings readerSettings) where T : class
+        public ReplyMessage<T> SendMessage<T>(IRequestMessage message, BsonReaderSettings readerSettings) where T : class
         {
             var reply = new ReplyMessage<T>(readerSettings);
             lock(this)
@@ -144,7 +144,7 @@ namespace MongoDB.Connections
         /// Sends the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
-        internal void Send(IRequestMessage message)
+        public void SendMessage(IRequestMessage message)
         {
             lock(this)
             {
@@ -152,6 +152,42 @@ namespace MongoDB.Connections
             }
         }
 
+        /// <summary>
+        /// Sends the command.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="factory">The factory.</param>
+        /// <param name="database">The database.</param>
+        /// <param name="rootType">Type of the root.</param>
+        /// <param name="command">The command.</param>
+        /// <returns></returns>
+        public T SendCommand<T>(ISerializationFactory factory, string database, Type rootType, object command) where T : class
+        {
+            var writerSettings = factory.GetBsonWriterSettings(rootType);
+
+            var query = new QueryMessage(writerSettings)
+            {
+                FullCollectionName = database + ".$cmd",
+                NumberToReturn = -1,
+                Query = command
+            };
+
+            var readerSettings = factory.GetBsonReaderSettings(typeof(T));
+
+            try
+            {
+                var reply = SendMessage<T>(query, readerSettings);
+
+                if(reply.CursorId > 0)
+                    SendMessage(new KillCursorsMessage(reply.CursorId));
+
+                return reply.Documents.FirstOrDefault();
+            }
+            catch(IOException exception)
+            {
+                throw new MongoConnectionException("Could not read data, communication failure", EndPoint, exception);
+            }
+        }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
