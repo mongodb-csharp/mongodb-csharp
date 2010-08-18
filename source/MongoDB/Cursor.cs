@@ -456,7 +456,7 @@ namespace MongoDB
 
             try
             {
-                var reply = _connection.SendTwoWayMessage<TReply>(message, readerSettings, _databaseName);
+                var reply = _connection.SendMessage<TReply>(message, readerSettings, _databaseName);
 
                 Id = reply.CursorId;
 
