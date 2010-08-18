@@ -1,5 +1,6 @@
 using System;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace MongoDB.Connections
 {
@@ -79,7 +80,7 @@ namespace MongoDB.Connections
             var servers = Builder.Servers;
             var endPoint = servers[_endPointPointer];
 
-            _endPointPointer++;
+            Interlocked.Increment(ref _endPointPointer);
 
             if(_endPointPointer >= servers.Length)
                 _endPointPointer = 0;
