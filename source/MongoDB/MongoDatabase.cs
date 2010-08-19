@@ -17,33 +17,42 @@ namespace MongoDB
         private DatabaseMetadata _metadata;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MongoDatabase"/> class.
+        ///   Initializes a new instance of the <see cref = "MongoDatabase" /> class.
         /// </summary>
-        /// <param name="connectionString">The connection string.</param>
+        /// <param name = "connectionString">The connection string.</param>
         public MongoDatabase(string connectionString)
-            : this(new MongoConfiguration {ConnectionString = connectionString})
         {
+            if(connectionString == null)
+                throw new ArgumentNullException("connectionString");
+
+            _configuration = new MongoConfiguration {ConnectionString = connectionString};
+            _connection = ConnectionFactoryFactory.GetConnection(_configuration.ConnectionString);
+            Name = new MongoConnectionStringBuilder(_configuration.ConnectionString).Database;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MongoDatabase"/> class.
+        ///   Initializes a new instance of the <see cref = "MongoDatabase" /> class.
         /// </summary>
-        /// <param name="configuration">The configuration.</param>
+        /// <param name = "configuration">The configuration.</param>
         public MongoDatabase(MongoConfiguration configuration)
-            : this(configuration,
-                ConnectionFactoryFactory.GetConnection(configuration.ConnectionString),
-                new MongoConnectionStringBuilder(configuration.ConnectionString).Database)
         {
-            //Todo: Add check for null
+            if(configuration == null)
+                throw new ArgumentNullException("configuration");
+
+            Name = new MongoConnectionStringBuilder(configuration.ConnectionString).Database;
+            _configuration = configuration;
+            _connection = ConnectionFactoryFactory.GetConnection(configuration.ConnectionString);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MongoDatabase"/> class.
+        ///   Initializes a new instance of the <see cref = "MongoDatabase" /> class.
         /// </summary>
-        /// <param name="configuration">The configuration.</param>
-        /// <param name="connection">The conn.</param>
-        /// <param name="name">The name.</param>
-        internal MongoDatabase(MongoConfiguration configuration, Connection connection, string name)
+        /// <param name = "configuration">The configuration.</param>
+        /// <param name = "connection">The conn.</param>
+        /// <param name = "name">The name.</param>
+        internal MongoDatabase(MongoConfiguration configuration,
+            Connection connection,
+            string name)
         {
             if(configuration == null)
                 throw new ArgumentNullException("configuration");
@@ -69,7 +78,7 @@ namespace MongoDB
         /// <value>The meta data.</value>
         public DatabaseMetadata Metadata
         {
-            get { return _metadata ?? (_metadata = new DatabaseMetadata(_configuration, Name, _connection)); }
+            get { return _metadata ?? ( _metadata = new DatabaseMetadata(_configuration, Name, _connection) ); }
         }
 
         /// <summary>
@@ -78,7 +87,7 @@ namespace MongoDB
         /// <value>The javascript.</value>
         public DatabaseJavascript Javascript
         {
-            get { return _javascript ?? (_javascript = new DatabaseJavascript(this)); }
+            get { return _javascript ?? ( _javascript = new DatabaseJavascript(this) ); }
         }
 
         /// <summary>
@@ -162,12 +171,12 @@ namespace MongoDB
         }
 
         /// <summary>
-        /// Retrieves the last error.
+        ///   Retrieves the last error.
         /// </summary>
         /// <returns></returns>
         /// <remarks>
-        /// Most operations do not have a return code in order to save the client from having to wait for results.
-        /// GetLastError can be called to retrieve the return code if clients want one.
+        ///   Most operations do not have a return code in order to save the client from having to wait for results.
+        ///   GetLastError can be called to retrieve the return code if clients want one.
         /// </remarks>
         public Document GetLastError()
         {
@@ -175,15 +184,15 @@ namespace MongoDB
         }
 
         /// <summary>
-        /// Retrieves the last error and forces the database to fsync all files before returning.
+        ///   Retrieves the last error and forces the database to fsync all files before returning.
         /// </summary>
-        /// <param name="fsync">if set to <c>true</c> [fsync].</param>
+        /// <param name = "fsync">if set to <c>true</c> [fsync].</param>
         /// <returns></returns>
         /// <remarks>
-        /// Most operations do not have a return code in order to save the client from having to wait for results.
-        /// GetLastError can be called to retrieve the return code if clients want one.
+        ///   Most operations do not have a return code in order to save the client from having to wait for results.
+        ///   GetLastError can be called to retrieve the return code if clients want one.
         /// 
-        /// Server version 1.3+
+        ///   Server version 1.3+
         /// </remarks>
         public Document GetLastError(bool fsync)
         {
