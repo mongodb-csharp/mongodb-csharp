@@ -36,7 +36,7 @@ namespace MongoDB.Connections
             _client.ReceiveTimeout = (int)connectionTimeout.TotalMilliseconds;
             _client.SendTimeout = (int)connectionTimeout.TotalMilliseconds;
 
-            //Todo: custom exception?
+            //Todo: Catch SocketException and translate to MongoConnectionException
             _client.Connect(EndPoint.Host, EndPoint.Port);
         }
 
