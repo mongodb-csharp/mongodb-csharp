@@ -90,6 +90,9 @@ namespace MongoDB
         /// </returns>
         public override string ToString()
         {
+            if(Port==DefaultPort)
+                return string.Format(CultureInfo.CurrentCulture, "{0}", Host);
+            
             return string.Format(CultureInfo.CurrentCulture, "{0}:{1}", Host, Port);
         }
 
