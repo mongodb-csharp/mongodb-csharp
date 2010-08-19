@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -13,6 +14,8 @@ namespace MongoDB
     [Serializable]
     public sealed class MongoServerEndPoint : EndPoint, IEquatable<MongoServerEndPoint>, IXmlSerializable
     {
+        private static readonly Regex ParseRegex = new Regex(@"^\s*([^:]+)(?::(\d+))?\s*$");
+
         /// <summary>
         /// The mongo default host name.
         /// </summary>
@@ -194,6 +197,56 @@ namespace MongoDB
                 writer.WriteAttributeString("host",Host);
 
             writer.WriteAttributeString("port",Port.ToString());
+        }
+
+        /// <summary>
+        /// Converts the string representation of MongoServerEndPoint to a
+        /// MongoServerEndPoint. A return value indicates whether the conversion
+        /// succeeded or failed.
+        /// </summary>
+        /// <param name="server">The server.</param>
+        /// <param name="endPoint">The end point.</param>
+        /// <returns></returns>
+        public static bool TryParse(string server, out MongoServerEndPoint endPoint)
+        {
+            endPoint = null;
+
+            if(server == null)
+                return false;
+            
+            var match = ParseRegex.Match(server);
+
+            if(!match.Success)
+                return false;
+
+            var host = match.Groups[1].Value;
+
+            int port;
+            if(!int.TryParse(match.Groups[2].Value, out port))
+                port = DefaultPort;
+            
+            endPoint = new MongoServerEndPoint(host,port);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Converts the string representation of MongoServerEndPoint to a
+        /// MongoServerEndPoint.
+        /// </summary>
+        /// <param name="server">The server.</param>
+        /// <returns></returns>
+        public static MongoServerEndPoint Parse(string server)
+        {
+            if(server == null)
+                throw new ArgumentNullException("server");
+
+            MongoServerEndPoint endPoint;
+            
+            if(!TryParse(server, out endPoint))
+                throw new FormatException("host is not in the correct format.");
+
+            return endPoint;
         }
     }
 }
