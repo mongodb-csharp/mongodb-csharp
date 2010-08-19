@@ -94,12 +94,12 @@ namespace MongoDB
         ///   Gets the collection names.
         /// </summary>
         /// <returns></returns>
-        public List<String> GetCollectionNames()
+        public IEnumerable<String> GetCollectionNames()
         {
             var namespaces = this["system.namespaces"];
             var cursor = namespaces.Find(new Document());
             //Todo: Should filter built-ins
-            return cursor.Documents.Select(d => (String)d["name"]).ToList();
+            return cursor.Documents.Select(d => (String)d["name"]);
         }
 
         /// <summary>

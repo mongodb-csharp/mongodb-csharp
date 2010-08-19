@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using System.Configuration;
 
@@ -64,7 +65,7 @@ namespace MongoDB.IntegrationTests
 
         [Test]
         public void TestGetCollectionNames(){
-            var names = DB.GetCollectionNames();
+            var names = DB.GetCollectionNames().ToList();
             Assert.IsNotNull(names, "No collection names returned");
             Assert.IsTrue(names.Count > 0);
             Assert.IsTrue(names.Contains("tests.inserts"));

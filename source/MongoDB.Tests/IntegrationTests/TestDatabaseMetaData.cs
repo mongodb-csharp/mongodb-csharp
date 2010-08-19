@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using System.Linq;
 
 namespace MongoDB.IntegrationTests
 {
@@ -22,7 +23,7 @@ namespace MongoDB.IntegrationTests
         public void TestCreateCollectionNoOptions(){
             DB.Metadata.CreateCollection("creatednoopts");
             
-            List<String> names = DB.GetCollectionNames();
+            List<String> names = DB.GetCollectionNames().ToList();
             Assert.IsTrue(names.Contains("tests.creatednoopts"));
             
         }
@@ -30,9 +31,9 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestCreateCollectionWithOptions(){
             Document options = new Document().Add("capped", true).Add("size", 10000);
-            DB.Metadata.CreateCollection("createdcapped",options);           
+            DB.Metadata.CreateCollection("createdcapped",options);
 
-            List<String> names = DB.GetCollectionNames();
+            List<String> names = DB.GetCollectionNames().ToList();
             Assert.IsTrue(names.Contains("tests.createdcapped"));
 
         }
@@ -40,9 +41,9 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestCreateCollectionWithInvalidOptions(){
             Document options = new Document().Add("invalidoption", true);
-            DB.Metadata.CreateCollection("createdinvalid",options);          
+            DB.Metadata.CreateCollection("createdinvalid",options);
 
-            List<String> names = DB.GetCollectionNames();
+            List<String> names = DB.GetCollectionNames().ToList();
             Assert.IsTrue(names.Contains("tests.createdinvalid"));
 
         }
@@ -53,7 +54,7 @@ namespace MongoDB.IntegrationTests
             
             Assert.IsTrue(dropped,"Dropped was false");
 
-            List<String> names = DB.GetCollectionNames();
+            List<String> names = DB.GetCollectionNames().ToList();
             Assert.IsFalse(names.Contains("tests.todrop"));
             
         }
@@ -68,8 +69,8 @@ namespace MongoDB.IntegrationTests
             }
             
             Assert.IsTrue(thrown,"Command exception should have been thrown");
-            
-            List<String> names = DB.GetCollectionNames();
+
+            List<String> names = DB.GetCollectionNames().ToList();
             Assert.IsFalse(names.Contains("tests.todrop_notexists"));
             
         }       

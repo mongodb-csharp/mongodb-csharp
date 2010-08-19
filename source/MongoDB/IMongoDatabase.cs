@@ -36,7 +36,7 @@ namespace MongoDB
         /// Gets the collection names.
         /// </summary>
         /// <returns></returns>
-        List<String> GetCollectionNames();
+        IEnumerable<string> GetCollectionNames();
 
         /// <summary>
         /// Gets the collection.
