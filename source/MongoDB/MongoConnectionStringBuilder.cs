@@ -36,7 +36,6 @@ namespace MongoDB
         public static readonly TimeSpan DefaultConnectionTimeout = TimeSpan.FromSeconds(15);
 
         private static readonly Regex PairRegex = new Regex(@"^\s*(.*)\s*=\s*(.*)\s*$");
-        private static readonly Regex ServerRegex = new Regex(@"^\s*([^:]+)(?::(\d+))?\s*$");
         private static readonly Regex UriRegex = new Regex(@"^mongodb://(?:([^:]*):([^@]*)@)?([^/]*)(?:/([^?]*))?(?:\?(.*))?$");
 
         private readonly List<MongoServerEndPoint> _servers = new List<MongoServerEndPoint>();
@@ -316,19 +315,8 @@ namespace MongoDB
         {
             var servers = value.Split(',');
 
-            foreach(var serverMatch in servers.Select(server => ServerRegex.Match(server)))
-            {
-                if(!serverMatch.Success)
-                    throw new FormatException(string.Format("Invalid server in connection string: {0}", serverMatch.Value));
-
-                var serverHost = serverMatch.Groups[1].Value;
-
-                int port;
-                if(int.TryParse(serverMatch.Groups[2].Value, out port))
-                    AddServer(serverHost, port);
-                else
-                    AddServer(serverHost);
-            }
+            foreach(var endPoint in servers.Select(MongoServerEndPoint.Parse))
+                AddServer(endPoint);
         }
 
         /// <summary>
@@ -394,11 +382,7 @@ namespace MongoDB
 
                 foreach(var server in _servers)
                 {
-                    builder.Append(server.Host);
-
-                    if(server.Port != MongoServerEndPoint.DefaultPort)
-                        builder.AppendFormat(":{0}", server.Port);
-
+                    builder.Append(server.ToString());
                     builder.Append(',');
                 }
 
