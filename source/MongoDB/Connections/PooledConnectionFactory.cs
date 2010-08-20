@@ -134,9 +134,16 @@ namespace MongoDB.Connections
 
             lock(SyncObject)
             {
-                if(_freeConnections.Count > 0)
+                while(_freeConnections.Count > 0)
                 {
                     connection = _freeConnections.Dequeue();
+
+                    if(!IsAlive(connection))
+                    {
+                        _invalidConnections.Add(connection);
+                        continue;
+                    }
+
                     _usedConnections.Add(connection);
                     return connection;
                 }
