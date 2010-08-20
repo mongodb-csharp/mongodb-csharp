@@ -11,36 +11,32 @@ namespace MongoDB.Connections
     internal class PooledConnectionFactory : ConnectionFactoryBase
     {
         private readonly Queue<RawConnection> _freeConnections = new Queue<RawConnection>();
-        private readonly List<RawConnection> _usedConnections = new List<RawConnection>();
         private readonly List<RawConnection> _invalidConnections = new List<RawConnection>();
+        private readonly List<RawConnection> _usedConnections = new List<RawConnection>();
 
         /// <summary>
-        /// Initializes a new instance of the
-        /// <see cref="PooledConnectionFactory"/>
-        /// class.
+        ///   Initializes a new instance of the
+        ///   <see cref = "PooledConnectionFactory" />
+        ///   class.
         /// </summary>
-        /// <param name="connectionString">The connection string.</param>
+        /// <param name = "connectionString">The connection string.</param>
         public PooledConnectionFactory(string connectionString)
-            :base(connectionString)
+            : base(connectionString)
         {
-            if(Builder.MaximumPoolSize < 1){
+            if(Builder.MaximumPoolSize < 1)
                 throw new ArgumentException("MaximumPoolSize have to be greater or equal then 1");
-            }
-            if(Builder.MinimumPoolSize < 0){
+            if(Builder.MinimumPoolSize < 0)
                 throw new ArgumentException("MinimumPoolSize have to be greater or equal then 0");
-            }
-            if(Builder.MinimumPoolSize > Builder.MaximumPoolSize){
+            if(Builder.MinimumPoolSize > Builder.MaximumPoolSize)
                 throw new ArgumentException("MinimumPoolSize must be smaller than MaximumPoolSize");
-            }
-            if(Builder.ConnectionLifetime.TotalSeconds < 0){
+            if(Builder.ConnectionLifetime.TotalSeconds < 0)
                 throw new ArgumentException("ConnectionLifetime have to be greater or equal then 0");
-            }
 
             EnsureMinimalPoolSize();
         }
 
         /// <summary>
-        /// Gets the size of the pool.
+        ///   Gets the size of the pool.
         /// </summary>
         /// <value>The size of the pool.</value>
         public int PoolSize
@@ -53,7 +49,7 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Cleanups the connections.
+        ///   Cleanups the connections.
         /// </summary>
         public override void Cleanup()
         {
@@ -65,7 +61,7 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Checks the free connections alive.
+        ///   Checks the free connections alive.
         /// </summary>
         private void CheckFreeConnectionsAlive()
         {
@@ -83,7 +79,7 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Disposes the invalid connections.
+        ///   Disposes the invalid connections.
         /// </summary>
         private void DisposeInvalidConnections()
         {
@@ -100,11 +96,11 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Determines whether the specified connection is alive.
+        ///   Determines whether the specified connection is alive.
         /// </summary>
-        /// <param name="connection">The connection.</param>
+        /// <param name = "connection">The connection.</param>
         /// <returns>
-        /// 	<c>true</c> if the specified connection is alive; otherwise, <c>false</c>.
+        ///   <c>true</c> if the specified connection is alive; otherwise, <c>false</c>.
         /// </returns>
         private bool IsAlive(RawConnection connection)
         {
@@ -152,7 +148,8 @@ namespace MongoDB.Connections
                 {
                     if(!Monitor.Wait(SyncObject, Builder.ConnectionTimeout))
                         //Todo: custom exception?
-                        throw new MongoException("Timeout expired. The timeout period elapsed prior to obtaining a connection from pool. This may have occured because all pooled connections were in use and max poolsize was reached.");
+                        throw new MongoException(
+                            "Timeout expired. The timeout period elapsed prior to obtaining a connection from pool. This may have occured because all pooled connections were in use and max poolsize was reached.");
 
                     return Open();
                 }
@@ -195,7 +192,7 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Ensures the size of the minimal pool.
+        ///   Ensures the size of the minimal pool.
         /// </summary>
         private void EnsureMinimalPoolSize()
         {
@@ -205,7 +202,7 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        ///   Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public override void Dispose()
         {
@@ -213,7 +210,7 @@ namespace MongoDB.Connections
             {
                 foreach(var usedConnection in _usedConnections)
                     usedConnection.Dispose();
-                
+
                 foreach(var freeConnection in _freeConnections)
                     freeConnection.Dispose();
 
