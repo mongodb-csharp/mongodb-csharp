@@ -10,7 +10,6 @@ namespace MongoDB.Connections
     /// </summary>
     internal class PooledConnectionFactory : ConnectionFactoryBase
     {
-        private readonly object _syncObject = new object();
         private readonly Queue<RawConnection> _freeConnections = new Queue<RawConnection>();
         private readonly List<RawConnection> _usedConnections = new List<RawConnection>();
         private readonly List<RawConnection> _invalidConnections = new List<RawConnection>();
@@ -48,7 +47,7 @@ namespace MongoDB.Connections
         {
             get
             {
-                lock(_syncObject)
+                lock(SyncObject)
                     return _freeConnections.Count + _usedConnections.Count;
             }
         }
@@ -70,7 +69,7 @@ namespace MongoDB.Connections
         /// </summary>
         private void CheckFreeConnectionsAlive()
         {
-            lock(_syncObject)
+            lock(SyncObject)
             {
                 var freeConnections = _freeConnections.ToArray();
                 _freeConnections.Clear();
@@ -90,7 +89,7 @@ namespace MongoDB.Connections
         {
             RawConnection[] invalidConnections;
 
-            lock(_syncObject)
+            lock(SyncObject)
             {
                 invalidConnections = _invalidConnections.ToArray();
                 _invalidConnections.Clear();
@@ -133,7 +132,7 @@ namespace MongoDB.Connections
         {
             RawConnection connection;
 
-            lock(_syncObject)
+            lock(SyncObject)
             {
                 if(_freeConnections.Count > 0)
                 {
@@ -144,7 +143,7 @@ namespace MongoDB.Connections
 
                 if(PoolSize >= Builder.MaximumPoolSize)
                 {
-                    if(!Monitor.Wait(_syncObject, Builder.ConnectionTimeout))
+                    if(!Monitor.Wait(SyncObject, Builder.ConnectionTimeout))
                         //Todo: custom exception?
                         throw new MongoException("Timeout expired. The timeout period elapsed prior to obtaining a connection from pool. This may have occured because all pooled connections were in use and max poolsize was reached.");
 
@@ -154,7 +153,7 @@ namespace MongoDB.Connections
 
             connection = CreateRawConnection();
 
-            lock(_syncObject)
+            lock(SyncObject)
                 _usedConnections.Add(connection);
 
             return connection;
@@ -171,7 +170,7 @@ namespace MongoDB.Connections
 
             if(!IsAlive(connection))
             {
-                lock(_syncObject)
+                lock(SyncObject)
                 {
                     _usedConnections.Remove(connection);
                     _invalidConnections.Add(connection);
@@ -180,11 +179,11 @@ namespace MongoDB.Connections
                 return;
             }
 
-            lock(_syncObject)
+            lock(SyncObject)
             {
                 _usedConnections.Remove(connection);
                 _freeConnections.Enqueue(connection);
-                Monitor.Pulse(_syncObject);
+                Monitor.Pulse(SyncObject);
             }
         }
 
@@ -193,7 +192,7 @@ namespace MongoDB.Connections
         /// </summary>
         private void EnsureMinimalPoolSize()
         {
-            lock(_syncObject)
+            lock(SyncObject)
                 while(PoolSize < Builder.MinimumPoolSize)
                     _freeConnections.Enqueue(CreateRawConnection());
         }
@@ -203,7 +202,7 @@ namespace MongoDB.Connections
         /// </summary>
         public override void Dispose()
         {
-            lock(_syncObject)
+            lock(SyncObject)
             {
                 foreach(var usedConnection in _usedConnections)
                     usedConnection.Dispose();
