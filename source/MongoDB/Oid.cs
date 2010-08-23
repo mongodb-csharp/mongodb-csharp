@@ -172,7 +172,7 @@ namespace MongoDB
                 return ToString();
             
             if(format == "J")
-                return String.Format("\"{0}\"", ToString());
+                return String.Format("ObjectId(\"{0}\")", ToString());
             
             throw new ArgumentException("Invalid format string","format");
         }

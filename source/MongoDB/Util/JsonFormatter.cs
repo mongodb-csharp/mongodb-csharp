@@ -43,7 +43,7 @@ namespace MongoDB.Util
             var sb = new StringBuilder();
             if (value is DateTime)
             {
-                DateTime d = (DateTime)value;
+                var d = (DateTime)value;
                 sb.AppendFormat("new Date({0},{1},{2},{3},{4},{5},{6})", d.Year, d.Month - 1, d.Day, d.Hour, d.Minute, d.Second, d.Millisecond);
             }
             else

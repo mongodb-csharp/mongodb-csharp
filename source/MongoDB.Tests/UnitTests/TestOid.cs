@@ -84,7 +84,7 @@ namespace MongoDB.UnitTests
             const string hex = "4a7067c30a57000000008ecb";
             var oid = new Oid(hex);
 
-            Assert.AreEqual("\"" + hex + "\"", oid.ToString("J"));
+            Assert.AreEqual("ObjectId(\"" + hex + "\")", oid.ToString("J"));
         }
 
         [Test]
