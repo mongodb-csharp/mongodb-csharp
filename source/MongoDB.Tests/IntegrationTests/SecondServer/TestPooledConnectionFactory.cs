@@ -1,3 +1,6 @@
+using System;
+using System.Diagnostics;
+using System.Threading;
 using MongoDB.Connections;
 using NUnit.Framework;
 
@@ -34,5 +37,31 @@ namespace MongoDB.IntegrationTests.SecondServer
             }
         }
 
+        [Test]
+        public void Foo()
+        {
+            while(true)
+            {
+                using(var mongo = new Mongo("Servers=localhost:27017,localhost:27018,localhost:27019"))
+                {
+                    try
+                    {
+                        mongo.Connect();
+
+                        var database = mongo.GetDatabase("test");
+
+                        var collection = database.GetCollection("test");
+
+                        collection.Insert(new Document("foo", 1), true);
+                    }
+                    catch(Exception exception)
+                    {
+                        Debug.WriteLine(exception);
+                    }
+                }
+
+                Thread.Sleep(500);
+            }
+        }
     }
 }

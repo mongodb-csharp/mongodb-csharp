@@ -31,6 +31,10 @@ namespace MongoDB.Connections
             if(connection == null)
                 throw new ArgumentNullException("connection");
             
+            if(!IsAlive(connection))
+                if(connection.EndPoint==PrimaryEndPoint)
+                    InvalidateReplicaSetStatus();
+
             connection.Dispose();
         }
     }

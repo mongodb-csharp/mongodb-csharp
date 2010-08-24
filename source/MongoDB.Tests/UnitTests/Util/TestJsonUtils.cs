@@ -102,7 +102,7 @@ namespace MongoDB.UnitTests.Util
         [Test]
         public void TestSerializeDocWithSingleOidField() {
             var doc = new Document().Add("foo", new Oid("4ac7ee91f693066f1c96b649"));
-            Assert.AreEqual(@"{ ""foo"": ""4ac7ee91f693066f1c96b649"" }", JsonFormatter.Serialize(doc));
+            Assert.AreEqual(@"{ ""foo"": ObjectId(""4ac7ee91f693066f1c96b649"") }", JsonFormatter.Serialize(doc));
         }
         [Test]
         public void TestSerializeDocWithMultipleFields() {
@@ -150,7 +150,7 @@ namespace MongoDB.UnitTests.Util
         public void TestSerializeDocWithDBRef(){
             var ostr = "000102030405060708090001";
             var doc = new Document(){{"d", new DBRef("smallreads", new Oid(ostr))}};
-            Assert.AreEqual(String.Format(@"{{ ""d"": {{ ""$ref"": ""smallreads"", ""$id"": ""{0}"" }} }}", ostr), 
+            Assert.AreEqual(String.Format(@"{{ ""d"": {{ ""$ref"": ""smallreads"", ""$id"": ObjectId(""{0}"") }} }}", ostr), 
                             JsonFormatter.Serialize(doc));
         }
         

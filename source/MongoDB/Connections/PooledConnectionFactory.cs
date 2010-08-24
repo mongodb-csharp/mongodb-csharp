@@ -96,31 +96,6 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        ///   Determines whether the specified connection is alive.
-        /// </summary>
-        /// <param name = "connection">The connection.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified connection is alive; otherwise, <c>false</c>.
-        /// </returns>
-        private bool IsAlive(RawConnection connection)
-        {
-            if(connection == null)
-                throw new ArgumentNullException("connection");
-
-            if(!connection.IsConnected)
-                return false;
-
-            if(connection.IsInvalid)
-                return false;
-
-            if(Builder.ConnectionLifetime != TimeSpan.Zero)
-                if(connection.CreationTime.Add(Builder.ConnectionLifetime) < DateTime.Now)
-                    return false;
-
-            return true;
-        }
-
-        /// <summary>
         ///   Borrows the connection.
         /// </summary>
         /// <returns></returns>
@@ -179,6 +154,9 @@ namespace MongoDB.Connections
                     _usedConnections.Remove(connection);
                     _invalidConnections.Add(connection);
                 }
+
+                if(connection.EndPoint==PrimaryEndPoint)
+                    InvalidateReplicaSetStatus();
 
                 return;
             }

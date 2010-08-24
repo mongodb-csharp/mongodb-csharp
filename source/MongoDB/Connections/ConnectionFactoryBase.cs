@@ -10,6 +10,7 @@ namespace MongoDB.Connections
     {
         private readonly List<MongoServerEndPoint> _servers;
         protected readonly object SyncObject = new object();
+        private Func<RawConnection> _createRawConnection;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref = "ConnectionFactoryBase" /> class.
@@ -24,7 +25,15 @@ namespace MongoDB.Connections
             Builder = new MongoConnectionStringBuilder(connectionString);
             _servers = new List<MongoServerEndPoint>(Builder.Servers);
 
-            InvalidateReplicaSetStatus();
+            _createRawConnection = () =>
+            {
+                lock(SyncObject)
+                {
+                    InvalidateReplicaSetStatus();
+                    _createRawConnection = CreateRawConnectionCore;
+                    return CreateRawConnectionCore();
+                }
+            };
         }
 
         /// <summary>
@@ -76,6 +85,15 @@ namespace MongoDB.Connections
         /// </summary>
         /// <returns></returns>
         protected RawConnection CreateRawConnection()
+        {
+            return _createRawConnection();
+        }
+
+        /// <summary>
+        /// Creates the raw connection core.
+        /// </summary>
+        /// <returns></returns>
+        private RawConnection CreateRawConnectionCore()
         {
             try
             {
@@ -147,6 +165,31 @@ namespace MongoDB.Connections
 
             foreach(var server in servers)
                 yield return MongoServerEndPoint.Parse(server);
+        }
+
+        /// <summary>
+        ///   Determines whether the specified connection is alive.
+        /// </summary>
+        /// <param name = "connection">The connection.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified connection is alive; otherwise, <c>false</c>.
+        /// </returns>
+        protected bool IsAlive(RawConnection connection)
+        {
+            if(connection == null)
+                throw new ArgumentNullException("connection");
+
+            if(!connection.IsConnected)
+                return false;
+
+            if(connection.IsInvalid)
+                return false;
+
+            if(Builder.ConnectionLifetime != TimeSpan.Zero)
+                if(connection.CreationTime.Add(Builder.ConnectionLifetime) < DateTime.Now)
+                    return false;
+
+            return true;
         }
     }
 }
