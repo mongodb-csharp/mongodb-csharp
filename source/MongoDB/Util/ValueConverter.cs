@@ -6,37 +6,46 @@ namespace MongoDB.Util
     {
         public static object Convert(object value, Type destinationType)
         {
-            var valueType = value != null ? value.GetType() : typeof(object);
-
-            if(value==null)
+            if(value == null)
                 return null;
 
-            if(valueType != destinationType)
-                try
-                {
-                    var code = System.Convert.GetTypeCode(value);
+            var valueType = value.GetType();
 
-                    if(destinationType.IsEnum)
-                        if(value is string)
-                            value = Enum.Parse(destinationType, (string)value);
-                        else
-                            value = Enum.ToObject(destinationType, value);
-                    else if(destinationType.IsGenericType &&
-                            destinationType.GetGenericTypeDefinition() == typeof(Nullable<>))
-                        value = System.Convert.ChangeType(value, Nullable.GetUnderlyingType(destinationType));
-                    else if(code != TypeCode.Object)
-                        value = System.Convert.ChangeType(value, destinationType);
-                    else if(valueType==typeof(Binary)&&destinationType==typeof(byte[]))
-                        value = (byte[])(Binary)value;
-                }
-                catch(FormatException exception)
-                {
-                    throw new MongoException("Can not convert value from " + valueType + " to " + destinationType, exception);
-                }
-                catch(ArgumentException exception)
-                {
-                    throw new MongoException("Can not convert value from " + valueType + " to " + destinationType, exception);
-                }
+            if(valueType == destinationType)
+                return value;
+
+            try
+            {
+                var code = System.Convert.GetTypeCode(value);
+
+                if(destinationType.IsEnum)
+                    if(value is string)
+                        return Enum.Parse(destinationType, (string)value);
+                    else
+                        return Enum.ToObject(destinationType, value);
+                
+                if(destinationType.IsGenericType && destinationType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    return System.Convert.ChangeType(value, Nullable.GetUnderlyingType(destinationType));
+
+                if(valueType == typeof(long) && destinationType == typeof(TimeSpan))
+                    return TimeSpan.FromTicks((long)value);
+
+                if(code != TypeCode.Object)
+                    return System.Convert.ChangeType(value, destinationType);
+                
+                if(valueType == typeof(Binary) && destinationType == typeof(byte[]))
+                    return (byte[])(Binary)value;
+
+                return value;
+            }
+            catch(FormatException exception)
+            {
+                throw new MongoException("Can not convert value from " + valueType + " to " + destinationType, exception);
+            }
+            catch(ArgumentException exception)
+            {
+                throw new MongoException("Can not convert value from " + valueType + " to " + destinationType, exception);
+            }
 
             return value;
         }
