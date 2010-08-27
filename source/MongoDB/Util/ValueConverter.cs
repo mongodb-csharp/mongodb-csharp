@@ -1,41 +1,41 @@
 ﻿using System;
 
-namespace MongoDB.Configuration.Mapping.Util
+namespace MongoDB.Util
 {
     internal static class ValueConverter
     {
-        public static object Convert(object value, Type type)
+        public static object Convert(object value, Type destinationType)
         {
             var valueType = value != null ? value.GetType() : typeof(object);
 
             if(value==null)
                 return null;
 
-            if(valueType != type)
+            if(valueType != destinationType)
                 try
                 {
                     var code = System.Convert.GetTypeCode(value);
 
-                    if(type.IsEnum)
+                    if(destinationType.IsEnum)
                         if(value is string)
-                            value = Enum.Parse(type, (string)value);
+                            value = Enum.Parse(destinationType, (string)value);
                         else
-                            value = Enum.ToObject(type, value);
-                    else if(type.IsGenericType &&
-                            type.GetGenericTypeDefinition() == typeof(Nullable<>))
-                        value = System.Convert.ChangeType(value, Nullable.GetUnderlyingType(type));
+                            value = Enum.ToObject(destinationType, value);
+                    else if(destinationType.IsGenericType &&
+                            destinationType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                        value = System.Convert.ChangeType(value, Nullable.GetUnderlyingType(destinationType));
                     else if(code != TypeCode.Object)
-                        value = System.Convert.ChangeType(value, type);
-                    else if(valueType==typeof(Binary)&&type==typeof(byte[]))
+                        value = System.Convert.ChangeType(value, destinationType);
+                    else if(valueType==typeof(Binary)&&destinationType==typeof(byte[]))
                         value = (byte[])(Binary)value;
                 }
                 catch(FormatException exception)
                 {
-                    throw new MongoException("Can not convert value from " + valueType + " to " + type, exception);
+                    throw new MongoException("Can not convert value from " + valueType + " to " + destinationType, exception);
                 }
                 catch(ArgumentException exception)
                 {
-                    throw new MongoException("Can not convert value from " + valueType + " to " + type, exception);
+                    throw new MongoException("Can not convert value from " + valueType + " to " + destinationType, exception);
                 }
 
             return value;

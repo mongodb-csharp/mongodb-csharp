@@ -123,7 +123,7 @@
     <Compile Include="Configuration\Mapping\Auto\IdOverrides.cs" />
     <Compile Include="Configuration\Mapping\Conventions\DefaultDictionaryAdapterConvention.cs" />
     <Compile Include="Configuration\Mapping\Conventions\IDictionaryAdapterConvention.cs" />
-    <Compile Include="Configuration\Mapping\Util\ValueConverter.cs" />
+    <Compile Include="Util\ValueConverter.cs" />
     <Compile Include="Configuration\MongoConfigurationBuilder.cs" />
     <Compile Include="Configuration\Builders\AutoMappingProfileBuilder.cs" />
     <Compile Include="Configuration\Builders\ClassOverridesBuilder.cs" />
@@ -273,7 +273,7 @@
     <Compile Include="Configuration\Mapping\Model\IClassMap.cs" />
     <Compile Include="Configuration\Mapping\Model\IdMap.cs" />
     <Compile Include="Configuration\Mapping\Model\MemberMapBase.cs" />
-    <Compile Include="Configuration\Mapping\Util\MemberReflectionOptimizer.cs" />
+    <Compile Include="Util\MemberReflectionOptimizer.cs" />
     <Compile Include="Configuration\Mapping\Model\PersistentMemberMap.cs" />
     <Compile Include="Configuration\Mapping\Model\SubClassMap.cs" />
     <Compile Include="Connections\RawConnection.cs" />

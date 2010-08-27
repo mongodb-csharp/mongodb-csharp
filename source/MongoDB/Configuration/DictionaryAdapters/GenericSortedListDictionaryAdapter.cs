@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MongoDB.Configuration.Mapping.Util;
+using MongoDB.Util;
 
 namespace MongoDB.Configuration.DictionaryAdapters
 {

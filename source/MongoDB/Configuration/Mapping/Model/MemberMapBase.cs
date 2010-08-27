@@ -1,5 +1,6 @@
 ﻿using System;
 using MongoDB.Configuration.Mapping.Util;
+using MongoDB.Util;
 
 namespace MongoDB.Configuration.Mapping.Model
 {

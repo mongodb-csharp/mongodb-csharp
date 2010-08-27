@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Configuration.Mapping.Util;
+using MongoDB.Util;
 
 namespace MongoDB.Configuration.DictionaryAdapters
 {
