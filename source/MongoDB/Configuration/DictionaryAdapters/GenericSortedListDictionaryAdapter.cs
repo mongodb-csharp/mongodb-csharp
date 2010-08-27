@@ -61,7 +61,7 @@ namespace MongoDB.Configuration.DictionaryAdapters
             var doc = new Document();
 
             foreach (var e in instance)
-                doc.Add(ValueConverter.ConvertKey(e.Key), e.Value);
+                doc.Add(ValueConverter.ConvertBackDictionaryKey(e.Key), e.Value);
 
             return doc;
         }

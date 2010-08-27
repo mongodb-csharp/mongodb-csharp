@@ -59,7 +59,7 @@ namespace MongoDB.Configuration.DictionaryAdapters
 
             var doc = new Document();
             foreach (DictionaryEntry entry in hashtable)
-                doc.Add(ValueConverter.ConvertKey(entry.Key), entry.Value);
+                doc.Add(ValueConverter.ConvertBackDictionaryKey(entry.Key), entry.Value);
 
             return doc;
         }

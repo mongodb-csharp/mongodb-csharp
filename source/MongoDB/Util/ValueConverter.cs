@@ -51,7 +51,7 @@ namespace MongoDB.Util
             return array;
         }
 
-        public static string ConvertKey(object key)
+        public static string ConvertBackDictionaryKey(object key)
         {
             if(key == null)
                 throw new ArgumentNullException("key");
