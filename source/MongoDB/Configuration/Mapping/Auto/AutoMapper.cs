@@ -79,13 +79,12 @@ namespace MongoDB.Configuration.Mapping.Auto
             var classMap = new ClassMap(classType)
             {
                 CollectionName = _profile.GetCollectionName(classType),
-                DiscriminatorAlias = _profile.GetDiscriminatorAlias(classType)
+                DiscriminatorAlias = _profile.GetDiscriminatorAlias(classType),
+                IdMap = CreateIdMap(classType),
+                ExtendedPropertiesMap = CreateExtendedPropertiesMap(classType)
             };
             //if(!classType.IsInterface && !classType.IsAbstract)
             //    classMap.Discriminator = _profile.GetDiscriminator(classType);
-
-            classMap.IdMap = CreateIdMap(classType);
-            classMap.ExtendedPropertiesMap = CreateExtendedPropertiesMap(classType);
 
             foreach(var member in _profile.FindMembers(classType))
             {
