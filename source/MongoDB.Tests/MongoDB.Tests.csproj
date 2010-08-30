@@ -150,7 +150,7 @@
     <Compile Include="UnitTests\TestMongoRegex.cs" />
     <Compile Include="UnitTests\TestMongoServerEndPoint.cs" />
     <Compile Include="UnitTests\TestOid.cs" />
-    <Compile Include="UnitTests\TestOidGenerator.cs" />
+    <Compile Include="UnitTests\Util\OidGeneratorTests.cs" />
     <Compile Include="UnitTests\Bson\TestBsonWriter.cs" />
     <Compile Include="IntegrationTests\TestDatabaseJavascript.cs" />
     <Compile Include="IntegrationTests\TestMapReduce.cs" />
