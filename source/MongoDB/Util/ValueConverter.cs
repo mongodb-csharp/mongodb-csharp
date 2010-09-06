@@ -46,8 +46,6 @@ namespace MongoDB.Util
             {
                 throw new MongoException("Can not convert value from " + valueType + " to " + destinationType, exception);
             }
-
-            return value;
         }
 
         public static Array ConvertArray(object[] elements, Type type)
