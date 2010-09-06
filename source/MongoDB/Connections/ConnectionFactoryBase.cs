@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Linq;
 
 namespace MongoDB.Connections
 {
@@ -145,6 +146,12 @@ namespace MongoDB.Connections
                         if(connection != null)
                             connection.Dispose();
                     }
+                }
+
+                if(_servers.Count <= 1)
+                {
+                    PrimaryEndPoint = _servers.FirstOrDefault();
+                    return;
                 }
 
                 throw new MongoException("Could not found the ReplicaSet master server.");
