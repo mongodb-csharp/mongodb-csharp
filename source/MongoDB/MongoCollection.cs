@@ -158,14 +158,17 @@ namespace MongoDB
         /// Executes a query and atomically applies a modifier operation to the first document returning the original document
         /// by default.
         /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="selector">The selector.</param>
-        /// <param name="sort">The sort.</param>
+        /// <param name="updateDocument">The update document.</param>
+        /// <param name="selectorDocument">The selector document.</param>
+        /// <param name="sortDocument">The sort document.</param>
+        /// <param name="fieldsDocument">The fields document.</param>
         /// <param name="returnNew">if set to <c>true</c> [return new].</param>
+        /// <param name="remove">if set to <c>true</c> [remove].</param>
+        /// <param name="upsert">if set to <c>true</c> [upsert].</param>
         /// <returns></returns>
-        public T FindAndModify(Document document, Document selector, Document sort, bool returnNew)
+        public T FindAndModify(Document updateDocument, Document selectorDocument, Document sortDocument, Document fieldsDocument, bool returnNew, bool remove, bool upsert)
         {
-            return (T)((IUntypedCollection)this).FindAndModify(document, selector, sort, returnNew);
+            return (T)( (IUntypedCollection)this ).FindAndModify(updateDocument, selectorDocument, sortDocument, fieldsDocument, returnNew, remove, upsert);
         }
 
         /// <summary>
@@ -175,18 +178,25 @@ namespace MongoDB
         /// <typeparam name="TExample1">The type of the example1.</typeparam>
         /// <typeparam name="TExample2">The type of the example2.</typeparam>
         /// <typeparam name="TExample3">The type of the example3.</typeparam>
-        /// <param name="documentExample">The document example.</param>
+        /// <typeparam name="TExample4">The type of the example4.</typeparam>
+        /// <param name="updateExample">The document example.</param>
         /// <param name="selectorExample">The selector example.</param>
         /// <param name="sortExample">The sort example.</param>
+        /// <param name="fieldsExample">The fields example.</param>
         /// <param name="returnNew">if set to <c>true</c> [return new].</param>
+        /// <param name="remove">if set to <c>true</c> [remove].</param>
+        /// <param name="upsert">if set to <c>true</c> [upsert].</param>
         /// <returns></returns>
-        public T FindAndModifyByExample<TExample1, TExample2, TExample3>(TExample1 documentExample, TExample2 selectorExample, TExample3 sortExample, bool returnNew)
+        public T FindAndModifyByExample<TExample1, TExample2, TExample3, TExample4>(TExample1 updateExample, TExample2 selectorExample, TExample3 sortExample, TExample4 fieldsExample, bool returnNew, bool remove, bool upsert)
         {
             return (T)((IUntypedCollection)this).FindAndModify(
-                ObjectToDocumentConverter.Convert(documentExample), 
+                ObjectToDocumentConverter.Convert(updateExample), 
                 ObjectToDocumentConverter.Convert(selectorExample), 
-                ObjectToDocumentConverter.Convert(sortExample), 
-                returnNew);
+                ObjectToDocumentConverter.Convert(sortExample),
+                ObjectToDocumentConverter.Convert(fieldsExample),
+                returnNew,
+                remove,
+                upsert);
         }
 
         /// <summary>
@@ -488,12 +498,15 @@ namespace MongoDB
         /// <summary>
         /// Finds the and modify.
         /// </summary>
-        /// <param name="document">The document.</param>
+        /// <param name="update">Update document.</param>
         /// <param name="selector">The selector.</param>
         /// <param name="sort">The sort.</param>
+        /// <param name="fields">The fields.</param>
         /// <param name="returnNew">if set to <c>true</c> [return new].</param>
+        /// <param name="remove">if set to <c>true</c> [remove].</param>
+        /// <param name="upsert">if set to <c>true</c> [upsert].</param>
         /// <returns></returns>
-        object IUntypedCollection.FindAndModify(object document, object selector, object sort, bool returnNew)
+        object IUntypedCollection.FindAndModify(object update, object selector, object sort, object fields, bool returnNew, bool remove, bool upsert)
         {
             try
             {
@@ -501,9 +514,12 @@ namespace MongoDB
                 {
                     {"findandmodify", Name},
                     {"query", selector},
-                    {"update", EnsureUpdateDocument(document)},
+                    {"update", EnsureUpdateDocument(update)},
+                    {"fields",fields},
                     {"sort", sort},
-                    {"new", returnNew}
+                    {"new", returnNew},
+                    {"remove", remove},
+                    {"upsert", upsert}
                 };
 
                 var response = _connection.SendCommand<FindAndModifyResult<T>>(_configuration.SerializationFactory,
@@ -686,7 +702,7 @@ namespace MongoDB
             var foundOp = descriptor.GetMongoPropertyNames(document)
                 .Any(name => name.IndexOf('$') == 0);
 
-            return foundOp == false ? new Document().Add("$set", document) : document;
+            return foundOp == false ? new Document("$set", document) : document;
         }
     }
 }

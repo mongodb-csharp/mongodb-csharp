@@ -12,7 +12,7 @@ namespace MongoDB
 
         IUntypedCursor Find(object spec);
 
-        object FindAndModify(object document, object selector, object sort, bool returnNew);
+        object FindAndModify(object update, object selector, object sort, object fields, bool returnNew, bool remove, bool upsert);
 
         void Insert(object document, bool safemode);
 

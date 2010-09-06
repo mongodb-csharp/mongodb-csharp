@@ -102,26 +102,39 @@ namespace MongoDB
         /// Executes a query and atomically applies a modifier operation to the first document returning the original document
         /// by default.
         /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="selector">The selector.</param>
-        /// <param name="sort"><see cref="Document"/> containing the names of columns to sort on with the values being the
-        /// <see cref="IndexOrder"/></param>
+        /// <param name="updateDocument">The update document.</param>
+        /// <param name="selectorDocument">The selector document.</param>
+        /// <param name="sortDocument">The sort document.</param>
+        /// <param name="fieldsDocument">The fields document.</param>
         /// <param name="returnNew">if set to <c>true</c> [return new].</param>
-        /// <returns>A <see cref="Document"/></returns>
-        T FindAndModify(Document document, Document selector, Document sort, bool returnNew);
+        /// <param name="remove">if set to <c>true</c> [remove].</param>
+        /// <param name="upsert">if set to <c>true</c> [upsert].</param>
+        /// <returns></returns>
+        T FindAndModify(Document updateDocument, Document selectorDocument, Document sortDocument, Document fieldsDocument, bool returnNew, bool remove, bool upsert);
 
         /// <summary>
-        /// Finds the and modify by example.
+        /// Executes a query and atomically applies a modifier operation to the first document returning the original document
+        /// by default.
         /// </summary>
         /// <typeparam name="TExample1">The type of the example1.</typeparam>
         /// <typeparam name="TExample2">The type of the example2.</typeparam>
         /// <typeparam name="TExample3">The type of the example3.</typeparam>
-        /// <param name="documentExample">The document example.</param>
+        /// <typeparam name="TExample4">The type of the example4.</typeparam>
+        /// <param name="updateExample">The document example.</param>
         /// <param name="selectorExample">The selector example.</param>
         /// <param name="sortExample">The sort example.</param>
+        /// <param name="fieldsExample">The fields example.</param>
         /// <param name="returnNew">if set to <c>true</c> [return new].</param>
+        /// <param name="remove">if set to <c>true</c> [remove].</param>
+        /// <param name="upsert">if set to <c>true</c> [upsert].</param>
         /// <returns></returns>
-        T FindAndModifyByExample<TExample1, TExample2, TExample3>(TExample1 documentExample, TExample2 selectorExample, TExample3 sortExample, bool returnNew);
+        T FindAndModifyByExample<TExample1, TExample2, TExample3, TExample4>(TExample1 updateExample,
+            TExample2 selectorExample,
+            TExample3 sortExample,
+            TExample4 fieldsExample,
+            bool returnNew,
+            bool remove,
+            bool upsert);
 
         /// <summary>
         ///   Entrypoint into executing a map/reduce query against the collection.
