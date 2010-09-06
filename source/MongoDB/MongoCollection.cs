@@ -162,13 +162,13 @@ namespace MongoDB
         /// <param name="selectorDocument">The selector document.</param>
         /// <param name="sortDocument">The sort document.</param>
         /// <param name="fieldsDocument">The fields document.</param>
-        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <param name="remove">if set to <c>true</c> [remove].</param>
+        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <param name="upsert">if set to <c>true</c> [upsert].</param>
         /// <returns></returns>
-        public T FindAndModify(Document updateDocument, Document selectorDocument, Document sortDocument, Document fieldsDocument, bool returnNew, bool remove, bool upsert)
+        public T FindAndModify(Document updateDocument, Document selectorDocument, Document sortDocument, Document fieldsDocument, bool remove, bool returnNew, bool upsert)
         {
-            return (T)( (IUntypedCollection)this ).FindAndModify(updateDocument, selectorDocument, sortDocument, fieldsDocument, returnNew, remove, upsert);
+            return (T)((IUntypedCollection)this).FindAndModify(updateDocument, selectorDocument, sortDocument, fieldsDocument, remove, returnNew, upsert);
         }
 
         /// <summary>
@@ -187,15 +187,15 @@ namespace MongoDB
         /// <param name="remove">if set to <c>true</c> [remove].</param>
         /// <param name="upsert">if set to <c>true</c> [upsert].</param>
         /// <returns></returns>
-        public T FindAndModifyByExample<TExample1, TExample2, TExample3, TExample4>(TExample1 updateExample, TExample2 selectorExample, TExample3 sortExample, TExample4 fieldsExample, bool returnNew, bool remove, bool upsert)
+        public T FindAndModifyByExample<TExample1, TExample2, TExample3, TExample4>(TExample1 updateExample, TExample2 selectorExample, TExample3 sortExample, TExample4 fieldsExample, bool remove, bool returnNew, bool upsert)
         {
             return (T)((IUntypedCollection)this).FindAndModify(
                 ObjectToDocumentConverter.Convert(updateExample), 
                 ObjectToDocumentConverter.Convert(selectorExample), 
                 ObjectToDocumentConverter.Convert(sortExample),
                 ObjectToDocumentConverter.Convert(fieldsExample),
-                returnNew,
                 remove,
+                returnNew,
                 upsert);
         }
 
@@ -502,11 +502,11 @@ namespace MongoDB
         /// <param name="selector">The selector.</param>
         /// <param name="sort">The sort.</param>
         /// <param name="fields">The fields.</param>
-        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <param name="remove">if set to <c>true</c> [remove].</param>
+        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <param name="upsert">if set to <c>true</c> [upsert].</param>
         /// <returns></returns>
-        object IUntypedCollection.FindAndModify(object update, object selector, object sort, object fields, bool returnNew, bool remove, bool upsert)
+        object IUntypedCollection.FindAndModify(object update, object selector, object sort, object fields, bool remove, bool returnNew, bool upsert)
         {
             try
             {
@@ -515,12 +515,15 @@ namespace MongoDB
                     {"findandmodify", Name},
                     {"query", selector},
                     {"update", EnsureUpdateDocument(update)},
-                    {"fields",fields},
-                    {"sort", sort},
-                    {"new", returnNew},
                     {"remove", remove},
+                    {"new", returnNew},
                     {"upsert", upsert}
                 };
+
+                if(sort != null)
+                    command.Add("sort", sort);
+                if(fields != null)
+                    command.Add("fields", fields);
 
                 var response = _connection.SendCommand<FindAndModifyResult<T>>(_configuration.SerializationFactory,
                     DatabaseName,

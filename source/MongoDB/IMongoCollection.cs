@@ -106,11 +106,17 @@ namespace MongoDB
         /// <param name="selectorDocument">The selector document.</param>
         /// <param name="sortDocument">The sort document.</param>
         /// <param name="fieldsDocument">The fields document.</param>
-        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <param name="remove">if set to <c>true</c> [remove].</param>
+        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <param name="upsert">if set to <c>true</c> [upsert].</param>
         /// <returns></returns>
-        T FindAndModify(Document updateDocument, Document selectorDocument, Document sortDocument, Document fieldsDocument, bool returnNew, bool remove, bool upsert);
+        T FindAndModify(Document updateDocument,
+            Document selectorDocument,
+            Document sortDocument,
+            Document fieldsDocument,
+            bool remove,
+            bool returnNew,
+            bool upsert);
 
         /// <summary>
         /// Executes a query and atomically applies a modifier operation to the first document returning the original document
@@ -124,16 +130,16 @@ namespace MongoDB
         /// <param name="selectorExample">The selector example.</param>
         /// <param name="sortExample">The sort example.</param>
         /// <param name="fieldsExample">The fields example.</param>
-        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <param name="remove">if set to <c>true</c> [remove].</param>
+        /// <param name="returnNew">if set to <c>true</c> [return new].</param>
         /// <param name="upsert">if set to <c>true</c> [upsert].</param>
         /// <returns></returns>
         T FindAndModifyByExample<TExample1, TExample2, TExample3, TExample4>(TExample1 updateExample,
             TExample2 selectorExample,
             TExample3 sortExample,
             TExample4 fieldsExample,
-            bool returnNew,
             bool remove,
+            bool returnNew,
             bool upsert);
 
         /// <summary>
