@@ -22,7 +22,7 @@ namespace MongoDB.Util
                     if(value is string)
                         return Enum.Parse(destinationType, (string)value);
                     else
-                        return Enum.ToObject(destinationType, value);
+                        return Enum.ToObject(destinationType, System.Convert.ToInt64(value));
                 
                 if(destinationType.IsGenericType && destinationType.GetGenericTypeDefinition() == typeof(Nullable<>))
                     return System.Convert.ChangeType(value, Nullable.GetUnderlyingType(destinationType));

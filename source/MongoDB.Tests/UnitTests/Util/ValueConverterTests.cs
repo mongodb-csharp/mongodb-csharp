@@ -81,5 +81,16 @@ namespace MongoDB.UnitTests.Util
             Assert.IsNotNull(dest);
             Assert.AreEqual(TestEnum.Value2, dest);
         }
+
+        [Test]
+        public void Convert_DoubleWithTypeEnum_ConvertToEnumType()
+        {
+            const double source = 2.0d;
+
+            var dest = (TestEnum)ValueConverter.Convert(source, typeof(TestEnum));
+
+            Assert.IsNotNull(dest);
+            Assert.AreEqual(TestEnum.Value2, dest);
+        }
     }
 }
