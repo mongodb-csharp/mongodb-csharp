@@ -134,7 +134,7 @@
     <Compile Include="IntegrationTests\TestCollection_1.cs" />
     <Compile Include="UnitTests\TestCode.cs" />
     <Compile Include="UnitTests\TestCodeWScope.cs" />
-    <Compile Include="UnitTests\TestConnectionStringBuilder.cs" />
+    <Compile Include="UnitTests\ConnectionStringBuilderTests.cs" />
     <Compile Include="IntegrationTests\TestCursor.cs" />
     <Compile Include="IntegrationTests\TestDatabase.cs" />
     <Compile Include="IntegrationTests\TestDatabaseMetaData.cs" />

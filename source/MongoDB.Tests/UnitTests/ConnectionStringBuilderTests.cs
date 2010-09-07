@@ -28,6 +28,17 @@ namespace MongoDB.UnitTests
         }
 
         [Test]
+        public void TestMultipleServers()
+        {
+            var builder = new MongoConnectionStringBuilder("Server=server1;Server=server2;Server=server3");
+
+            Assert.AreEqual(3, builder.Servers.Length);
+            Assert.AreEqual("server1", builder.Servers[0].ToString());
+            Assert.AreEqual("server2", builder.Servers[1].ToString());
+            Assert.AreEqual("server3", builder.Servers[2].ToString());
+        }
+
+        [Test]
         public void TestConnectionStringParsingServerWithoutPort()
         {
             var builder = new MongoConnectionStringBuilder("Username=testuser;Password=testpassword;Server=testserver");
