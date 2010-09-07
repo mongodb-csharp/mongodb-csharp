@@ -99,13 +99,6 @@ namespace MongoDB
         Document GetPreviousError();
 
         /// <summary>
-        /// Gets the sister database on the same Mongo connection with the given name.
-        /// </summary>
-        /// <param name="sisterDatabaseName">Name of the sister database.</param>
-        /// <returns></returns>
-        MongoDatabase GetSisterDatabase(string sisterDatabaseName);
-
-        /// <summary>
         ///   Resets last error.  This is good to call before a bulk operation.
         /// </summary>
         void ResetError();

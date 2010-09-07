@@ -27,7 +27,7 @@ namespace MongoDB.IntegrationTests
             its.Insert(createDoc("U", "D", "Newtown", "OH"));
             its.Insert(createDoc("J", "E", "Newport", "KY"));
 
-            adminDb = DB.GetSisterDatabase("admin");
+            adminDb = ((MongoDatabase)DB).GetSisterDatabase("admin");
             //adminDb.MetaData.AddUser(adminuser, adminpass);
         }
 

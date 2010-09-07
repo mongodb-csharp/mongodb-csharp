@@ -213,7 +213,7 @@ namespace MongoDB
         /// </summary>
         /// <param name = "sisterDatabaseName">Name of the sister database.</param>
         /// <returns></returns>
-        public MongoDatabase GetSisterDatabase(string sisterDatabaseName)
+        internal MongoDatabase GetSisterDatabase(string sisterDatabaseName)
         {
             return new MongoDatabase(_configuration, _connection, sisterDatabaseName);
         }
