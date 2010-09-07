@@ -92,5 +92,15 @@ namespace MongoDB.UnitTests.Util
             Assert.IsNotNull(dest);
             Assert.AreEqual(TestEnum.Value2, dest);
         }
+
+        [Test]
+        public void Convert_MongoTimestampWithTypeLong_ConvertToLong()
+        {
+            var source = new MongoTimestamp(long.MaxValue-10);
+
+            var dest = (long)ValueConverter.Convert(source, typeof(long));
+
+            Assert.AreEqual(source.Value,dest);
+        }
     }
 }

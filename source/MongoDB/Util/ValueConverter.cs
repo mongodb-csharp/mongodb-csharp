@@ -36,6 +36,9 @@ namespace MongoDB.Util
                 if(valueType == typeof(Binary) && destinationType == typeof(byte[]))
                     return (byte[])(Binary)value;
 
+                if(valueType == typeof(MongoTimestamp) && destinationType == typeof(long))
+                    return ( (MongoTimestamp)value ).Value;
+
                 return value;
             }
             catch(FormatException exception)
