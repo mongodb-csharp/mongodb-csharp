@@ -152,7 +152,7 @@ namespace MongoDB
         {
             if(reference == null)
                 throw new ArgumentNullException("reference", "cannot be null");
-            var query = new Document().Add("_id", reference.Id);
+            var query = new Document("_id", reference.Id);
             return this[reference.CollectionName].FindOne(query);
         }
 
@@ -166,7 +166,7 @@ namespace MongoDB
         {
             if(reference == null)
                 throw new ArgumentNullException("reference", "cannot be null");
-            var query = new Document().Add("_id", reference.Id);
+            var query = new Document("_id", reference.Id);
             return GetCollection<T>(reference.CollectionName).FindOneByExample(query);
         }
 
@@ -254,7 +254,7 @@ namespace MongoDB
         /// <returns></returns>
         public Document Eval(CodeWScope codeScope)
         {
-            var cmd = new Document().Add("$eval", codeScope);
+            var cmd = new Document("$eval", codeScope);
             return SendCommand(cmd);
         }
 
@@ -265,7 +265,7 @@ namespace MongoDB
         /// <returns></returns>
         public Document SendCommand(string commandName)
         {
-            return SendCommand(new Document().Add(commandName, 1.0));
+            return SendCommand(new Document(commandName, 1.0));
         }
 
         /// <summary>
@@ -298,7 +298,7 @@ namespace MongoDB
         public T SendCommand<T>(string commandName)
             where T : CommandResultBase
         {
-            return SendCommand<T>(new Document().Add(commandName, 1.0));
+            return SendCommand<T>(new Document(commandName, 1.0));
         }
 
         /// <summary>

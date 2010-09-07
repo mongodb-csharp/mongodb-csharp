@@ -62,7 +62,7 @@ namespace MongoDB.IntegrationTests
         public void TestCreateIndex()
         {
             CollectionMetadata cmd = DB["indextests"].Metadata;
-            cmd.CreateIndex("lastnames", new Document().Add("lname", IndexOrder.Ascending), false);
+            cmd.CreateIndex("lastnames", new Document("lname", IndexOrder.Ascending), false);
             Dictionary<string, Document> indexes = cmd.Indexes;
             Assert.IsNotNull(indexes["lastnames"]);
         }
@@ -71,7 +71,7 @@ namespace MongoDB.IntegrationTests
         public void TestCreateIndexNoNames()
         {
             CollectionMetadata cmd = DB["indextests"].Metadata;
-            cmd.CreateIndex(new Document().Add("lname", IndexOrder.Ascending).Add("fname", IndexOrder.Ascending), true);
+            cmd.CreateIndex(new Document("lname", IndexOrder.Ascending).Add("fname", IndexOrder.Ascending), true);
             Dictionary<string, Document> indexes = cmd.Indexes;
             Assert.IsNotNull(indexes["_lname_fname_unique_"]);
         }
@@ -80,7 +80,7 @@ namespace MongoDB.IntegrationTests
         public void TestDropIndex()
         {
             CollectionMetadata cmd = DB["indextests"].Metadata;
-            cmd.CreateIndex("firstnames", new Document().Add("fname", IndexOrder.Ascending), false);
+            cmd.CreateIndex("firstnames", new Document("fname", IndexOrder.Ascending), false);
             Dictionary<string, Document> indexes = cmd.Indexes;
             Assert.IsNotNull(indexes["firstnames"]);
             cmd.DropIndex("firstnames");

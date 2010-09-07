@@ -42,7 +42,7 @@ namespace MongoDB.Serialization.Descriptors
                         throw new NotSupportedException("Count queries on subclasses using anonymous types is not supported.");
                     }
                     else if (!queryDoc.ContainsKey(ClassMap.DiscriminatorAlias))
-                        queryDoc.Append(ClassMap.DiscriminatorAlias, ClassMap.Discriminator);
+                        queryDoc.Add(ClassMap.DiscriminatorAlias, ClassMap.Discriminator);
                 }
                 else
                     yield return CreateProperty(ClassMap.DiscriminatorAlias, ClassMap.Discriminator.GetType(), ClassMap.Discriminator, false);

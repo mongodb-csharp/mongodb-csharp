@@ -88,7 +88,7 @@ namespace MongoDB.UnitTests
         [Test]
         public void TestDocumentIsSerializable()
         {
-            var src = new Document().Add("test", 2);
+            var src = new Document("test", 2);
             using(var mem = new MemoryStream())
             {
                 var formatter = new BinaryFormatter();
@@ -205,48 +205,48 @@ namespace MongoDB.UnitTests
         [Test]
         public void TestTwoDocumentsWithDifferentDocumentChildTreeAreNotEqual()
         {
-            var d1 = new Document().Add("k1", new Document().Add("k2", new Document().Add("k3", "foo")));
-            var d2 = new Document().Add("k1", new Document().Add("k2", new Document().Add("k3", "bar")));
+            var d1 = new Document("k1", new Document().Add("k2", new Document().Add("k3", "foo")));
+            var d2 = new Document("k1", new Document().Add("k2", new Document().Add("k3", "bar")));
             AreNotEqual(d1, d2);
         }
 
         [Test]
         public void TestTwoDocumentsWithMisorderedArrayContentAreNotEqual()
         {
-            var d1 = new Document().Add("k1", new[] {"v1", "v2"});
-            var d2 = new Document().Add("k1", new[] {"v2", "v1"});
+            var d1 = new Document("k1", new[] {"v1", "v2"});
+            var d2 = new Document("k1", new[] {"v2", "v1"});
             AreNotEqual(d1, d2);
         }
 
         [Test]
         public void TestTwoDocumentsWithSameArrayContentAreEqual()
         {
-            var d1 = new Document().Add("k1", new[] {"v1", "v2"});
-            var d2 = new Document().Add("k1", new[] {"v1", "v2"});
+            var d1 = new Document("k1", new[] {"v1", "v2"});
+            var d2 = new Document("k1", new[] {"v1", "v2"});
             AreEqual(d1, d2);
         }
 
         [Test]
         public void TestTwoDocumentsWithSameContentInDifferentOrderAreNotEqual()
         {
-            var d1 = new Document().Add("k1", "v1").Add("k2", "v2");
-            var d2 = new Document().Add("k2", "v2").Add("k1", "v1");
+            var d1 = new Document("k1", "v1").Add("k2", "v2");
+            var d2 = new Document("k2", "v2").Add("k1", "v1");
             AreNotEqual(d1, d2);
         }
 
         [Test]
         public void TestTwoDocumentsWithSameContentInSameOrderAreEqual()
         {
-            var d1 = new Document().Add("k1", "v1").Add("k2", "v2");
-            var d2 = new Document().Add("k1", "v1").Add("k2", "v2");
+            var d1 = new Document("k1", "v1").Add("k2", "v2");
+            var d2 = new Document("k1", "v1").Add("k2", "v2");
             AreEqual(d1, d2);
         }
 
         [Test]
         public void TestTwoDocumentsWithSameDocumentChildTreeAreEqual()
         {
-            var d1 = new Document().Add("k1", new Document().Add("k2", new Document().Add("k3", "foo")));
-            var d2 = new Document().Add("k1", new Document().Add("k2", new Document().Add("k3", "foo")));
+            var d1 = new Document("k1", new Document().Add("k2", new Document().Add("k3", "foo")));
+            var d2 = new Document("k1", new Document().Add("k2", new Document().Add("k3", "foo")));
             AreEqual(d1, d2);
         }
 
@@ -255,9 +255,9 @@ namespace MongoDB.UnitTests
         {
             var doc = new Document(new ReverseComparer());
 
-            doc.Append("a", 3);
-            doc.Append("b", 2);
-            doc.Append("c", 1);
+            doc.Add("a", 3);
+            doc.Add("b", 2);
+            doc.Add("c", 1);
 
             Assert.AreEqual("c", doc.Keys.First());
         }

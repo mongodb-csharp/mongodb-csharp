@@ -108,7 +108,7 @@ namespace MongoDB.IntegrationTests
         public void TestHint()
         {
             var reads = DB["reads"];
-            var hint = new Document().Add("x", IndexOrder.Ascending);
+            var hint = new Document("x", IndexOrder.Ascending);
 
             var exp = reads.FindAll().Hint(hint).Explain();
             Assert.IsTrue(exp.ContainsKey("$err"), "No error found");
@@ -127,7 +127,7 @@ namespace MongoDB.IntegrationTests
             var sorts = DB["sorts"];
             var randoms = new[] {4, 6, 8, 9, 1, 3, 2, 5, 7, 0};
             foreach(var x in randoms)
-                sorts.Insert(new Document().Add("x", randoms[x]));
+                sorts.Insert(new Document("x", randoms[x]));
             Assert.AreEqual(randoms.Length, sorts.Count());
 
             var exp = 0;

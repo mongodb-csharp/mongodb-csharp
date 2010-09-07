@@ -22,7 +22,7 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestEvalWithScope(){
             var val = 3;
-            var scope = new Document().Add("x", val);
+            var scope = new Document("x", val);
             var result = DB.Eval("function(){return x;}", scope);
             Assert.AreEqual(val, result["retval"]);
         }
@@ -32,7 +32,7 @@ namespace MongoDB.IntegrationTests
             var x = 3;
             var y = 4;
             var func = "adder = function(a, b){return a + b;}; return adder(x,y)";
-            var scope = new Document().Add("x", x).Add("y", y);
+            var scope = new Document("x", x).Add("y", y);
             var result = DB.Eval(func, scope);
             Console.Out.WriteLine(result.ToString());
             Assert.AreEqual(x + y, result["retval"]);
@@ -114,7 +114,7 @@ namespace MongoDB.IntegrationTests
         public void TestReferenceNonOid(){
             var refs = DB["refs"];
 
-            var doc = new Document().Add("_id", 123).Add("msg", "this has a non oid key");
+            var doc = new Document("_id", 123).Add("msg", "this has a non oid key");
             refs.Insert(doc);
 
             var rf = new DBRef("refs", 123);

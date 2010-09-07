@@ -84,7 +84,7 @@ namespace MongoDB.UnitTests.Serialization.Descriptors
         {
             var doc = new Document("A", new[] { new Document("B", "b" ) });
             var o = new GenericListOfEmbeddedDocuments();
-            o.A = new List<Document> { new Document().Append("B", "b") };
+            o.A = new List<Document> { new Document("B", "b") };
             string bson = Serialize<GenericListOfEmbeddedDocuments>(o);
             string expected = Serialize(doc);
             Assert.AreEqual(expected, bson);

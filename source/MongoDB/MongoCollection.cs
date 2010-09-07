@@ -462,7 +462,7 @@ namespace MongoDB
         {
             try
             {
-                var response = Database.SendCommand(typeof(T), new Document().Add("count", Name).Add("query", selector));
+                var response = Database.SendCommand(typeof(T), new Document("count", Name).Add("query", selector));
                 return Convert.ToInt64((double)response["n"]);
             }
             catch (MongoCommandException)

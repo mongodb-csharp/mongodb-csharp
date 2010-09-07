@@ -47,11 +47,11 @@ namespace MongoDB.IntegrationTests
 
             inserts.InsertMany(new[] {indoc1, indoc2});
 
-            var result = inserts.FindOne(new Document().Add("song", "The Axe"));
+            var result = inserts.FindOne(new Document("song", "The Axe"));
             Assert.IsNotNull(result);
             Assert.AreEqual(2006, result["year"]);
 
-            result = inserts.FindOne(new Document().Add("song", "The Axe2"));
+            result = inserts.FindOne(new Document("song", "The Axe2"));
             Assert.IsNotNull(result);
             Assert.AreEqual(2008, result["year"]);
         }
@@ -62,7 +62,7 @@ namespace MongoDB.IntegrationTests
             var counts = DB["counts"];
             var top = 100;
             for(var i = 0; i < top; i++)
-                counts.Insert(new Document().Add("Last", "Cordr").Add("First", "Sam").Add("cnt", i));
+                counts.Insert(new Document("Last", "Cordr").Add("First", "Sam").Add("cnt", i));
             var cnt = counts.Count();
             Assert.AreEqual(top, cnt, "Count not the same as number of inserted records");
         }
@@ -78,13 +78,13 @@ namespace MongoDB.IntegrationTests
         public void TestCountWithSpec()
         {
             var counts = DB["counts_spec"];
-            counts.Insert(new Document().Add("Last", "Cordr").Add("First", "Sam").Add("cnt", 1));
-            counts.Insert(new Document().Add("Last", "Cordr").Add("First", "Sam").Add("cnt", 2));
-            counts.Insert(new Document().Add("Last", "Corder").Add("First", "Sam").Add("cnt", 3));
+            counts.Insert(new Document("Last", "Cordr").Add("First", "Sam").Add("cnt", 1));
+            counts.Insert(new Document("Last", "Cordr").Add("First", "Sam").Add("cnt", 2));
+            counts.Insert(new Document("Last", "Corder").Add("First", "Sam").Add("cnt", 3));
 
-            Assert.AreEqual(2, counts.Count(new Document().Add("Last", "Cordr")));
-            Assert.AreEqual(1, counts.Count(new Document().Add("Last", "Corder")));
-            Assert.AreEqual(0, counts.Count(new Document().Add("Last", "Brown")));
+            Assert.AreEqual(2, counts.Count(new Document("Last", "Cordr")));
+            Assert.AreEqual(1, counts.Count(new Document("Last", "Corder")));
+            Assert.AreEqual(0, counts.Count(new Document("Last", "Brown")));
         }
 
         [Test]
@@ -96,7 +96,7 @@ namespace MongoDB.IntegrationTests
             doc["x"] = 2;
             deletes.Insert(doc);
 
-            var selector = new Document().Add("x", 2);
+            var selector = new Document("x", 2);
 
             var result = deletes.FindOne(selector);
             Assert.IsNotNull(result);
@@ -128,7 +128,7 @@ namespace MongoDB.IntegrationTests
         public void TestFindGTRange()
         {
             var query = new Document();
-            query["j"] = new Document().Add("$gt", 20);
+            query["j"] = new Document("$gt", 20);
 
             var c = DB["finds"].Find(query);
             foreach(var result in c.Documents)
@@ -142,7 +142,7 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestFindNulls()
         {
-            var query = new Document().Add("n", null);
+            var query = new Document("n", null);
             var numnulls = DB["finds"].Count(query);
             Assert.AreEqual(99, numnulls);
         }
@@ -181,11 +181,11 @@ namespace MongoDB.IntegrationTests
         public void TestFindWhereEquivalency()
         {
             var col = DB["finds"];
-            var lt = new Document().Add("j", new Document().Add("$lt", 5));
+            var lt = new Document("j", new Document().Add("$lt", 5));
             var where = "this.j < 5";
-            var explicitWhere = new Document().Add("$where", new Code(where));
+            var explicitWhere = new Document("$where", new Code(where));
             var func = new CodeWScope("function() { return this.j < 5; }", new Document());
-            var funcDoc = new Document().Add("$where", func);
+            var funcDoc = new Document("$where", func);
 
             Assert.AreEqual(4, CountDocs(col.Find(lt)), "Basic find didn't return 4 docs");
             Assert.AreEqual(4, CountDocs(col.Find(where)), "String where didn't return 4 docs");
@@ -196,11 +196,11 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestFindAndModifyReturnsOldDocument() {
             IMongoCollection<Document> collection = DB["find_and_modify"];
-            Document person = new Document().Append("First", "Sally").Append("Last", "Simmons");
+            Document person = new Document("First", "Sally").Add("Last", "Simmons");
             collection.Insert(person);
             
-            Document spec = new Document().Append("_id", person["_id"]);
-            Document loaded = collection.FindAndModify(new Document().Append("First", "Jane"), spec);
+            Document spec = new Document("_id", person["_id"]);
+            Document loaded = collection.FindAndModify(new Document("First", "Jane"), spec);
             
             Assert.AreEqual("Sally", loaded["First"]);
         }
@@ -208,11 +208,11 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestFindAndModifyReturnsNewDocument() {
             IMongoCollection<Document> collection = DB["find_and_modify"];
-            Document person = new Document().Append("First", "Susie").Append("Last", "O'Hara");
+            Document person = new Document("First", "Susie").Add("Last", "O'Hara");
             collection.Insert(person);
             
-            Document spec = new Document().Append("_id", person["_id"]);
-            Document loaded = collection.FindAndModify(new Document().Append("First", "Darlene"), spec, true);
+            Document spec = new Document("_id", person["_id"]);
+            Document loaded = collection.FindAndModify(new Document("First", "Darlene"), spec, true);
             
             Assert.AreEqual("Darlene", loaded["First"]);
         }
@@ -220,14 +220,14 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestFindAndModifySortsResults() {
             IMongoCollection<Document> collection = DB["find_and_modify"];
-            Document doc1 = new Document().Append("handled", false).Append("priority", 1).Append("value", "Test 1");
-            Document doc2 = new Document().Append("handled", false).Append("priority", 2).Append("value", "Test 2");
+            Document doc1 = new Document("handled", false).Add("priority", 1).Append("value", "Test 1");
+            Document doc2 = new Document("handled", false).Add("priority", 2).Append("value", "Test 2");
             collection.Insert(doc1);
             collection.Insert(doc2);
             
-            Document update = new Document().Append("handled", true);
-            Document spec = new Document().Append("handled", false);
-            Document sort = new Document().Append("priority", -1);
+            Document update = new Document("handled", true);
+            Document spec = new Document("handled", false);
+            Document sort = new Document("priority", -1);
             Document loaded = collection.FindAndModify(update, spec, sort, true);
             
             Assert.AreEqual(true, loaded["handled"]);
@@ -238,8 +238,8 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestFindAndModifyReturnNullForNoRecordFound() {
             IMongoCollection<Document> collection = DB["find_and_modify"];
-            Document spec = new Document().Append("FirstName", "Noone");
-            Document loaded = collection.FindAndModify(new Document().Append("First", "Darlene"), spec, true);
+            Document spec = new Document("FirstName", "Noone");
+            Document loaded = collection.FindAndModify(new Document("First", "Darlene"), spec, true);
             
             Assert.IsNull(loaded, "Should return null for no document found");
         }
@@ -298,15 +298,15 @@ namespace MongoDB.IntegrationTests
             album["title"] = "Deliveries After Dark";
             album["songs"] = new[]
             {
-                new Document().Add("title", "Let The Music Set You Free").Add("length", "5:15").Add("_id", ogen.Generate()),
-                new Document().Add("title", "Sally Likes to Run").Add("length", "4:06").Add("_id", ogen.Generate()),
-                new Document().Add("title", "Deliveries After Dark").Add("length", "4:17").Add("_id", ogen.Generate()),
-                new Document().Add("title", "Theme From The Godfather").Add("length", "3:06").Add("_id", ogen.Generate()),
-                new Document().Add("title", "Grown Man Crying Blues").Add("length", "8:09").Add("_id", ogen.Generate()),
+                new Document("title", "Let The Music Set You Free").Add("length", "5:15").Add("_id", ogen.Generate()),
+                new Document("title", "Sally Likes to Run").Add("length", "4:06").Add("_id", ogen.Generate()),
+                new Document("title", "Deliveries After Dark").Add("length", "4:17").Add("_id", ogen.Generate()),
+                new Document("title", "Theme From The Godfather").Add("length", "3:06").Add("_id", ogen.Generate()),
+                new Document("title", "Grown Man Crying Blues").Add("length", "8:09").Add("_id", ogen.Generate()),
             };
             inserts.Insert(album);
 
-            var result = inserts.FindOne(new Document().Add("songs.title", "Deliveries After Dark"));
+            var result = inserts.FindOne(new Document("songs.title", "Deliveries After Dark"));
             Assert.IsNotNull(result);
 
             Assert.AreEqual(album.ToString(), result.ToString());
@@ -315,7 +315,7 @@ namespace MongoDB.IntegrationTests
         [Test]
         public void TestManualWhere()
         {
-            var query = new Document().Add("$where", new Code("this.j % 2 == 0"));
+            var query = new Document("$where", new Code("this.j % 2 == 0"));
             var c = DB["finds"].Find(query);
             foreach(var result in c.Documents)
             {
@@ -329,10 +329,10 @@ namespace MongoDB.IntegrationTests
         public void TestPoundSymbolInsert()
         {
             var inserts = DB["inserts"];
-            var indoc = new Document().Add("x", "1234" + POUND + "56").Add("y", 1);
+            var indoc = new Document("x", "1234" + POUND + "56").Add("y", 1);
             inserts.Insert(indoc);
 
-            var result = inserts.FindOne(new Document().Add("x", "1234" + POUND + "56"));
+            var result = inserts.FindOne(new Document("x", "1234" + POUND + "56"));
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result["y"]);
         }
@@ -346,7 +346,7 @@ namespace MongoDB.IntegrationTests
             indoc["x"] = 2;
             inserts.Insert(indoc);
 
-            var result = inserts.FindOne(new Document().Add("x", 2));
+            var result = inserts.FindOne(new Document("x", 2));
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result["y"]);
         }
@@ -419,7 +419,7 @@ namespace MongoDB.IntegrationTests
 
             inserts.Insert(indoc);
 
-            var result = inserts.FindOne(new Document().Add("song", "Palmdale"));
+            var result = inserts.FindOne(new Document("song", "Palmdale"));
             Assert.IsNotNull(result);
             Assert.AreEqual(1999, result["year"]);
         }
@@ -429,11 +429,11 @@ namespace MongoDB.IntegrationTests
         {
             var updates = DB["updates"];
 
-            updates.Insert(new Document().Add("Last", "Cordr").Add("First", "Sam"));
-            updates.Insert(new Document().Add("Last", "Cordr").Add("First", "Sam2"));
-            updates.Insert(new Document().Add("Last", "Cordr").Add("First", "Sam3"));
+            updates.Insert(new Document("Last", "Cordr").Add("First", "Sam"));
+            updates.Insert(new Document("Last", "Cordr").Add("First", "Sam2"));
+            updates.Insert(new Document("Last", "Cordr").Add("First", "Sam3"));
 
-            var selector = new Document().Add("Last", "Cordr");
+            var selector = new Document("Last", "Cordr");
             var results = updates.Find(selector);
             var found = false;
             foreach(var doc in results.Documents)
@@ -445,7 +445,7 @@ namespace MongoDB.IntegrationTests
             Assert.AreEqual(3, updates.Count(selector), "Didn't find all Documents inserted for TestUpdateMany with Selector");
 
             //Document updateData = new Document().Append("$set", new Document().Append("Last", "Corder2"));
-            var updateData = new Document().Add("Last", "Corder2");
+            var updateData = new Document("Last", "Corder2");
             updates.UpdateMany(updateData, selector);
 
             selector["Last"] = "Corder2";
@@ -494,7 +494,7 @@ namespace MongoDB.IntegrationTests
 
             updates.Insert(doc);
 
-            var selector = new Document().Add("Last", "Brewer");
+            var selector = new Document("Last", "Brewer");
             doc = updates.FindOne(selector);
             Assert.IsNotNull(doc);
             Assert.AreEqual("Mtt", doc["First"]);
@@ -517,7 +517,7 @@ namespace MongoDB.IntegrationTests
             doc["Last"] = "CorderNE";
 
             updates.Save(doc);
-            var selector = new Document().Add("Last", "CorderNE");
+            var selector = new Document("Last", "CorderNE");
             var result = updates.FindOne(selector);
             Assert.IsNotNull(result);
             Assert.AreEqual("Sam", result["First"]);
@@ -540,14 +540,13 @@ namespace MongoDB.IntegrationTests
         {
             var updates = DB["updates"];
             var id = Guid.NewGuid();
-            var doc = new Document()
-                .Add("_id", id)
+            var doc = new Document("_id", id)
                 .Add("FirstName", "David")
                 .Add("LastName", "Beckham")
-                .Add("Embedded", new Document().Add("Types", 1));
+                .Add("Embedded", new Document("Types", 1));
             updates.Insert(doc);
-            var find = new Document().Add("_id", id);
-            var modify = new Document().Add("LastName", "Copperfield");
+            var find = new Document("_id", id);
+            var modify = new Document("LastName", "Copperfield");
             var returned = updates.FindAndModify(modify, find, true);
             Assert.IsInstanceOfType(typeof(Document), returned["Embedded"]);
         }

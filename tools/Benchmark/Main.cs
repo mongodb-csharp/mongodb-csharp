@@ -49,7 +49,7 @@ namespace MongoDB.Driver.Benchmark
             RunInsertTest("batch insert (medium, no index)", db, "medium_bulk", medium, false, true);
             RunInsertTest("batch insert (large, no index)", db, "large_bulk", large, false, true);
 
-            var fonespec = new Document().Add("x", perTrial/2);
+            var fonespec = new Document("x", perTrial/2);
             RunFindTest("find_one (small, no index)", db, "small_none", fonespec, false);
             RunFindTest("find_one (medium, no index)", db, "medium_none", fonespec, false);
             RunFindTest("find_one (large, no index)", db, "large_none", fonespec, false);
@@ -66,7 +66,7 @@ namespace MongoDB.Driver.Benchmark
             RunFindTest("find (medium, indexed)", db, "medium_index", fonespec, true);
             RunFindTest("find (large, indexed)", db, "large_index", fonespec, true);
 
-            var findRange = new Document().Add("x", new Document().Add("$gt", perTrial/2).Add("$lt", perTrial/2 + batchSize));
+            var findRange = new Document("x", new Document().Add("$gt", perTrial/2).Add("$lt", perTrial/2 + batchSize));
             RunFindTest("find range (small, indexed)", db, "small_index", findRange, true);
             RunFindTest("find range (medium, indexed)", db, "medium_index", findRange, true);
             RunFindTest("find range (large, indexed)", db, "large_index", findRange, true);
@@ -86,12 +86,11 @@ namespace MongoDB.Driver.Benchmark
             large.Add("total_word_count", 6743);
             large.Add("access_time", DateTime.UtcNow);
             large.Add("meta_tags",
-                new Document()
-                    .Add("description", "i am a long description string")
+                new Document("description", "i am a long description string")
                     .Add("author", "Holly Man")
                     .Add("dynamically_created_meta_tag", "who know\n what"));
             large.Add("page_structure",
-                new Document().Add("counted_tags", 3450)
+                new Document("counted_tags", 3450)
                     .Add("no_of_js_attached", 10)
                     .Add("no_of_images", 6));
             var words = new[]
@@ -127,7 +126,7 @@ namespace MongoDB.Driver.Benchmark
                 db.Metadata.DropCollection(col);
                 if(index)
                 {
-                    var idx = new Document().Add("x", IndexOrder.Ascending);
+                    var idx = new Document("x", IndexOrder.Ascending);
                     db[col].Metadata.CreateIndex(idx, false);
                 }
             }

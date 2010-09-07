@@ -43,7 +43,7 @@ namespace MongoDB
             {
                 if(_options != null)
                     return _options;
-                var doc = _database["system.namespaces"].FindOne(new Document().Add("name", _fullName)) ?? new Document();
+                var doc = _database["system.namespaces"].FindOne(new Document("name", _fullName)) ?? new Document();
                 if(doc.ContainsKey("create"))
                     doc.Remove("create");
                 //Not sure why this is here.  The python driver has it.
@@ -65,7 +65,7 @@ namespace MongoDB
 
                 _indexes.Clear();
 
-                var docs = _database["system.indexes"].Find(new Document().Add("ns", _fullName));
+                var docs = _database["system.indexes"].Find(new Document("ns", _fullName));
                 foreach(var doc in docs.Documents)
                     _indexes.Add((string)doc["name"], doc);
 

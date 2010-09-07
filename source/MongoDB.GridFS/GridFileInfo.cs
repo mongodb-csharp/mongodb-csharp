@@ -281,7 +281,7 @@ namespace MongoDB.GridFS
         public void Truncate(){
             if(filedata.ContainsKey("_id") == false)
                 return;
-            this.gridFile.Chunks.Remove(new Document().Add("files_id", filedata["_id"]));
+            this.gridFile.Chunks.Remove(new Document("files_id", filedata["_id"]));
             this.Length = 0;
             this.gridFile.Files.Save(filedata);
         }
@@ -291,7 +291,7 @@ namespace MongoDB.GridFS
         /// </summary>
         /// <returns></returns>
         public string CalcMD5(){
-            Document doc = this.db.SendCommand(new Document().Add("filemd5", this.Id).Add("root", this.bucket));
+            Document doc = this.db.SendCommand(new Document("filemd5", this.Id).Add("root", this.bucket));
             return (String)doc["md5"];
         }
         
@@ -318,7 +318,7 @@ namespace MongoDB.GridFS
         }
         
         private void LoadFileData(){
-            Document doc = this.gridFile.Files.FindOne(new Document().Add("filename", this.FileName));
+            Document doc = this.gridFile.Files.FindOne(new Document("filename", this.FileName));
             if(doc != null){
                 filedata = doc;
             }else{

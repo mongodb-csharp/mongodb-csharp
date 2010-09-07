@@ -71,7 +71,7 @@ namespace MongoDB
         /// <returns></returns>
         public bool DropCollection(string name)
         {
-            var result = _database.SendCommand(new Document().Add("drop", name));
+            var result = _database.SendCommand(new Document("drop", name));
             return result.ContainsKey("ok") && Convert.ToBoolean(result["ok"]);
         }
 
@@ -94,7 +94,7 @@ namespace MongoDB
         {
             var users = _database["system.users"];
             var pwd = MongoHash.Generate(username + ":mongo:" + password);
-            var user = new Document().Add("user", username).Add("pwd", pwd);
+            var user = new Document("user", username).Add("pwd", pwd);
 
             if(FindUser(username) != null)
                 throw new MongoException("A user with the name " + username + " already exists in this database.", null);
@@ -108,7 +108,7 @@ namespace MongoDB
         public void RemoveUser(string username)
         {
             var users = _database["system.users"];
-            users.Remove(new Document().Add("user", username));
+            users.Remove(new Document("user", username));
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace MongoDB
         /// <returns></returns>
         public Document FindUser(string username)
         {
-            return FindUser(new Document().Add("user", username));
+            return FindUser(new Document("user", username));
         }
 
         /// <summary>

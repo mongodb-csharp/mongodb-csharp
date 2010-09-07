@@ -49,7 +49,7 @@ namespace MongoDB.UnitTests.Serialization.Builders
 
         [Test]
         public void CanTransfromASimpleArrayToItsMostEqualTypeInADocument(){
-            var bson = Serialize(new Document().Add("A", new[] {"text"}));
+            var bson = Serialize(new Document("A", new[] {"text"}));
 
             var simpleArray = Deserialize<Document>(bson);
 

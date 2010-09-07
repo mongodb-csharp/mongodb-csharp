@@ -70,7 +70,7 @@ namespace MongoDB.UnitTests
         {
             const string colname = "tests";
             const string id = "32312312";
-            var doc = new Document().Add(DBRef.RefName, colname).Add(DBRef.IdName, id);
+            var doc = new Document(DBRef.RefName, colname).Add(DBRef.IdName, id);
 
             var expected = new DBRef(colname, id);
             Assert.AreEqual(expected, DBRef.FromDocument(doc));

@@ -43,7 +43,7 @@ namespace MongoDB.IntegrationTests
             using(var m = new Mongo(_connectionString))
             {
                 var db = m["admin"];
-                db["$cmd"].FindOne(new Document().Add("listDatabases", 1.0));
+                db["$cmd"].FindOne(new Document("listDatabases", 1.0));
             }
         }
 

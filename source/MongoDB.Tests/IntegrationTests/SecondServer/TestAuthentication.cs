@@ -90,7 +90,7 @@ namespace MongoDB.IntegrationTests.SecondServer
                 mongo.Connect();
 
                 var collection = mongo[TestDatabaseName]["testCollection"];
-                collection.Insert(new Document().Add("value", 84), false);
+                collection.Insert(new Document("value", 84), false);
             }
         }
 
@@ -110,9 +110,9 @@ namespace MongoDB.IntegrationTests.SecondServer
 	    {
             var collection = mongo[TestDatabaseName]["testCollection"];
             collection.Remove(new Document(),true);
-            collection.Insert(new Document().Add("value", 84),true);
+            collection.Insert(new Document("value", 84),true);
             
-            var value = collection.FindOne(new Document().Add("value", 84));
+            var value = collection.FindOne(new Document("value", 84));
             
             Assert.AreEqual(84, value["value"]);
         }

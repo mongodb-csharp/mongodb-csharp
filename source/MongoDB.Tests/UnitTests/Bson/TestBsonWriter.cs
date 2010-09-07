@@ -26,7 +26,7 @@ namespace MongoDB.UnitTests.Bson
             var doc = new Document();
             doc.Add("a", "a");
             doc.Add("b", 1);
-            var sub = new Document().Add("c_1", 1).Add("c_2", DateTime.Now);
+            var sub = new Document("c_1", 1).Add("c_2", DateTime.Now);
             doc.Add("c", sub);
             var ms = new MemoryStream();
             var writer = new BsonWriter(ms, new BsonDocumentDescriptor());
@@ -75,7 +75,7 @@ namespace MongoDB.UnitTests.Bson
         {
             var ms = new MemoryStream();
             var writer = new BsonWriter(ms, new BsonDocumentDescriptor());
-            var doc = new Document().Add("n", null);
+            var doc = new Document("n", null);
             try
             {
                 writer.WriteObject(doc);
@@ -107,7 +107,7 @@ namespace MongoDB.UnitTests.Bson
             var ms = new MemoryStream();
             var writer = new BsonWriter(ms, new BsonDocumentDescriptor());
             const string expected = "1400000002746573740005000000746573740000";
-            var doc = new Document().Add("test", "test");
+            var doc = new Document("test", "test");
 
             writer.WriteObject(doc);
 
@@ -193,7 +193,7 @@ namespace MongoDB.UnitTests.Bson
             var ms = new MemoryStream();
             var writer = new BsonWriter(ms, new BsonDocumentDescriptor());
             var b = new Binary(new byte[BsonInfo.MaxDocumentSize]);
-            var big = new Document().Add("x", b);
+            var big = new Document("x", b);
 
             writer.WriteObject(big);
         }

@@ -27,7 +27,7 @@ namespace MongoDB.IntegrationTests
         protected void AddFunction(string name)
         {
             var func = new Code("function(x,y){return x + y;}");
-            DB["system.js"].Insert(new Document().Add("_id", name).Add("value", func));
+            DB["system.js"].Insert(new Document("_id", name).Add("value", func));
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace MongoDB.IntegrationTests
         {
             const string name = "fadddoc";
             var func = new Code("function(x, y){return x + y;}");
-            var doc = new Document().Add("_id", name).Add("value", func);
+            var doc = new Document("_id", name).Add("value", func);
             _javascript.Add(doc);
             Assert.IsNotNull(_javascript[name]);
         }
@@ -63,7 +63,7 @@ namespace MongoDB.IntegrationTests
         {
             const string name = "fassignadd";
             var func = new Code("function(x,y){return x + y;}");
-            var doc = new Document().Add("_id", name).Add("value", func);
+            var doc = new Document("_id", name).Add("value", func);
             _javascript[name] = doc;
             Assert.IsNotNull(_javascript[name]);
         }
@@ -132,7 +132,7 @@ namespace MongoDB.IntegrationTests
             AddFunction(name);
             Assert.IsTrue(_javascript.Contains(name));
             Assert.IsFalse(_javascript.Contains("none"));
-            Assert.IsTrue(_javascript.Contains(new Document().Add("_id", name).Add("value", new Code("dfs"))));
+            Assert.IsTrue(_javascript.Contains(new Document("_id", name).Add("value", new Code("dfs"))));
         }
 
         [Test]
@@ -170,8 +170,8 @@ namespace MongoDB.IntegrationTests
         public void TestExecWithScope()
         {
             _javascript.Add("lt", new Code("function(doc){ return doc.j < limit;}"));
-            var scope = new Document().Add("limit", 5);
-            var query = new Document().Add("$where", new CodeWScope("lt(this)", scope));
+            var scope = new Document("limit", 5);
+            var query = new Document("$where", new CodeWScope("lt(this)", scope));
             var cnt = DB["jsreads"].Find(query).Documents.Count();
             Assert.AreEqual(4, cnt);
         }
@@ -189,7 +189,7 @@ namespace MongoDB.IntegrationTests
         public void TestRemoveByDoc()
         {
             const string name = "fremoved";
-            var func = new Document().Add("_id", name);
+            var func = new Document("_id", name);
             AddFunction(name);
             Assert.IsTrue(_javascript.Contains(name));
             _javascript.Remove(func);

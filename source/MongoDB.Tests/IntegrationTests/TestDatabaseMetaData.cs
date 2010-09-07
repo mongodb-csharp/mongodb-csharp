@@ -16,7 +16,7 @@ namespace MongoDB.IntegrationTests
 
         public override void OnInit () {
             //Add any new collections ones to work on.
-            DB["$cmd"].FindOne(new Document().Add("create", "todrop"));
+            DB["$cmd"].FindOne(new Document("create", "todrop"));
         }       
         
         [Test]
@@ -30,7 +30,7 @@ namespace MongoDB.IntegrationTests
         
         [Test]
         public void TestCreateCollectionWithOptions(){
-            Document options = new Document().Add("capped", true).Add("size", 10000);
+            Document options = new Document("capped", true).Add("size", 10000);
             DB.Metadata.CreateCollection("createdcapped",options);
 
             List<String> names = DB.GetCollectionNames().ToList();
@@ -40,7 +40,7 @@ namespace MongoDB.IntegrationTests
 
         [Test]
         public void TestCreateCollectionWithInvalidOptions(){
-            Document options = new Document().Add("invalidoption", true);
+            Document options = new Document("invalidoption", true);
             DB.Metadata.CreateCollection("createdinvalid",options);
 
             List<String> names = DB.GetCollectionNames().ToList();

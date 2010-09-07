@@ -31,18 +31,18 @@ namespace MongoDB.IntegrationTests
         public override void OnInit()
         {
             _collection = DB["mr"];
-            _collection.Insert(new Document().Add("_id", 1).Add("tags", new[] {"dog", "cat"}));
-            _collection.Insert(new Document().Add("_id", 2).Add("tags", new[] {"dog"}));
-            _collection.Insert(new Document().Add("_id", 3).Add("tags", new[] {"mouse", "cat", "dog"}));
-            _collection.Insert(new Document().Add("_id", 4).Add("tags", new String[] {}));
+            _collection.Insert(new Document("_id", 1).Add("tags", new[] {"dog", "cat"}));
+            _collection.Insert(new Document("_id", 2).Add("tags", new[] {"dog"}));
+            _collection.Insert(new Document("_id", 3).Add("tags", new[] {"mouse", "cat", "dog"}));
+            _collection.Insert(new Document("_id", 4).Add("tags", new String[] {}));
         }
 
         [Test]
         public void TestBuilderSetsAllProperties()
         {
-            var query = new Document().Add("x", 1);
-            var scope = new Document().Add("y", 2);
-            var sort = new Document().Add("z", 3);
+            var query = new Document("x", 1);
+            var scope = new Document("y", 2);
+            var sort = new Document("z", 3);
             var mrb = _collection.MapReduce();
             mrb.Map(MapFunc)
                 .Reduce(ReduceFunc)

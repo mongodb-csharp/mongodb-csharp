@@ -199,7 +199,7 @@ namespace MongoDB
         /// </returns>
         public Document GetFunction(string name)
         {
-            return _collection.FindOne(new Document().Add("_id", name));
+            return _collection.FindOne(new Document("_id", name));
         }
 
         /// <summary>

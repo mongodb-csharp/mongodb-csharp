@@ -112,11 +112,11 @@ namespace MongoDB.IntegrationTests
 
             inserts.InsertManyByExample(new[] {indoc1, indoc2});
 
-            var result = inserts.FindOneByExample(new Document().Add("Song", "The Axe"));
+            var result = inserts.FindOneByExample(new Document("Song", "The Axe"));
             Assert.IsNotNull(result);
             Assert.AreEqual(2006, result.Year);
 
-            result = inserts.FindOneByExample(new Document().Add("Song", "The Axe2"));
+            result = inserts.FindOneByExample(new Document("Song", "The Axe2"));
             Assert.IsNotNull(result);
             Assert.AreEqual(2008, result.Year);
         }
@@ -232,9 +232,9 @@ namespace MongoDB.IntegrationTests
             var col = DB.GetCollection<FindsEntity>("finds");
             var lt = new {Index = Op.LessThan(5)};
             var where = "this.j < 5";
-            var explicitWhere = new Document().Add("$where", new Code(where));
+            var explicitWhere = new Document("$where", new Code(where));
             var func = new CodeWScope("function() { return this.j < 5; }", new Document());
-            var funcDoc = new Document().Add("$where", func);
+            var funcDoc = new Document("$where", func);
 
             Assert.AreEqual(4, col.FindByExample(lt).Documents.Count(), "Basic find didn't return 4 docs");
             Assert.AreEqual(4, col.Find(where).Documents.Count(), "String where didn't return 4 docs");
@@ -277,7 +277,7 @@ namespace MongoDB.IntegrationTests
             };
             inserts.Insert(album);
 
-            var result = inserts.FindOneByExample(new Document().Add("Songs.Title", "Deliveries After Dark"));
+            var result = inserts.FindOneByExample(new Document("Songs.Title", "Deliveries After Dark"));
             Assert.IsNotNull(result);
 
             Assert.AreEqual(album.Songs.Count, result.Songs.Count);
