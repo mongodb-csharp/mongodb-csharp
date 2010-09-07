@@ -5,10 +5,11 @@ using NUnit.Framework;
 namespace MongoDB.UnitTests
 {
     [TestFixture]
-    public class TestConnectionStringBuilder
+    public class ConnectionStringBuilderTests
     {
         [Test]
-        public void TestConnectionStringParsing(){
+        public void TestConnectionStringParsing()
+        {
             var builder =
                 new MongoConnectionStringBuilder(
                     "Username=testuser;Password=testpassword;Server=testserver:555;ConnectionLifetime=50;MaximumPoolSize=101;MinimumPoolSize=202;Pooled=false;Database=testdatabase");
@@ -27,7 +28,8 @@ namespace MongoDB.UnitTests
         }
 
         [Test]
-        public void TestConnectionStringParsingServerWithoutPort(){
+        public void TestConnectionStringParsingServerWithoutPort()
+        {
             var builder = new MongoConnectionStringBuilder("Username=testuser;Password=testpassword;Server=testserver");
             Assert.AreEqual("testuser", builder.Username);
             Assert.AreEqual("testpassword", builder.Password);
@@ -39,12 +41,14 @@ namespace MongoDB.UnitTests
         }
 
         [Test]
-        public void TestCreateEmptyInstance(){
+        public void TestCreateEmptyInstance()
+        {
             new MongoConnectionStringBuilder();
         }
 
         [Test]
-        public void TestDefaults(){
+        public void TestDefaults()
+        {
             var builder = new MongoConnectionStringBuilder();
             Assert.IsNull(builder.Username);
             Assert.IsNull(builder.Password);
@@ -62,7 +66,8 @@ namespace MongoDB.UnitTests
         }
 
         [Test]
-        public void TestSimpleUriString(){
+        public void TestSimpleUriString()
+        {
             var builder = new MongoConnectionStringBuilder("mongodb://server");
             Assert.AreEqual(1, builder.Servers.Length);
             Assert.AreEqual(MongoConnectionStringBuilder.DefaultDatabase, builder.Database);
@@ -71,7 +76,8 @@ namespace MongoDB.UnitTests
         }
 
         [Test]
-        public void TestSimpleUriStringWithDatabase(){
+        public void TestSimpleUriStringWithDatabase()
+        {
             var builder = new MongoConnectionStringBuilder("mongodb://server/database");
             Assert.AreEqual("database", builder.Database);
             Assert.AreEqual(1, builder.Servers.Length);
@@ -80,7 +86,8 @@ namespace MongoDB.UnitTests
         }
 
         [Test]
-        public void TestToStringOutput(){
+        public void TestToStringOutput()
+        {
             var builder = new MongoConnectionStringBuilder
             {
                 Password = "testpassword",
@@ -99,14 +106,16 @@ namespace MongoDB.UnitTests
         }
 
         [Test]
-        public void TestToStringOutputWithDefaultServerPort(){
+        public void TestToStringOutputWithDefaultServerPort()
+        {
             var builder = new MongoConnectionStringBuilder();
             builder.AddServer("testserver");
             Assert.AreEqual("Server=testserver", builder.ToString());
         }
 
         [Test]
-        public void TestToStringOutputWithoutUsernameAndPassword(){
+        public void TestToStringOutputWithoutUsernameAndPassword()
+        {
             var builder = new MongoConnectionStringBuilder();
             builder.AddServer("testserver", 555);
 
@@ -114,7 +123,8 @@ namespace MongoDB.UnitTests
         }
 
         [Test]
-        public void TestUriStringWithUsenameAndPasswort(){
+        public void TestUriStringWithUsenameAndPasswort()
+        {
             var builder = new MongoConnectionStringBuilder("mongodb://username:password@server");
             Assert.AreEqual("username", builder.Username);
             Assert.AreEqual("password", builder.Password);
@@ -125,7 +135,8 @@ namespace MongoDB.UnitTests
         }
 
         [Test]
-        public void TestUriWithMultipleServers(){
+        public void TestUriWithMultipleServers()
+        {
             var builder = new MongoConnectionStringBuilder("mongodb://server1,server2:1234,server3/database");
             Assert.AreEqual("database", builder.Database);
             Assert.AreEqual(3, builder.Servers.Length);
@@ -138,7 +149,8 @@ namespace MongoDB.UnitTests
         }
 
         [Test]
-        public void TestUriWithPropertys(){
+        public void TestUriWithPropertys()
+        {
             var builder = new MongoConnectionStringBuilder("mongodb://server1/database?pooled=false&connectionlifetime=10");
             Assert.AreEqual(false, builder.Pooled);
             Assert.AreEqual(10.0, builder.ConnectionLifetime.TotalSeconds);
