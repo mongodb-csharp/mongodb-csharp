@@ -18,7 +18,7 @@ namespace MongoDB
     {
         private readonly MongoConfiguration _configuration;
         private readonly Connection _connection;
-        private MongoDatabase _database;
+        private IMongoDatabase _database;
         private CollectionMetadata _metadata;
 
         /// <summary>
@@ -30,11 +30,46 @@ namespace MongoDB
         /// <param name="collectionName">The name.</param>
         internal MongoCollection(MongoConfiguration configuration, Connection connection, string databaseName, string collectionName)
         {
+            if(configuration == null)
+                throw new ArgumentNullException("configuration");
+            if(connection == null)
+                throw new ArgumentNullException("connection");
+            if(databaseName == null)
+                throw new ArgumentNullException("databaseName");
+            if(collectionName == null)
+                throw new ArgumentNullException("collectionName");
+
             //Todo: add public constructors for users to call
             Name = collectionName;
             DatabaseName = databaseName;
             _configuration = configuration;
             _connection = connection;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MongoCollection&lt;T&gt;"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="connection">The connection.</param>
+        /// <param name="database">The database.</param>
+        /// <param name="collectionName">Name of the collection.</param>
+        internal MongoCollection(MongoConfiguration configuration, Connection connection, IMongoDatabase database, string collectionName)
+        {
+            if(configuration == null)
+                throw new ArgumentNullException("configuration");
+            if(connection == null)
+                throw new ArgumentNullException("connection");
+            if(database == null)
+                throw new ArgumentNullException("database");
+            if(collectionName == null)
+                throw new ArgumentNullException("collectionName");
+
+            //Todo: add public constructors for users to call
+            Name = collectionName;
+            DatabaseName = database.Name;
+            _configuration = configuration;
+            _connection = connection;
+            _database = database;
         }
 
         /// <summary>
@@ -508,6 +543,11 @@ namespace MongoDB
         /// <returns></returns>
         object IUntypedCollection.FindAndModify(object update, object selector, object sort, object fields, bool remove, bool returnNew, bool upsert)
         {
+            if(update == null)
+                throw new ArgumentNullException("update");
+            if(selector == null)
+                throw new ArgumentNullException("selector");
+
             try
             {
                 var command = new Document
@@ -556,6 +596,9 @@ namespace MongoDB
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void IUntypedCollection.InsertMany(IEnumerable documents, bool safemode)
         {
+            if(documents == null)
+                throw new ArgumentNullException("documents");
+
             var rootType = typeof(T);
             var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(rootType);
 
@@ -606,6 +649,9 @@ namespace MongoDB
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void IUntypedCollection.Remove(object selector, bool safemode)
         {
+            if(selector == null)
+                throw new ArgumentNullException("selector");
+
             var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(typeof(T));
 
             try
@@ -631,6 +677,9 @@ namespace MongoDB
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void IUntypedCollection.Save(object document, bool safemode)
         {
+            if(document == null)
+                throw new ArgumentNullException("document");
+
             //Try to generate a selector using _id for an existing document.
             //otherwise just set the upsert flag to 1 to insert and send onward.
 
@@ -657,7 +706,12 @@ namespace MongoDB
         /// <param name="flags">The flags.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         void IUntypedCollection.Update(object document, object selector, UpdateFlags flags, bool safemode)
-        {            
+        {
+            if(document == null)
+                throw new ArgumentNullException("document");
+            if(selector == null)
+                throw new ArgumentNullException("selector");
+
             var writerSettings = _configuration.SerializationFactory.GetBsonWriterSettings(typeof(T));
 
             try

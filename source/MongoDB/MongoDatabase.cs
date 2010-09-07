@@ -118,7 +118,7 @@ namespace MongoDB
         /// <returns></returns>
         public IMongoCollection<Document> GetCollection(string name)
         {
-            return new MongoCollection<Document>(_configuration, _connection, Name, name);
+            return new MongoCollection<Document>(_configuration, _connection, this, name);
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace MongoDB
         /// <returns></returns>
         public IMongoCollection<T> GetCollection<T>(String name) where T : class
         {
-            return new MongoCollection<T>(_configuration, _connection, Name, name);
+            return new MongoCollection<T>(_configuration, _connection, this, name);
         }
 
         /// <summary>
