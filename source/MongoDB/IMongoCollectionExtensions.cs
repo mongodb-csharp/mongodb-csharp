@@ -18,7 +18,7 @@ namespace MongoDB
         /// <returns>A <see cref="Document"/></returns>
         public static T FindAndModify<T>(this IMongoCollection<T> collection, Document updateDocument, Document queryDocument) where T : class
         {
-            return collection.FindAndModify(updateDocument, queryDocument, new Document(), null, false, false, false);
+            return collection.FindAndModify(updateDocument, queryDocument, null, null, false, false, false);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace MongoDB
         /// <returns>A <see cref="Document"/></returns>
         public static T FindAndModify<T>(this IMongoCollection<T> collection, Document updateDocument, Document queryDocument, Document sortDocument, bool returnNew) where T : class
         {
-            return collection.FindAndModify(updateDocument, queryDocument, sortDocument, null, returnNew, false, false);
+            return collection.FindAndModify(updateDocument, queryDocument, sortDocument, null, false, returnNew, false);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace MongoDB
         /// <returns>A <see cref="Document"/></returns>
         public static T FindAndModify<T>(this IMongoCollection<T> collection, Document updateDocument, Document queryDocument, bool returnNew) where T : class
         {
-            return collection.FindAndModify(updateDocument, queryDocument, new Document(), null, returnNew, false, false);
+            return collection.FindAndModify(updateDocument, queryDocument, null, null, false, returnNew, false);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace MongoDB
         /// <returns></returns>
         public static T FindAndModifyByExample<T, TExample1, TExample2>(this IMongoCollection<T> collection, TExample1 updateExample, TExample2 queryExample) where T : class
         {
-            return collection.FindAndModifyByExample(updateExample, queryExample, new {}, (object)null, false, false, false);
+            return collection.FindAndModifyByExample(updateExample, queryExample, (object)null, (object)null, false, false, false);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace MongoDB
         /// <returns></returns>
         public static T FindAndModifyByExample<T, TExample1, TExample2, TExample3>(this IMongoCollection<T> collection, TExample1 updateExample, TExample2 queryExample, TExample3 sortExample, bool returnNew) where T : class
         {
-            return collection.FindAndModifyByExample(updateExample, queryExample, sortExample, (object)null, returnNew, false, false);
+            return collection.FindAndModifyByExample(updateExample, queryExample, sortExample, (object)null, false, returnNew, false);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace MongoDB
         /// <returns></returns>
         public static T FindAndModifyByExample<T, TExample1, TExample2>(this IMongoCollection<T> collection, TExample1 updateExample, TExample2 queryExample, bool returnNew) where T : class
         {
-            return collection.FindAndModifyByExample(updateExample, queryExample, new {}, (object)null, returnNew, false, false);
+            return collection.FindAndModifyByExample(updateExample, queryExample, new { }, (object)null, false, returnNew, false);
         }
 
         /// <summary>
