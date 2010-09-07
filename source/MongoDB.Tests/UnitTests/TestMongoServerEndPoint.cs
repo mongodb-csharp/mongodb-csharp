@@ -44,7 +44,7 @@ namespace MongoDB.UnitTests
         }
 
         [Test]
-        [ExpectedException(typeof(FormatException))]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void Parse_NullHost_Throws()
         {
             MongoServerEndPoint.Parse(null);
