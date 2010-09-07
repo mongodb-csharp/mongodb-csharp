@@ -34,6 +34,40 @@ namespace MongoDB
         public long Value { get; set; }
 
         /// <summary>
+        /// Gets the increment.
+        /// </summary>
+        /// <value>The increment.</value>
+        public int Increment
+        {
+            get { return BitConverter.ToInt32(BitConverter.GetBytes(Value), 0); }
+            set
+            {
+                var val = BitConverter.GetBytes(Value);
+
+                Array.Copy(BitConverter.GetBytes(value),val,4);
+
+                Value = BitConverter.ToInt64(val,0);
+            }
+        }
+
+        /// <summary>
+        /// Gets the timestamp.
+        /// </summary>
+        /// <value>The timestamp.</value>
+        public int Timestamp
+        {
+            get { return BitConverter.ToInt32(BitConverter.GetBytes(Value), 4); }
+            set
+            {
+                var val = BitConverter.GetBytes(Value);
+
+                Array.Copy(BitConverter.GetBytes(value), 0, val, 4, 4);
+
+                Value = BitConverter.ToInt64(val, 0);
+            }
+        }
+
+        /// <summary>
         /// Equalses the specified other.
         /// </summary>
         /// <param name="other">The other.</param>
