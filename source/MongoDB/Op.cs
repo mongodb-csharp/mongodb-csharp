@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using MongoDB.Bson;
 
 namespace MongoDB
@@ -82,6 +83,29 @@ namespace MongoDB
         }
 
         /// <summary>
+        /// Ins the specified values.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns></returns>
+        public static Op In(params object[] values)
+        {
+            return (Op)new Op().Add("$in", values);
+        }
+
+        /// <summary>
+        /// Ins the specified values.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns></returns>
+        public static Op In(IEnumerable<object> values)
+        {
+            if(values == null)
+                throw new ArgumentNullException("values");
+
+            return (Op)new Op().Add("$in", values);
+        }
+
+        /// <summary>
         /// Matches an array which does not have any of the specified values.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -93,6 +117,29 @@ namespace MongoDB
         }
 
         /// <summary>
+        /// Nots the in.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns></returns>
+        public static Op NotIn(params object[] values)
+        {
+            return (Op)new Op().Add("$nin", values);
+        }
+
+        /// <summary>
+        /// Nots the in.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns></returns>
+        public static Op NotIn(IEnumerable<object> values)
+        {
+            if(values == null)
+                throw new ArgumentNullException("values");
+
+            return (Op)new Op().Add("$nin", values);
+        }
+
+        /// <summary>
         /// Matches an array which has all of the specified values.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -100,6 +147,29 @@ namespace MongoDB
         /// <returns></returns>
         public static Op All<T>(params T[] values)
         {
+            return (Op)new Op().Add("$all", values);
+        }
+
+        /// <summary>
+        /// Alls the specified values.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns></returns>
+        public static Op All(params object[] values)
+        {
+            return (Op)new Op().Add("$all", values);
+        }
+
+        /// <summary>
+        /// Alls the specified values.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns></returns>
+        public static Op All(IEnumerable<object> values)
+        {
+            if(values == null)
+                throw new ArgumentNullException("values");
+
             return (Op)new Op().Add("$all", values);
         }
 
