@@ -233,6 +233,18 @@ namespace MongoDB.IntegrationTests.Linq
         }
 
         [Test]
+        public void NestedQueryable_All()
+        {
+            var people = Collection.Linq().Where(x => x.Addresses.All(a => a.City == "London"));
+
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.NumberToLimit);
+            Assert.AreEqual(0, queryObject.NumberToSkip);
+            Assert.AreEqual(new Document("Addresses", new Document("$all", new Document("City", "London"))), queryObject.Query);
+        }
+
+        [Test]
         public void NestedQueryable_Contains()
         {
             var people = Collection.Linq().Where(x => x.EmployerIds.Contains(1));

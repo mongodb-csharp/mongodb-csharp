@@ -26,7 +26,8 @@ namespace MongoDB.IntegrationTests.Linq
                     {
                         new Address { City = "London", IsInternational = true, AddressType = AddressType.Company },
                         new Address { City = "Tokyo", IsInternational = true, AddressType = AddressType.Private }, 
-                        new Address { City = "Seattle", IsInternational = false, AddressType = AddressType.Private } 
+                        new Address { City = "Seattle", IsInternational = false, AddressType = AddressType.Private },
+                        new Address { City = "Paris", IsInternational = true, AddressType = AddressType.Private } 
                     },
                     EmployerIds = new[] { 1, 2 }
                 }, true);
@@ -273,9 +274,17 @@ namespace MongoDB.IntegrationTests.Linq
         [Test]
         public void NestedQueryable_Any()
         {
-            var people = Collection.Linq().Where(x => x.Addresses.Any(a => a.City == "London")).ToList();
+            var people = Collection.Linq().Where(x => x.Addresses.Any(a => a.City == "Paris")).ToList();
 
             Assert.AreEqual(2, people.Count);
+        }
+
+        [Test]
+        public void NestedQueryable_All()
+        {
+            var people = Collection.Linq().Where(x => x.Addresses.All(a => a.City == "Paris")).ToList();
+
+            Assert.AreEqual(1, people.Count);
         }
 
         [Test]
@@ -294,7 +303,7 @@ namespace MongoDB.IntegrationTests.Linq
             Assert.AreEqual(1, people.Count);
         }
 
-        [Test(Description = "This will fail < 1.4")]
+        [Test]
         public void Nested_Queryable_ElementAt()
         {
             var people = Collection.Linq().Where(x => x.Addresses.ElementAt(1).City == "Tokyo").ToList();
