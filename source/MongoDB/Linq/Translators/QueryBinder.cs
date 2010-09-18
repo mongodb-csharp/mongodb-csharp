@@ -36,6 +36,7 @@ namespace MongoDB.Linq.Translators
 
         protected override Expression VisitBinary(BinaryExpression b)
         {
+
             ExpressionType nodeType = b.NodeType;
             bool shouldFlip = false;
             switch (nodeType)

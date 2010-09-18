@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using MongoDB.Linq;
 using NUnit.Framework;
+using System.Collections;
 
 namespace MongoDB.IntegrationTests.Linq
 {
@@ -88,7 +89,7 @@ namespace MongoDB.IntegrationTests.Linq
         }
 
         [Test]
-        public void DisjunctionInClause()
+        public void Disjunction()
         {
             var people = Collection.Linq().Where(x => x.Age == 21 || x.Age == 35);
 
@@ -96,19 +97,11 @@ namespace MongoDB.IntegrationTests.Linq
             Assert.AreEqual(0, queryObject.Fields.Count);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(new Document("Age", new Document("$in", new [] { 21, 35 })), queryObject.Query);
-        }
 
-        [Test]
-        public void Disjunction()
-        {
-            var people = Collection.Linq().Where(x => x.Age == 21 || (x.FirstName == "Jack" && x.LastName == "Jim"));
-
-            var queryObject = ((IMongoQueryable)people).GetQueryObject();
-            Assert.AreEqual(0, queryObject.Fields.Count);
-            Assert.AreEqual(0, queryObject.NumberToLimit);
-            Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(new Document("$or", new Document("Age", 21).Add("FirstName", "Jack")), queryObject.Query);
+            var arrayList = queryObject.Query["$or"] as ArrayList;
+            Assert.IsNotNull(arrayList);
+            Assert.AreEqual(new Document("Age", 21), arrayList[0]);
+            Assert.AreEqual(new Document("Age", 35), arrayList[1]);
         }
 
         [Test]

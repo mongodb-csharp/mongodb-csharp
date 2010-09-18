@@ -29,7 +29,7 @@ namespace MongoDB.Linq.Translators
             int scopeDepth = _scopes.Count;
             bool hasPredicate = b.NodeType != ExpressionType.And && b.NodeType != ExpressionType.AndAlso && b.NodeType != ExpressionType.Or && b.NodeType != ExpressionType.OrElse;
 
-            if(b.NodeType == ExpressionType.Or || b.NodeType == ExpressionType.OrElse)
+            if (b.NodeType == ExpressionType.Or || b.NodeType == ExpressionType.OrElse)
                 PushConditionScope("$or");
 
             VisitPredicate(b.Left, hasPredicate);
@@ -309,6 +309,15 @@ namespace MongoDB.Linq.Translators
 
             if (scope.Value is NullPlaceHolder)
                 doc[scope.Key] = null;
+            else if (_scopes.Count > 0 && _scopes.Peek().Key == "$or")
+            {
+                ArrayList arr = _scopes.Peek().Value as ArrayList;
+                if (arr == null)
+                    arr = new ArrayList();
+
+                arr.Add(new Document(scope.Key, scope.Value));
+                _scopes.Peek().AddCondition(arr);
+            }
             else
                 doc[scope.Key] = scope.Value;
         }

@@ -173,6 +173,14 @@ namespace MongoDB.IntegrationTests.Linq
         }
 
         [Test]
+        public void Disjunction()
+        {
+            var people = Collection.Linq().Where(x => x.Age == 21 || x.Age == 35).ToList();
+
+            Assert.AreEqual(2, people.Count);
+        }
+
+        [Test]
         public void DocumentQuery()
         {
             var people = (from p in DocumentCollection.Linq()
