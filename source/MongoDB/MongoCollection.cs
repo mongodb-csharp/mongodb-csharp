@@ -121,8 +121,7 @@ namespace MongoDB
         /// <returns></returns>
         public ICursor<T> FindAll()
         {
-            var spec = new Document();
-            return Find(spec);
+            return (ICursor<T>)((IMongoCollection)this).FindAll();
         }
 
         /// <summary>
@@ -143,7 +142,7 @@ namespace MongoDB
         /// <returns></returns>
         public ICursor<T> Find(Document selector)
         {
-            return new Cursor<T>(_configuration.SerializationFactory, _configuration.MappingStore, _connection, DatabaseName, Name).Spec(selector);
+            return (ICursor<T>)((IMongoCollection)this).Find(selector);
         }
 
         /// <summary>
@@ -197,7 +196,7 @@ namespace MongoDB
         /// <returns>A <see cref="MapReduce"/></returns>
         public MapReduce MapReduce()
         {
-            return new MapReduce(Database, Name, typeof(T));
+            return ((IMongoCollection)this).MapReduce();
         }
 
         ///<summary>
@@ -464,6 +463,19 @@ namespace MongoDB
             }
         }
 
+        ICursor IMongoCollection.FindAll()
+        {
+            var spec = new Document();
+            return ((IMongoCollection)this).Find(spec);
+        }
+
+        ICursor IMongoCollection.Find(object selector)
+        {
+            var cursor = (ICursor)new Cursor<T>(_configuration.SerializationFactory, _configuration.MappingStore, _connection, DatabaseName, Name);
+            cursor.Spec(selector);
+            return cursor;
+        }
+
         object IMongoCollection.FindAndModify(object document, object selector, object sort, bool returnNew)
         {
             try
@@ -533,6 +545,11 @@ namespace MongoDB
             {
                 throw new MongoConnectionException("Could not insert document, communication failure", _connection, exception);
             }
+        }
+
+        MapReduce IMongoCollection.MapReduce()
+        {
+            return new MapReduce(Database, Name, typeof(T));
         }
 
         void IMongoCollection.Remove(object selector, bool safemode)

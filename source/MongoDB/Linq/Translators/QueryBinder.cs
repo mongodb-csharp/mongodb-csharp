@@ -493,7 +493,7 @@ namespace MongoDB.Linq.Translators
             var collection = (IMongoQueryable)value;
             var fields = new List<FieldDeclaration>();
             return new ProjectionExpression(
-                new SelectExpression(selectAlias, fields, new CollectionExpression(collectionAlias, collection.Database, collection.CollectionName, collection.ElementType), null),
+                new SelectExpression(selectAlias, fields, new CollectionExpression(collectionAlias, collection.Collection, collection.ElementType), null),
                 Expression.Parameter(collection.ElementType, "document"));
         }
 

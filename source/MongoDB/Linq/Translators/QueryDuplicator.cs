@@ -18,7 +18,7 @@ namespace MongoDB.Linq.Translators
         {
             var newAlias = new Alias();
             _map[collection.Alias] = newAlias;
-            return new CollectionExpression(newAlias, collection.Database, collection.CollectionName, collection.DocumentType);
+            return new CollectionExpression(newAlias, collection.Collection, collection.DocumentType);
         }
 
         protected override Expression VisitSelect(SelectExpression select)

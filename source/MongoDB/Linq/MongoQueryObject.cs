@@ -12,16 +12,10 @@ namespace MongoDB.Linq
         public LambdaExpression Aggregator { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the collection.
+        /// Gets or sets the collection.
         /// </summary>
-        /// <value>The name of the collection.</value>
-        public string CollectionName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the database.
-        /// </summary>
-        /// <value>The database.</value>
-        public IMongoDatabase Database { get; set; }
+        /// <value>The collection.</value>
+        public IMongoCollection Collection { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the document.

@@ -1,7 +1,37 @@
 using System;
 using System.Collections.Generic;
+using System.Collections;
 
-namespace MongoDB{
+namespace MongoDB
+{
+    internal interface ICursor : IDisposable
+    {
+        void Spec(object spec);
+
+        void Limit(int limit);
+
+        void Skip(int skip);
+
+        void Fields(object fields);
+
+        void Options(QueryOptions options);
+
+        void Sort(object sort);
+
+        void Hint(object index);
+
+        void KeepCursor(bool value);
+
+        void Snapshot();
+
+        Document Explain();
+
+        bool IsModifiable { get; }
+
+        IEnumerable Documents { get; }
+    }
+       
+
     /// <summary>
     /// 
     /// </summary>
@@ -15,11 +45,18 @@ namespace MongoDB{
         long Id { get; }
 
         /// <summary>
-        /// Specs the specified spec.
+        /// Specifies the selector.
         /// </summary>
         /// <param name="spec">The spec.</param>
         /// <returns></returns>
-        ICursor<T> Spec(object spec);
+        ICursor<T> Spec(Document spec);
+
+        /// <summary>
+        /// Specifies the selector.
+        /// </summary>
+        /// <param name="spec">The spec.</param>
+        /// <returns></returns>
+        ICursor<T> SpecByExample<TExample>(TExample spec);
 
         /// <summary>
         /// Limits the specified limit.
@@ -36,11 +73,18 @@ namespace MongoDB{
         ICursor<T> Skip(int skip);
 
         /// <summary>
-        /// Fieldses the specified fields.
+        /// Specifies the projection.
         /// </summary>
         /// <param name="fields">The fields.</param>
         /// <returns></returns>
-        ICursor<T> Fields(object fields);
+        ICursor<T> Fields(Document fields);
+
+        /// <summary>
+        /// Specifies the projection.
+        /// </summary>
+        /// <param name="fields">The fields.</param>
+        /// <returns></returns>
+        ICursor<T> FieldsByExample<TExample>(TExample fields);
 
         /// <summary>
         /// Optionses the specified options.
@@ -50,33 +94,32 @@ namespace MongoDB{
         ICursor<T> Options(QueryOptions options);
 
         /// <summary>
-        /// Sorts the specified field.
+        /// Sorts the specified fields.
         /// </summary>
-        /// <param name="field">The field.</param>
+        /// <param name="fields">The fields.</param>
         /// <returns></returns>
-        ICursor<T> Sort(string field);
-
-        /// <summary>
-        /// Sorts the specified field.
-        /// </summary>
-        /// <param name="field">The field.</param>
-        /// <param name="order">The order.</param>
-        /// <returns></returns>
-        ICursor<T> Sort(string field, IndexOrder order);
+        ICursor<T> Sort(Document fields);
 
         /// <summary>
         /// Sorts the specified fields.
         /// </summary>
         /// <param name="fields">The fields.</param>
         /// <returns></returns>
-        ICursor<T> Sort(object fields);
+        ICursor<T> SortByExample<TExample>(TExample fields);
 
         /// <summary>
         /// Hints the specified index.
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        ICursor<T> Hint(object index);
+        ICursor<T> Hint(Document index);
+
+        /// <summary>
+        /// Hints the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
+        ICursor<T> HintByExample<TExample>(TExample index);
 
         /// <summary>
         /// Keeps the cursor open.

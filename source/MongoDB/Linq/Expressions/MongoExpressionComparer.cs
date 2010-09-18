@@ -59,7 +59,7 @@ namespace MongoDB.Linq.Expressions
 
         protected virtual bool CompareCollection(CollectionExpression a, CollectionExpression b)
         {
-            return a.CollectionName == b.CollectionName;
+            return a.Collection == b.Collection;
         }
 
         protected virtual bool CompareField(FieldExpression a, FieldExpression b)

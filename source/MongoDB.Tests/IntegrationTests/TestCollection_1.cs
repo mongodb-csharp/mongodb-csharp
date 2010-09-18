@@ -176,7 +176,7 @@ namespace MongoDB.IntegrationTests
         public void TestFindAttributeLimit(){
             var query = new {Index = 10};
             var fields = new {x = 1};
-            var c = DB.GetCollection<FindsEntity>("finds").FindByExample(query).Fields(fields);
+            var c = DB.GetCollection<FindsEntity>("finds").FindByExample(query).FieldsByExample(fields);
             foreach(var result in c.Documents)
             {
                 Assert.IsNotNull(result);

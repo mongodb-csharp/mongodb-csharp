@@ -7,6 +7,7 @@ using MongoDB.Commands;
 using MongoDB.Linq.Expressions;
 using MongoDB.Linq.Translators;
 using MongoDB.Util;
+using System.Collections;
 
 namespace MongoDB.Linq
 {
@@ -15,25 +16,15 @@ namespace MongoDB.Linq
     /// </summary>
     internal class MongoQueryProvider : IQueryProvider
     {
-        private readonly string _collectionName;
-        private readonly IMongoDatabase _database;
+        private readonly IMongoCollection _collection;
 
         /// <summary>
         /// Gets the name of the collection.
         /// </summary>
         /// <value>The name of the collection.</value>
-        public string CollectionName
+        public IMongoCollection Collection
         {
-            get { return _collectionName; }
-        }
-
-        /// <summary>
-        /// Gets the database.
-        /// </summary>
-        /// <value>The database.</value>
-        public IMongoDatabase Database
-        {
-            get { return _database; }
+            get { return _collection; }
         }
 
         /// <summary>
@@ -41,15 +32,12 @@ namespace MongoDB.Linq
         /// </summary>
         /// <param name="database">The database.</param>
         /// <param name="collectionName">Name of the collection.</param>
-        public MongoQueryProvider(IMongoDatabase database, string collectionName)
+        public MongoQueryProvider(IMongoCollection collection)
         {
-            if (database == null)
-                throw new ArgumentNullException("database");
-            if (collectionName == null)
-                throw new ArgumentNullException("collectionName");
+            if (collection == null)
+                throw new ArgumentNullException("collection");
 
-            _collectionName = collectionName;
-            _database = database;
+            _collection = collection;
         }
 
         /// <summary>
@@ -216,23 +204,15 @@ namespace MongoDB.Linq
         /// <returns></returns>
         private object ExecuteCount(MongoQueryObject queryObject)
         {
-            var miGetCollection = typeof(IMongoDatabase).GetMethods().Where(m => m.Name == "GetCollection" && m.GetGenericArguments().Length == 1 && m.GetParameters().Length == 1).Single().MakeGenericMethod(queryObject.DocumentType);
-            var collection = miGetCollection.Invoke(queryObject.Database, new[] { queryObject.CollectionName });
-
             if (queryObject.Query == null)
-                return Convert.ToInt32(collection.GetType().GetMethod("Count", Type.EmptyTypes).Invoke(collection, null));
+                return (int)_collection.Count();
 
-            return Convert.ToInt32(collection.GetType().GetMethod("Count", new[] { typeof(Document) }).Invoke(collection, new[] { queryObject.Query }));
+            return (int)_collection.Count(queryObject.Query);
         }
 
         private object ExecuteFind(MongoQueryObject queryObject)
         {
-            var miGetCollection = typeof(IMongoDatabase).GetMethods().Where(m => m.Name == "GetCollection" && m.GetGenericArguments().Length == 1 && m.GetParameters().Length == 1).Single().MakeGenericMethod(queryObject.DocumentType);
-            var collection = miGetCollection.Invoke(queryObject.Database, new[] { queryObject.CollectionName });
-
-            var cursor = collection.GetType().GetMethod("FindAll")
-                            .Invoke(collection, null);
-            var cursorType = cursor.GetType();
+            var cursor = queryObject.Collection.FindAll();
             Document spec;
             if (queryObject.Sort != null)
             {
@@ -245,24 +225,21 @@ namespace MongoDB.Linq
             else
                 spec = queryObject.Query;
 
-            cursorType.GetMethod("Spec", new[] { typeof(Document) }).Invoke(cursor, new object[] { spec });
-            if(queryObject.Fields.Count > 0)
-                cursorType.GetMethod("Fields", new[] { typeof(Document) }).Invoke(cursor, new object[] { queryObject.Fields });
-            cursorType.GetMethod("Limit").Invoke(cursor, new object[] { queryObject.NumberToLimit });
-            cursorType.GetMethod("Skip").Invoke(cursor, new object[] { queryObject.NumberToSkip });
+            cursor.Spec(spec);
+            if (queryObject.Fields.Count > 0)
+                cursor.Fields(queryObject.Fields);
+            cursor.Limit(queryObject.NumberToLimit);
+            cursor.Skip(queryObject.NumberToSkip);
 
             var executor = GetExecutor(queryObject.DocumentType, queryObject.Projector, queryObject.Aggregator, true);
-            return executor.Compile().DynamicInvoke(cursor.GetType().GetProperty("Documents").GetValue(cursor, null));
+            return executor.Compile().DynamicInvoke(cursor.Documents);
         }
 
         private object ExecuteMapReduce(MongoQueryObject queryObject)
         {
-            var miGetCollection = typeof(IMongoDatabase).GetMethods().Where(m => m.Name == "GetCollection" && m.GetGenericArguments().Length == 1 && m.GetParameters().Length == 1).Single().MakeGenericMethod(queryObject.DocumentType);
-            var collection = miGetCollection.Invoke(queryObject.Database, new[] { queryObject.CollectionName });
-            
-            var mapReduce = collection.GetType().GetMethod("MapReduce").Invoke(collection, null);
+            var mapReduce = queryObject.Collection.MapReduce();
 
-            var mapReduceCommand = (MapReduceCommand)mapReduce.GetType().GetProperty("Command").GetValue(mapReduce, null);
+            var mapReduceCommand = mapReduce.Command;
             mapReduceCommand.Map = new Code(queryObject.MapFunction);
             mapReduceCommand.Reduce = new Code(queryObject.ReduceFunction);
             mapReduceCommand.Finalize = new Code(queryObject.FinalizerFunction);
@@ -277,13 +254,13 @@ namespace MongoDB.Linq
                 throw new InvalidQueryException("MapReduce queries do no support Skips.");
 
             var executor = GetExecutor(typeof(Document), queryObject.Projector, queryObject.Aggregator, true);
-            return executor.Compile().DynamicInvoke(mapReduce.GetType().GetProperty("Documents").GetValue(mapReduce, null));
+            return executor.Compile().DynamicInvoke(mapReduce.Documents);
         }
 
         private static LambdaExpression GetExecutor(Type documentType, LambdaExpression projector,  
             Expression aggregator, bool boxReturn)
         {
-            var documents = Expression.Parameter(typeof(IEnumerable<>).MakeGenericType(documentType), "documents");
+            var documents = Expression.Parameter(typeof(IEnumerable), "documents");
             Expression body = Expression.Call(
                 typeof(MongoQueryProvider),
                 "Project",
@@ -299,9 +276,9 @@ namespace MongoDB.Linq
             return Expression.Lambda(body, documents);
         }
 
-        private static IEnumerable<TResult> Project<TDocument, TResult>(IEnumerable<TDocument> documents, Func<TDocument, TResult> projector)
+        private static IEnumerable<TResult> Project<TDocument, TResult>(IEnumerable documents, Func<TDocument, TResult> projector)
         {
-            return documents.Select(projector);
+            return documents.OfType<TDocument>().Select(projector);
         }
 
         private class RootQueryableFinder : MongoExpressionVisitor

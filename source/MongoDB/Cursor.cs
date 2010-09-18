@@ -8,6 +8,7 @@ using System.Linq;
 using MongoDB.Util;
 using MongoDB.Configuration.Mapping.Model;
 using MongoDB.Configuration.Mapping;
+using System.Collections;
 
 namespace MongoDB
 {
@@ -15,7 +16,7 @@ namespace MongoDB
     /// 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Cursor<T> : ICursor<T> where T : class
+    public class Cursor<T> : ICursor<T>, ICursor where T : class
     {
         private readonly Connection _connection;
         private readonly string _databaseName;
@@ -75,7 +76,8 @@ namespace MongoDB
         /// Releases unmanaged resources and performs other cleanup operations before the
         /// <see cref="Cursor&lt;T&gt;"/> is reclaimed by garbage collection.
         /// </summary>
-        ~Cursor(){
+        ~Cursor()
+        {
             Dispose(false);
         }
 
@@ -96,10 +98,21 @@ namespace MongoDB
         /// </summary>
         /// <param name="spec">The spec.</param>
         /// <returns></returns>
-        public ICursor<T> Spec(object spec){
-            TryModify();
-            _spec = spec;
+        public ICursor<T> Spec(Document spec)
+        {
+            ((ICursor)this).Spec(spec);
             return this;
+        }
+
+        /// <summary>
+        /// Specs the by example.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="spec">The spec.</param>
+        /// <returns></returns>
+        public ICursor<T> SpecByExample<TExample>(TExample spec)
+        {
+            return Spec(ObjectToDocumentConverter.Convert(spec));
         }
 
         /// <summary>
@@ -107,9 +120,9 @@ namespace MongoDB
         /// </summary>
         /// <param name="limit">The limit.</param>
         /// <returns></returns>
-        public ICursor<T> Limit(int limit){
-            TryModify();
-            _limit = limit;
+        public ICursor<T> Limit(int limit)
+        {
+            ((ICursor)this).Limit(limit);
             return this;
         }
 
@@ -118,9 +131,9 @@ namespace MongoDB
         /// </summary>
         /// <param name="skip">The skip.</param>
         /// <returns></returns>
-        public ICursor<T> Skip(int skip){
-            TryModify();
-            _skip = skip;
+        public ICursor<T> Skip(int skip)
+        {
+            ((ICursor)this).Skip(skip);
             return this;
         }
 
@@ -129,29 +142,21 @@ namespace MongoDB
         /// </summary>
         /// <param name="fields">The fields.</param>
         /// <returns></returns>
-        public ICursor<T> Fields(object fields){
-            TryModify();
-            _fields = fields;
+        public ICursor<T> Fields(Document fields)
+        {
+            ((ICursor)this).Fields(fields);
             return this;
         }
 
         /// <summary>
-        ///   Sorts the specified field.
+        /// Fieldses the by example.
         /// </summary>
-        /// <param name = "field">The field.</param>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="fields">The fields.</param>
         /// <returns></returns>
-        public ICursor<T> Sort(string field){
-            return Sort(field, IndexOrder.Ascending);
-        }
-
-        /// <summary>
-        ///   Sorts the specified field.
-        /// </summary>
-        /// <param name = "field">The field.</param>
-        /// <param name = "order">The order.</param>
-        /// <returns></returns>
-        public ICursor<T> Sort(string field, IndexOrder order){
-            return Sort(new Document().Add(field, order));
+        public ICursor<T> FieldsByExample<TExample>(TExample fields)
+        {
+            return Fields(ObjectToDocumentConverter.Convert(fields));
         }
 
         /// <summary>
@@ -159,10 +164,20 @@ namespace MongoDB
         /// </summary>
         /// <param name="fields">The fields.</param>
         /// <returns></returns>
-        public ICursor<T> Sort(object fields){
-            TryModify();
-            AddOrRemoveSpecOpt("$orderby", fields);
+        public ICursor<T> Sort(Document fields)
+        {
+            ((ICursor)this).Sort(fields);
             return this;
+        }
+
+        /// <summary>
+        /// Sorts the by example.
+        /// </summary>
+        /// <param name="fields">The fields.</param>
+        /// <returns></returns>
+        public ICursor<T> SortByExample<TExample>(TExample fields)
+        {
+            return Sort(ObjectToDocumentConverter.Convert(fields));
         }
 
         /// <summary>
@@ -170,10 +185,21 @@ namespace MongoDB
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        public ICursor<T> Hint(object index){
-            TryModify();
-            AddOrRemoveSpecOpt("$hint", index);
+        public ICursor<T> Hint(Document index)
+        {
+            ((ICursor)this).Hint(index);
             return this;
+        }
+
+        /// <summary>
+        /// Hints the specified index.
+        /// </summary>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="example">The example.</param>
+        /// <returns></returns>
+        public ICursor<T> HintByExample<TExample>(TExample example)
+        {
+            return Hint(ObjectToDocumentConverter.Convert(example));
         }
 
         /// <summary>
@@ -187,16 +213,16 @@ namespace MongoDB
         /// </remarks>
         public ICursor<T> KeepCursor(bool value)
         {
-            _keepCursor = value;
+            ((ICursor)this).KeepCursor(value);
             return this;
         }
 
         /// <summary>
         /// Snapshots the specified index.
         /// </summary>
-        public ICursor<T> Snapshot(){
-            TryModify();
-            AddOrRemoveSpecOpt("$snapshot", true);
+        public ICursor<T> Snapshot()
+        {
+            ((ICursor)this).Snapshot();
             return this;
         }
 
@@ -204,7 +230,8 @@ namespace MongoDB
         ///   Explains this instance.
         /// </summary>
         /// <returns></returns>
-        public Document Explain(){
+        public Document Explain()
+        {
             TryModify();
             _specOpts["$explain"] = true;
 
@@ -213,14 +240,14 @@ namespace MongoDB
             {
                 var explain = explainResult.Documents.FirstOrDefault();
 
-                if(explain==null)
+                if (explain == null)
                     throw new InvalidOperationException("Explain failed. No documents where returned.");
 
                 return explain;
             }
-            finally 
+            finally
             {
-                if(explainResult.CursorId > 0)
+                if (explainResult.CursorId > 0)
                     KillCursor(explainResult.CursorId);
             }
         }
@@ -235,22 +262,11 @@ namespace MongoDB
         ///   Gets the documents.
         /// </summary>
         /// <value>The documents.</value>
-        public IEnumerable<T> Documents {
-            get {
-                do
-                {
-                    _reply = RetrieveData<T>();
-
-                    if(_reply == null)
-                        throw new InvalidOperationException("Expecting reply but get null");
-
-                    foreach(var document in _reply.Documents)
-                        yield return document;
-                }
-                while(Id > 0 && _limit<CursorPosition);
-
-                if(!_keepCursor)
-                    Dispose(true);
+        public IEnumerable<T> Documents
+        {
+            get
+            {
+                return ((ICursor)this).Documents.OfType<T>();
             }
         }
 
@@ -262,7 +278,7 @@ namespace MongoDB
         {
             get
             {
-                if(_reply == null)
+                if (_reply == null)
                     return 0;
 
                 return _reply.StartingFrom + _reply.NumberReturned;
@@ -274,8 +290,7 @@ namespace MongoDB
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            ((ICursor)this).Dispose();
         }
 
         /// <summary>
@@ -284,7 +299,7 @@ namespace MongoDB
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if(Id == 0 || !_connection.IsConnected) //All server side resources disposed of.
+            if (Id == 0 || !_connection.IsConnected) //All server side resources disposed of.
                 return;
 
             KillCursor(Id);
@@ -295,9 +310,9 @@ namespace MongoDB
         /// </summary>
         /// <param name = "options">The options.</param>
         /// <returns></returns>
-        public ICursor<T> Options(QueryOptions options){
-            TryModify();
-            _options = options;
+        public ICursor<T> Options(QueryOptions options)
+        {
+            ((ICursor)this).Options(options);
             return this;
         }
 
@@ -307,11 +322,14 @@ namespace MongoDB
         private void KillCursor(long cursorId)
         {
             var killCursorsMessage = new KillCursorsMessage(cursorId);
-            
-            try {
-                _connection.SendMessage(killCursorsMessage,_databaseName);
+
+            try
+            {
+                _connection.SendMessage(killCursorsMessage, _databaseName);
                 Id = 0;
-            } catch (IOException exception) {
+            }
+            catch (IOException exception)
+            {
                 throw new MongoConnectionException("Could not read data, communication failure", _connection, exception);
             }
         }
@@ -327,7 +345,7 @@ namespace MongoDB
 
             IRequestMessage message;
 
-            if(Id <= 0)
+            if (Id <= 0)
             {
                 var writerSettings = _serializationFactory.GetBsonWriterSettings(typeof(T));
 
@@ -352,12 +370,12 @@ namespace MongoDB
             {
 
                 var reply = _connection.SendTwoWayMessage<TReply>(message, readerSettings, _databaseName);
-                
+
                 Id = reply.CursorId;
-                
+
                 return reply;
             }
-            catch(IOException exception)
+            catch (IOException exception)
             {
                 throw new MongoConnectionException("Could not read data, communication failure", _connection, exception);
             }
@@ -366,8 +384,9 @@ namespace MongoDB
         /// <summary>
         ///   Tries the modify.
         /// </summary>
-        private void TryModify(){
-            if(!IsModifiable)
+        private void TryModify()
+        {
+            if (!IsModifiable)
                 throw new InvalidOperationException("Cannot modify a cursor that has already returned documents.");
         }
 
@@ -376,7 +395,8 @@ namespace MongoDB
         /// </summary>
         /// <param name = "key">The key.</param>
         /// <param name = "doc">The doc.</param>
-        private void AddOrRemoveSpecOpt(string key, object doc){
+        private void AddOrRemoveSpecOpt(string key, object doc)
+        {
             if (doc == null)
                 _specOpts.Remove(key);
             else
@@ -387,10 +407,11 @@ namespace MongoDB
         ///   Builds the spec.
         /// </summary>
         /// <returns></returns>
-        private object BuildSpec(){
+        private object BuildSpec()
+        {
             if (_specOpts.Count == 0)
                 return _spec;
-            
+
             var document = new Document();
             _specOpts.CopyTo(document);
             document["$query"] = _spec;
@@ -402,7 +423,7 @@ namespace MongoDB
             if (document == null)
                 return null;
 
-            if(!(document is Document) && typeof(T).IsAssignableFrom(document.GetType()))
+            if (!(document is Document) && typeof(T).IsAssignableFrom(document.GetType()))
                 throw new NotSupportedException("An entity type is not supported in field selection. Use either a document or an anonymous type.");
 
             var doc = ObjectToDocumentConverter.Convert(document);
@@ -411,6 +432,86 @@ namespace MongoDB
                 doc[classMap.DiscriminatorAlias] = true;
 
             return doc.Count == 0 ? null : doc;
+        }
+
+        void ICursor.Spec(object spec)
+        {
+            TryModify();
+            _spec = spec;
+        }
+
+        void ICursor.Hint(object index)
+        {
+            TryModify();
+            AddOrRemoveSpecOpt("$hint", index);
+        }
+
+        void ICursor.Limit(int limit)
+        {
+            TryModify();
+            _limit = limit;
+        }
+
+        void ICursor.Skip(int skip)
+        {
+            TryModify();
+            _skip = skip;
+        }
+
+        void ICursor.Fields(object fields)
+        {
+            TryModify();
+            _fields = fields;
+        }
+
+        void ICursor.Sort(object fields)
+        {
+            TryModify();
+            AddOrRemoveSpecOpt("$orderby", fields);
+        }
+
+        void ICursor.KeepCursor(bool value)
+        {
+            _keepCursor = value;
+        }
+
+        void ICursor.Snapshot()
+        {
+            TryModify();
+            AddOrRemoveSpecOpt("$snapshot", true);
+        }
+
+        IEnumerable ICursor.Documents
+        {
+            get
+            {
+                do
+                {
+                    _reply = RetrieveData<T>();
+
+                    if (_reply == null)
+                        throw new InvalidOperationException("Expecting reply but get null");
+
+                    foreach (var document in _reply.Documents)
+                        yield return document;
+                }
+                while (Id > 0 && _limit < CursorPosition);
+
+                if (!_keepCursor)
+                    Dispose(true);
+            }
+        }
+
+                void ICursor.Options(QueryOptions options)
+        {
+            TryModify();
+            _options = options;
+        }
+
+        void IDisposable.Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }
