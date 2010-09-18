@@ -28,6 +28,10 @@ namespace MongoDB.Linq.Translators
         {
             int scopeDepth = _scopes.Count;
             bool hasPredicate = b.NodeType != ExpressionType.And && b.NodeType != ExpressionType.AndAlso && b.NodeType != ExpressionType.Or && b.NodeType != ExpressionType.OrElse;
+
+            if(b.NodeType == ExpressionType.Or || b.NodeType == ExpressionType.OrElse)
+                PushConditionScope("$or");
+
             VisitPredicate(b.Left, hasPredicate);
 
             switch (b.NodeType)
@@ -51,6 +55,9 @@ namespace MongoDB.Linq.Translators
                     break;
                 case ExpressionType.Modulo:
                     throw new NotImplementedException();
+                case ExpressionType.Or:
+                case ExpressionType.OrElse:
+                    break;
                 case ExpressionType.And:
                 case ExpressionType.AndAlso:
                     break;

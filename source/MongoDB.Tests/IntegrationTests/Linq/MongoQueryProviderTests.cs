@@ -88,8 +88,7 @@ namespace MongoDB.IntegrationTests.Linq
         }
 
         [Test]
-        [Ignore("Something is interesting about document comparison that causes this to fail.")]
-        public void Disjunction()
+        public void DisjunctionInClause()
         {
             var people = Collection.Linq().Where(x => x.Age == 21 || x.Age == 35);
 
@@ -97,7 +96,19 @@ namespace MongoDB.IntegrationTests.Linq
             Assert.AreEqual(0, queryObject.Fields.Count);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(new Document("$where", new Code("((this.Age === 21) || (this.Age === 35))")), queryObject.Query);
+            Assert.AreEqual(new Document("Age", new Document("$in", new [] { 21, 35 })), queryObject.Query);
+        }
+
+        [Test]
+        public void Disjunction()
+        {
+            var people = Collection.Linq().Where(x => x.Age == 21 || (x.FirstName == "Jack" && x.LastName == "Jim"));
+
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.NumberToLimit);
+            Assert.AreEqual(0, queryObject.NumberToSkip);
+            Assert.AreEqual(new Document("$or", new Document("Age", 21).Add("FirstName", "Jack")), queryObject.Query);
         }
 
         [Test]
