@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MongoDB.Bson;
+using System.Collections;
 
 namespace MongoDB
 {
@@ -254,6 +255,17 @@ namespace MongoDB
         public static Op operator !(Op op)
         {
             return (Op)new Op().Add("$not", op);
+        }
+
+        /// <summary>
+        /// Implements the operator |.
+        /// </summary>
+        /// <param name="op1">The op1.</param>
+        /// <param name="op2">The op2.</param>
+        /// <returns>The result of the operator.</returns>
+        public static Op operator |(Op op1, Op op2)
+        {
+            return (Op)new Op().Add("$or", new Document[] { op1, op2 });
         }
     }
 }

@@ -28,6 +28,10 @@ namespace MongoDB.Linq.Translators
         {
             int scopeDepth = _scopes.Count;
             bool hasPredicate = b.NodeType != ExpressionType.And && b.NodeType != ExpressionType.AndAlso && b.NodeType != ExpressionType.Or && b.NodeType != ExpressionType.OrElse;
+
+            if (b.NodeType == ExpressionType.Or || b.NodeType == ExpressionType.OrElse)
+                PushConditionScope("$or");
+
             VisitPredicate(b.Left, hasPredicate);
 
             switch (b.NodeType)
@@ -51,6 +55,9 @@ namespace MongoDB.Linq.Translators
                     break;
                 case ExpressionType.Modulo:
                     throw new NotImplementedException();
+                case ExpressionType.Or:
+                case ExpressionType.OrElse:
+                    break;
                 case ExpressionType.And:
                 case ExpressionType.AndAlso:
                     break;
@@ -138,7 +145,17 @@ namespace MongoDB.Linq.Translators
                         PopConditionScope(); //elemMatch
                         PopConditionScope(); //field
                         return m;
+                    case "All":
+                        if (m.Arguments.Count != 2)
+                            throw new NotSupportedException("Only the All method with 2 arguments is supported.");
 
+                        field = m.Arguments[0] as FieldExpression;
+                        VisitPredicate(field, true);
+                        PushConditionScope("$all");
+                        VisitPredicate(m.Arguments[1], true);
+                        PopConditionScope(); //all
+                        PopConditionScope(); //field
+                        return m;
                     case "Contains":
                         if (m.Arguments.Count != 2)
                             throw new NotSupportedException("Only the Contains method with 2 arguments is supported.");
@@ -302,6 +319,15 @@ namespace MongoDB.Linq.Translators
 
             if (scope.Value is NullPlaceHolder)
                 doc[scope.Key] = null;
+            else if (_scopes.Count > 0 && _scopes.Peek().Key == "$or")
+            {
+                ArrayList arr = _scopes.Peek().Value as ArrayList;
+                if (arr == null)
+                    arr = new ArrayList();
+
+                arr.Add(new Document(scope.Key, scope.Value));
+                _scopes.Peek().AddCondition(arr);
+            }
             else
                 doc[scope.Key] = scope.Value;
         }

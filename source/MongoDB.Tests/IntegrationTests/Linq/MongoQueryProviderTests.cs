@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using MongoDB.Linq;
 using NUnit.Framework;
+using System.Collections;
 
 namespace MongoDB.IntegrationTests.Linq
 {
@@ -88,7 +89,6 @@ namespace MongoDB.IntegrationTests.Linq
         }
 
         [Test]
-        [Ignore("Something is interesting about document comparison that causes this to fail.")]
         public void Disjunction()
         {
             var people = Collection.Linq().Where(x => x.Age == 21 || x.Age == 35);
@@ -97,7 +97,11 @@ namespace MongoDB.IntegrationTests.Linq
             Assert.AreEqual(0, queryObject.Fields.Count);
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
-            Assert.AreEqual(new Document("$where", new Code("((this.Age === 21) || (this.Age === 35))")), queryObject.Query);
+
+            var arrayList = queryObject.Query["$or"] as ArrayList;
+            Assert.IsNotNull(arrayList);
+            Assert.AreEqual(new Document("Age", 21), arrayList[0]);
+            Assert.AreEqual(new Document("Age", 35), arrayList[1]);
         }
 
         [Test]
@@ -226,6 +230,18 @@ namespace MongoDB.IntegrationTests.Linq
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(new Document("Addresses", new Document("$elemMatch", new Document("City", "London"))), queryObject.Query);
+        }
+
+        [Test]
+        public void NestedQueryable_All()
+        {
+            var people = Collection.Linq().Where(x => x.Addresses.All(a => a.City == "London"));
+
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.NumberToLimit);
+            Assert.AreEqual(0, queryObject.NumberToSkip);
+            Assert.AreEqual(new Document("Addresses", new Document("$all", new Document("City", "London"))), queryObject.Query);
         }
 
         [Test]
