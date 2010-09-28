@@ -106,80 +106,6 @@ namespace MongoDB
             }
         }
 
-        void IUntypedCursor.Spec(object spec)
-        {
-            TryModify();
-            _spec = spec;
-        }
-
-        void IUntypedCursor.Hint(object index)
-        {
-            TryModify();
-            AddOrRemoveSpecOpt("$hint", index);
-        }
-
-        void IUntypedCursor.Limit(int limit)
-        {
-            TryModify();
-            _limit = limit;
-        }
-
-        void IUntypedCursor.Skip(int skip)
-        {
-            TryModify();
-            _skip = skip;
-        }
-
-        void IUntypedCursor.Fields(object fields)
-        {
-            TryModify();
-            _fields = fields;
-        }
-
-        void IUntypedCursor.Sort(object fields)
-        {
-            TryModify();
-            AddOrRemoveSpecOpt("$orderby", fields);
-        }
-
-        void IUntypedCursor.KeepCursor(bool value)
-        {
-            _keepCursor = value;
-        }
-
-        void IUntypedCursor.Snapshot()
-        {
-            TryModify();
-            AddOrRemoveSpecOpt("$snapshot", true);
-        }
-
-        IEnumerable IUntypedCursor.Documents
-        {
-            get
-            {
-                do
-                {
-                    _reply = RetrieveData<T>();
-
-                    if(_reply == null)
-                        throw new InvalidOperationException("Expecting reply but get null");
-
-                    foreach(var document in _reply.Documents)
-                        yield return document;
-                }
-                while(Id > 0 && _limit < CursorPosition);
-
-                if(!_keepCursor)
-                    Dispose(true);
-            }
-        }
-
-        void IUntypedCursor.Options(QueryOptions options)
-        {
-            TryModify();
-            _options = options;
-        }
-
         /// <summary>
         ///   Gets or sets the id.
         /// </summary>
@@ -375,6 +301,88 @@ namespace MongoDB
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        void IUntypedCursor.Spec(object spec)
+        {
+            TryModify();
+            _spec = spec;
+        }
+
+        void IUntypedCursor.Hint(object index)
+        {
+            TryModify();
+            AddOrRemoveSpecOpt("$hint", index);
+        }
+
+        void IUntypedCursor.Limit(int limit)
+        {
+            TryModify();
+            _limit = limit;
+        }
+
+        void IUntypedCursor.Skip(int skip)
+        {
+            TryModify();
+            _skip = skip;
+        }
+
+        void IUntypedCursor.Fields(object fields)
+        {
+            TryModify();
+            _fields = fields;
+        }
+
+        void IUntypedCursor.Sort(object fields)
+        {
+            TryModify();
+            AddOrRemoveSpecOpt("$orderby", fields);
+        }
+
+        void IUntypedCursor.KeepCursor(bool value)
+        {
+            _keepCursor = value;
+        }
+
+        void IUntypedCursor.Snapshot()
+        {
+            TryModify();
+            AddOrRemoveSpecOpt("$snapshot", true);
+        }
+
+        IEnumerable IUntypedCursor.Documents
+        {
+            get
+            {
+                do
+                {
+                    _reply = RetrieveData<T>();
+
+                    if(_reply == null)
+                        throw new InvalidOperationException("Expecting reply but get null");
+
+                    if(_limit > 0 && CursorPosition > _limit)
+                    {
+                        foreach(var document in _reply.Documents.Take(_limit - _reply.StartingFrom))
+                            yield return document;
+
+                        yield break;
+                    }
+
+                    foreach(var document in _reply.Documents)
+                        yield return document;
+                }
+                while(Id > 0);
+
+                if(!_keepCursor)
+                    Dispose(true);
+            }
+        }
+
+        void IUntypedCursor.Options(QueryOptions options)
+        {
+            TryModify();
+            _options = options;
         }
 
         /// <summary>

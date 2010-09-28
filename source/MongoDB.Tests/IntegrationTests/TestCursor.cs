@@ -9,7 +9,7 @@ namespace MongoDB.IntegrationTests
     {
         public override string TestCollections
         {
-            get { return "sorts,hintindex,smallreads,reads"; }
+            get { return "sorts,hintindex,smallreads,reads,largereads"; }
         }
 
         public override void OnInit()
@@ -17,12 +17,17 @@ namespace MongoDB.IntegrationTests
             //smallreads
             var smallreads = DB["smallreads"];
             for(var j = 1; j < 5; j++)
-                smallreads.Insert(new Document {{"x", 4}, {"j", j}});
-            smallreads.Insert(new Document {{"x", 4}, {"j", 5}, {"n", 1}});
+                smallreads.Insert(new Document { { "x", 4 }, { "j", j } });
+            smallreads.Insert(new Document { { "x", 4 }, { "j", 5 }, { "n", 1 } });
 
             var reads = DB["reads"];
             for(var j = 1; j < 10000; j++)
-                reads.Insert(new Document {{"x", 4}, {"h", "hi"}, {"j", j}});
+                reads.Insert(new Document { { "x", 4 }, { "h", "hi" }, { "j", j } });
+
+            var properties = Enumerable.Range(1, 500).ToDictionary(x => x.ToString(), x => (object)x).ToArray();
+            var largereads = DB["largereads"];
+            largereads.InsertMany(Enumerable.Range(1, 3000).Select(i => new Document(properties)));
+
         }
 
         [Test]
@@ -36,6 +41,14 @@ namespace MongoDB.IntegrationTests
             Assert.AreEqual(5, reads);
         }
 
+        [Test]
+        public void TestCanLimitWithLargeResultSet()
+        {
+            var count = DB["largereads"].FindAll().Limit(2000).Documents.Count();
+
+            Assert.AreEqual(2000, count);
+        }
+        
         [Test]
         public void TestCanReadAndKillCursor()
         {
@@ -59,11 +72,10 @@ namespace MongoDB.IntegrationTests
             foreach(var doc in c.Documents)
             {
                 reads++;
-                if(c.Id != id)
-                {
-                    idchanges++;
-                    id = c.Id;
-                }
+                if(c.Id == id)
+                    continue;
+                idchanges++;
+                id = c.Id;
             }
             Assert.IsTrue(reads > 0, "No documents were returned.");
             Assert.IsTrue(idchanges > 0, String.Format("ReadMore message never sent. {0} changes seen", idchanges));
