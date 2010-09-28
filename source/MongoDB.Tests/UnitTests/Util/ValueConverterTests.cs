@@ -102,5 +102,13 @@ namespace MongoDB.UnitTests.Util
 
             Assert.AreEqual(source.Value,dest);
         }
+        
+        [Test]
+        public void ConvertArray_NullArrayWithTypeObject_ReturnsNull()
+        {
+            var array = ValueConverter.ConvertArray(null, typeof(object));
+
+            Assert.IsNull(array);
+        }
     }
 }

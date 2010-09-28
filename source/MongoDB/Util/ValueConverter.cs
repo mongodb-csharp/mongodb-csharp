@@ -53,6 +53,9 @@ namespace MongoDB.Util
 
         public static Array ConvertArray(object[] elements, Type type)
         {
+            if(elements == null)
+                return null;
+
             var array = Array.CreateInstance(type, elements.Length);
 
             for(var i = 0; i < elements.Length; i++)
