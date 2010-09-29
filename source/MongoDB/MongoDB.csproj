@@ -125,6 +125,7 @@
     <Compile Include="Configuration\Mapping\Conventions\IDictionaryAdapterConvention.cs" />
     <Compile Include="MongoTimestamp.cs" />
     <Compile Include="Protocol\ResponseFlags.cs" />
+    <Compile Include="RemoveFlags.cs" />
     <Compile Include="Util\ValueConverter.cs" />
     <Compile Include="Configuration\MongoConfigurationBuilder.cs" />
     <Compile Include="Configuration\Builders\AutoMappingProfileBuilder.cs" />
