@@ -1,4 +1,6 @@
-﻿namespace MongoDB
+﻿using System;
+
+namespace MongoDB
 {
     /// <summary>
     ///   Query options
@@ -6,6 +8,7 @@
     /// <remarks>
     ///   Oplog replay: 8 (internal replication use only - drivers should not implement)
     /// </remarks>
+    [Flags]
     public enum QueryOptions
     {
         /// <summary>
