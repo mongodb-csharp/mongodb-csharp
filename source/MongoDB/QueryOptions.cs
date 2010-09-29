@@ -12,7 +12,7 @@ namespace MongoDB
     public enum QueryOptions
     {
         /// <summary>
-        ///   None
+        ///   No flag set
         /// </summary>
         None = 0,
         /// <summary>

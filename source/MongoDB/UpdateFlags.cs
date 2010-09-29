@@ -12,7 +12,7 @@ namespace MongoDB
     public enum UpdateFlags
     {
         /// <summary>
-        ///   Default is None.
+        ///   No flag set
         /// </summary>
         Default = 0,
         /// <summary>
