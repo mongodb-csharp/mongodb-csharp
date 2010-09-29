@@ -38,13 +38,19 @@ namespace MongoDB.Protocol
         public object Selector { get; set; }
 
         /// <summary>
+        /// Gets or sets the flags.
+        /// </summary>
+        /// <value>The flags.</value>
+        public RemoveFlags Flags { get; set; }
+
+        /// <summary>
         /// Writes the body.
         /// </summary>
         /// <param name="writer">The writer.</param>
         protected override void WriteBody(BsonWriter writer){
             writer.WriteValue(BsonType.Integer, 0);
             writer.Write(FullCollectionName, false);
-            writer.WriteValue(BsonType.Integer, 0);
+            writer.WriteValue(BsonType.Integer, Flags);
             writer.WriteObject(Selector);
         }
 
