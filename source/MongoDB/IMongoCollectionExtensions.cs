@@ -212,7 +212,37 @@ namespace MongoDB
         /// </remarks>
         public static void Remove<T>(this IMongoCollection<T> collection, Document selector) where T : class
         {
-            collection.Remove(selector, false);
+            collection.Remove(selector, RemoveFlags.None, false);
+        }
+
+        /// <summary>
+        /// Remove documents from the collection according to the selector.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="selector">The selector.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        /// <remarks>
+        /// An empty document will match all documents in the collection and effectively truncate it.
+        /// </remarks>
+        public static void Remove<T>(this IMongoCollection<T> collection, Document selector, bool safemode) where T : class
+        {
+            collection.Remove(selector, RemoveFlags.None, safemode);
+        }
+
+        /// <summary>
+        /// Remove documents from the collection according to the selector.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="flags">The flags.</param>
+        /// <param name="selector">The selector.</param>
+        /// <remarks>
+        /// An empty document will match all documents in the collection and effectively truncate it.
+        /// </remarks>
+        public static void Remove<T>(this IMongoCollection<T> collection, RemoveFlags flags, Document selector) where T : class
+        {
+            collection.Remove(selector, flags, false);
         }
 
         /// <summary>
@@ -226,7 +256,23 @@ namespace MongoDB
         /// </remarks>
         public static void Remove<T>(this IMongoCollection<T> collection, T document) where T : class
         {
-            collection.Remove(document, false);
+            collection.Remove(document, RemoveFlags.None, false);
+        }
+
+        /// <summary>
+        /// Remove documents from the collection according to the selector.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="example">The example.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        /// <remarks>
+        /// An empty document will match all documents in the collection and effectively truncate it.
+        /// </remarks>
+        public static void RemoveByExample<T, TExample>(this IMongoCollection<T> collection, TExample example, bool safemode) where T : class
+        {
+            collection.RemoveByExample(example, RemoveFlags.None, safemode);
         }
 
         /// <summary>
@@ -241,7 +287,23 @@ namespace MongoDB
         /// </remarks>
         public static void RemoveByExample<T, TExample>(this IMongoCollection<T> collection, TExample example) where T : class
         {
-            collection.RemoveByExample(example, false);
+            collection.RemoveByExample(example, RemoveFlags.None, false);
+        }
+
+        /// <summary>
+        /// Remove documents from the collection according to the selector.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TExample">The type of the example.</typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="example">The example.</param>
+        /// <param name="flags">The flags.</param>
+        /// <remarks>
+        /// An empty document will match all documents in the collection and effectively truncate it.
+        /// </remarks>
+        public static void RemoveByExample<T, TExample>(this IMongoCollection<T> collection, TExample example, RemoveFlags flags) where T : class
+        {
+            collection.RemoveByExample(example, flags, false);
         }
 
         /// <summary>

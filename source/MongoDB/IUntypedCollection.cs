@@ -20,7 +20,7 @@ namespace MongoDB
 
         MapReduce MapReduce();
 
-        void Remove(object selector, bool safemode);
+        void Remove(object selector, RemoveFlags flags, bool safemode);
 
         void Save(object document, bool safemode);
 

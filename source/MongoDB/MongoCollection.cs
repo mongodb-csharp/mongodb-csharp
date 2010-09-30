@@ -341,28 +341,30 @@ namespace MongoDB
         /// Remove documents from the collection according to the selector.
         /// </summary>
         /// <param name="selector">The selector.</param>
+        /// <param name="flags">The flags.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         /// <remarks>
         /// An empty document will match all documents in the collection and effectively truncate it.
         /// See the safemode description in the class description
         /// </remarks>
-        public void Remove(Document selector, bool safemode)
+        public void Remove(Document selector, RemoveFlags flags, bool safemode)
         {
-            ((IUntypedCollection)this).Remove(selector, safemode);
+            ((IUntypedCollection)this).Remove(selector, flags, safemode);
         }
 
         /// <summary>
         /// Remove documents from the collection.
         /// </summary>
         /// <param name="document">The document.</param>
+        /// <param name="flags">The flags.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         /// <remarks>
         /// An empty document will match all documents in the collection and effectively truncate it.
         /// See the safemode description in the class description
         /// </remarks>
-        public void Remove(T document, bool safemode)
+        public void Remove(T document, RemoveFlags flags, bool safemode)
         {
-            ((IUntypedCollection)this).Remove(document, safemode);
+            ((IUntypedCollection)this).Remove(document, flags, safemode);
         }
 
         /// <summary>
@@ -370,13 +372,14 @@ namespace MongoDB
         /// </summary>
         /// <typeparam name="TExample">The type of the example.</typeparam>
         /// <param name="example">The example.</param>
+        /// <param name="flags">The flags.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         /// <remarks>
         /// An empty document will match all documents in the collection and effectively truncate it.
         /// </remarks>
-        public void RemoveByExample<TExample>(TExample example, bool safemode)
+        public void RemoveByExample<TExample>(TExample example, RemoveFlags flags, bool safemode)
         {
-            Remove(ObjectToDocumentConverter.Convert(example), false);
+            Remove(ObjectToDocumentConverter.Convert(example), flags, false);
         }
 
         /// <summary>
@@ -646,8 +649,9 @@ namespace MongoDB
         /// Removes the specified selector.
         /// </summary>
         /// <param name="selector">The selector.</param>
+        /// <param name="flags">The flags.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        void IUntypedCollection.Remove(object selector, bool safemode)
+        void IUntypedCollection.Remove(object selector, RemoveFlags flags, bool safemode)
         {
             if(selector == null)
                 throw new ArgumentNullException("selector");
@@ -659,7 +663,8 @@ namespace MongoDB
                 _connection.SendMessage(new DeleteMessage(writerSettings)
                 {
                     FullCollectionName = FullName,
-                    Selector = selector
+                    Selector = selector,
+                    Flags = flags
                 }, DatabaseName);
                 
                 CheckLastError(safemode);

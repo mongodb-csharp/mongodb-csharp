@@ -214,34 +214,37 @@ namespace MongoDB
         void InsertManyByExample<TExample>(IEnumerable<TExample> examples, bool safemode);
 
         /// <summary>
-        ///   Remove documents from the collection according to the selector.
+        /// Remove documents from the collection according to the selector.
         /// </summary>
-        /// <param name = "selector">The selector.</param>
-        /// <param name = "safemode">if set to <c>true</c> [safemode].</param>
-        /// <remarks>
-        ///   An empty document will match all documents in the collection and effectively truncate it.
-        ///   See the safemode description in the class description
-        /// </remarks>
-        void Remove(Document selector, bool safemode);
-
-        /// <summary>
-        /// Remove documents from the collection.
-        /// </summary>
-        /// <param name="document">The document.</param>
+        /// <param name="selector">The selector.</param>
+        /// <param name="flags">The flags.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
         /// <remarks>
         /// An empty document will match all documents in the collection and effectively truncate it.
         /// See the safemode description in the class description
         /// </remarks>
-        void Remove(T document, bool safemode);
+        void Remove(Document selector, RemoveFlags flags, bool safemode);
 
         /// <summary>
-        ///   Remove documents from the collection according to the selector.
+        /// Remove documents from the collection.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="flags">The flags.</param>
+        /// <param name="safemode">if set to <c>true</c> [safemode].</param>
+        /// <remarks>
+        /// An empty document will match all documents in the collection and effectively truncate it.
+        /// See the safemode description in the class description
+        /// </remarks>
+        void Remove(T document, RemoveFlags flags, bool safemode);
+
+        /// <summary>
+        /// Remove documents from the collection according to the selector.
         /// </summary>
         /// <typeparam name="TExample">The type of the example.</typeparam>
         /// <param name="example">The example.</param>
+        /// <param name="flags">The flags.</param>
         /// <param name="safemode">if set to <c>true</c> [safemode].</param>
-        void RemoveByExample<TExample>(TExample example, bool safemode);
+        void RemoveByExample<TExample>(TExample example, RemoveFlags flags, bool safemode);
 
         /// <summary>
         /// Inserts or updates a document in the database.  If the document does not contain an _id one will be
