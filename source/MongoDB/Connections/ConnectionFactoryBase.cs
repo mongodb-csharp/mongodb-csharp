@@ -191,6 +191,21 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
+        /// Determines whether the specified connection is invalid.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified connection is invalid; otherwise, <c>false</c>.
+        /// </returns>
+        protected bool IsInvalid(RawConnection connection)
+        {
+            if(connection == null)
+                throw new ArgumentNullException("connection");
+            
+            return !connection.IsConnected || connection.IsInvalid;
+        }
+
+        /// <summary>
         ///   Determines whether the specified connection is alive.
         /// </summary>
         /// <param name = "connection">The connection.</param>
@@ -202,10 +217,7 @@ namespace MongoDB.Connections
             if(connection == null)
                 throw new ArgumentNullException("connection");
 
-            if(!connection.IsConnected)
-                return false;
-
-            if(connection.IsInvalid)
+            if(IsInvalid(connection))
                 return false;
 
             if(Builder.ConnectionLifetime != TimeSpan.Zero)
