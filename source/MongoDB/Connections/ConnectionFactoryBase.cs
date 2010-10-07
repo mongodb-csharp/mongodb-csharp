@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
 using System.Linq;
+using System.Net.Sockets;
 
 namespace MongoDB.Connections
 {
@@ -9,8 +9,8 @@ namespace MongoDB.Connections
     /// </summary>
     internal abstract class ConnectionFactoryBase : IConnectionFactory
     {
-        private readonly List<MongoServerEndPoint> _servers;
         protected readonly object SyncObject = new object();
+        private readonly List<MongoServerEndPoint> _servers;
         private Func<RawConnection> _createRawConnection;
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Gets the primary end point.
+        ///   Gets the primary end point.
         /// </summary>
         /// <value>The primary end point.</value>
         public MongoServerEndPoint PrimaryEndPoint { get; private set; }
@@ -91,7 +91,7 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Creates the raw connection core.
+        ///   Creates the raw connection core.
         /// </summary>
         /// <returns></returns>
         private RawConnection CreateRawConnectionCore()
@@ -107,7 +107,7 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Invalidates the replica set status.
+        ///   Invalidates the replica set status.
         /// </summary>
         protected void InvalidateReplicaSetStatus()
         {
@@ -116,37 +116,20 @@ namespace MongoDB.Connections
                 for(var i = 0; i < _servers.Count; i++)
                 {
                     var endPoint = _servers[i];
-                    RawConnection connection = null;
-                    try
-                    {
-                        connection = new RawConnection(endPoint, Builder.ConnectionTimeout);
 
-                        var result = connection.SendCommand("admin", new Document("ismaster", 1));
+                    if(endPoint == PrimaryEndPoint)
+                        continue; // skip the old primary for now
 
-                        foreach(var replicaSetHost in ParseReplicaSetHosts(result))
-                            if(!_servers.Contains(replicaSetHost))
-                                _servers.Add(replicaSetHost);
-
-                        if(true.Equals(result["ismaster"]))
-                        {
-                            PrimaryEndPoint = endPoint;
-                            return;
-                        }
-                    }
-                    catch(SocketException)
-                    {
+                    if(!IsEndPointMaster(endPoint))
                         continue;
-                    }
-                    catch(MongoConnectionException)
-                    {
-                        continue;
-                    }
-                    finally
-                    {
-                        if(connection != null)
-                            connection.Dispose();
-                    }
+
+                    PrimaryEndPoint = endPoint;
+                    return;
                 }
+
+                if(PrimaryEndPoint != null)
+                    if(IsEndPointMaster(PrimaryEndPoint))
+                        return;
 
                 if(_servers.Count <= 1)
                 {
@@ -158,10 +141,43 @@ namespace MongoDB.Connections
             }
         }
 
+        private bool IsEndPointMaster(MongoServerEndPoint endPoint)
+        {
+            RawConnection connection = null;
+            try
+            {
+                connection = new RawConnection(endPoint, Builder.ConnectionTimeout);
+
+                var result = connection.SendCommand("admin", new Document("ismaster", 1));
+
+                foreach(var replicaSetHost in ParseReplicaSetHosts(result))
+                    if(!_servers.Contains(replicaSetHost))
+                        _servers.Add(replicaSetHost);
+
+                if(true.Equals(result["ismaster"]))
+                    return true;
+            }
+            catch(SocketException)
+            {
+                return false;
+            }
+            catch(MongoConnectionException)
+            {
+                return false;
+            }
+            finally
+            {
+                if(connection != null)
+                    connection.Dispose();
+            }
+
+            return false;
+        }
+
         /// <summary>
-        /// Parses the replica set hosts.
+        ///   Parses the replica set hosts.
         /// </summary>
-        /// <param name="result">The result.</param>
+        /// <param name = "result">The result.</param>
         /// <returns></returns>
         private static IEnumerable<MongoServerEndPoint> ParseReplicaSetHosts(Document result)
         {
