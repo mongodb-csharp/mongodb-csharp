@@ -155,8 +155,18 @@ namespace MongoDB.Connections
                     _invalidConnections.Add(connection);
                 }
 
-                if(connection.EndPoint==PrimaryEndPoint)
+                if(connection.EndPoint == PrimaryEndPoint && IsInvalid(connection))
+                {
+                    // Primary is possible dead. Flush active connections.
+                    lock(SyncObject)
+                    {
+                        _invalidConnections.AddRange(_freeConnections);
+                        _freeConnections.Clear();
+                        Monitor.Pulse(SyncObject);
+                    }
+
                     InvalidateReplicaSetStatus();
+                }
 
                 return;
             }
