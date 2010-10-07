@@ -27,7 +27,6 @@ namespace MongoDB.IntegrationTests
             var properties = Enumerable.Range(1, 500).ToDictionary(x => x.ToString(), x => (object)x).ToArray();
             var largereads = DB["largereads"];
             largereads.InsertMany(Enumerable.Range(1, 3000).Select(i => new Document(properties)));
-
         }
 
         [Test]
@@ -48,7 +47,14 @@ namespace MongoDB.IntegrationTests
 
             Assert.AreEqual(2000, count);
         }
-        
+
+        [Test]
+        [ExpectedException(typeof(MongoException))]
+        public void TestThrowsAnExceptionIfServerReturnsAQueryFailure()
+        {
+            DB["largereads"].FindAll().Sort("j").Documents.Any();
+        }
+
         [Test]
         public void TestCanReadAndKillCursor()
         {
