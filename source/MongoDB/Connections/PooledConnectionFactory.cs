@@ -162,7 +162,7 @@ namespace MongoDB.Connections
                     {
                         _invalidConnections.AddRange(_freeConnections);
                         _freeConnections.Clear();
-                        Monitor.Pulse(SyncObject);
+                        //Monitor.Pulse(SyncObject);
                     }
 
                     InvalidateReplicaSetStatus();

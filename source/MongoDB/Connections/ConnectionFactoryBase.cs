@@ -113,34 +113,48 @@ namespace MongoDB.Connections
         {
             lock(SyncObject)
             {
-                for(var i = 0; i < _servers.Count; i++)
+                var timeout = DateTime.UtcNow.Add(Builder.ConnectionTimeout);
+
+                do
                 {
-                    var endPoint = _servers[i];
+                    var index = -1;
+                    while(++index < _servers.Count)
+                    {
+                        var endPoint = _servers[index];
 
-                    if(endPoint == PrimaryEndPoint)
-                        continue; // skip the old primary for now
+                        if(endPoint == PrimaryEndPoint)
+                            continue; // skip the old primary for now
 
-                    if(!IsEndPointMaster(endPoint))
-                        continue;
+                        if(!IsEndPointMaster(endPoint))
+                            continue;
 
-                    PrimaryEndPoint = endPoint;
-                    return;
-                }
+                        PrimaryEndPoint = endPoint;
+                        return;
+                    }
 
-                if(PrimaryEndPoint != null)
-                    if(IsEndPointMaster(PrimaryEndPoint))
+                    if(PrimaryEndPoint != null && IsEndPointMaster(PrimaryEndPoint))
                         return;
 
-                if(_servers.Count <= 1)
-                {
+                    if(_servers.Count > 1)
+                        continue;
+
                     PrimaryEndPoint = _servers.FirstOrDefault();
+
                     return;
                 }
+                while(DateTime.UtcNow < timeout);
 
-                throw new MongoException("Could not found the ReplicaSet master server.");
+                throw new MongoException("Timeout expired. The timeout period elapsed prior to find a ReplicaSet master server.");
             }
         }
 
+        /// <summary>
+        /// Determines whether [is end point master] [the specified end point].
+        /// </summary>
+        /// <param name="endPoint">The end point.</param>
+        /// <returns>
+        /// 	<c>true</c> if [is end point master] [the specified end point]; otherwise, <c>false</c>.
+        /// </returns>
         private bool IsEndPointMaster(MongoServerEndPoint endPoint)
         {
             RawConnection connection = null;
@@ -150,12 +164,9 @@ namespace MongoDB.Connections
 
                 var result = connection.SendCommand("admin", new Document("ismaster", 1));
 
-                foreach(var replicaSetHost in ParseReplicaSetHosts(result))
-                    if(!_servers.Contains(replicaSetHost))
-                        _servers.Add(replicaSetHost);
+                _servers.AddRange(ParseReplicaSetHosts(result).Where(h=>!_servers.Contains(h)));
 
-                if(true.Equals(result["ismaster"]))
-                    return true;
+                return true.Equals(result["ismaster"]);
             }
             catch(SocketException)
             {
@@ -170,8 +181,6 @@ namespace MongoDB.Connections
                 if(connection != null)
                     connection.Dispose();
             }
-
-            return false;
         }
 
         /// <summary>
@@ -191,17 +200,17 @@ namespace MongoDB.Connections
         }
 
         /// <summary>
-        /// Determines whether the specified connection is invalid.
+        ///   Determines whether the specified connection is invalid.
         /// </summary>
-        /// <param name="connection">The connection.</param>
+        /// <param name = "connection">The connection.</param>
         /// <returns>
-        /// 	<c>true</c> if the specified connection is invalid; otherwise, <c>false</c>.
+        ///   <c>true</c> if the specified connection is invalid; otherwise, <c>false</c>.
         /// </returns>
         protected bool IsInvalid(RawConnection connection)
         {
             if(connection == null)
                 throw new ArgumentNullException("connection");
-            
+
             return !connection.IsConnected || connection.IsInvalid;
         }
 
