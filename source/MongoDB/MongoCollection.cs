@@ -551,9 +551,7 @@ namespace MongoDB
             if(selector == null)
                 throw new ArgumentNullException("selector");
 
-            try
-            {
-                var command = new Document
+            var command = new Document
                 {
                     {"findandmodify", Name},
                     {"query", selector},
@@ -563,23 +561,18 @@ namespace MongoDB
                     {"upsert", upsert}
                 };
 
-                if(sort != null)
-                    command.Add("sort", sort);
-                if(fields != null)
-                    command.Add("fields", fields);
+            if(sort != null)
+                command.Add("sort", sort);
+            if(fields != null)
+                command.Add("fields", fields);
 
-                var response = _connection.SendCommand<FindAndModifyResult<T>>(_configuration.SerializationFactory,
-                    DatabaseName,
-                    typeof(T),
-                    command);
+            var response = _connection.SendCommand<FindAndModifyResult<T>>(_configuration.SerializationFactory,
+                DatabaseName,
+                typeof(T),
+                command,
+                false);
 
-                return response.Value;
-            }
-            catch (MongoCommandException)
-            {
-                // This is when there is no document to operate on
-                return null;
-            }
+            return response.Value;
         }
 
         /// <summary>
