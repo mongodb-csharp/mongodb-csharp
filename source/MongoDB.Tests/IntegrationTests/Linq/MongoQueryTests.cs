@@ -289,14 +289,6 @@ namespace MongoDB.IntegrationTests.Linq
         }
 
         [Test]
-        public void NestedQueryable_All()
-        {
-            var people = Collection.Linq().Where(x => x.Addresses.All(a => a.City == "Paris")).ToList();
-
-            Assert.AreEqual(1, people.Count);
-        }
-
-        [Test]
         public void NestedQueryable_Contains()
         {
             var people = Collection.Linq().Where(x => x.EmployerIds.Contains(1)).ToList();
