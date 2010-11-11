@@ -98,7 +98,7 @@ namespace MongoDB.Connections
         {
             try
             {
-                return new RawConnection(PrimaryEndPoint, Builder.ConnectionTimeout);
+                return new RawConnection(PrimaryEndPoint, Builder.ConnectionTimeout, Builder.ConnectionLifetime);
             }
             catch(SocketException exception)
             {
@@ -160,7 +160,7 @@ namespace MongoDB.Connections
             RawConnection connection = null;
             try
             {
-                connection = new RawConnection(endPoint, Builder.ConnectionTimeout);
+                connection = new RawConnection(endPoint, Builder.ConnectionTimeout, Builder.ConnectionLifetime);
 
                 var result = connection.SendCommand("admin", new Document("ismaster", 1));
 
@@ -230,7 +230,7 @@ namespace MongoDB.Connections
                 return false;
 
             if(Builder.ConnectionLifetime != TimeSpan.Zero)
-                if(connection.CreationTime.Add(Builder.ConnectionLifetime) < DateTime.Now)
+                if(connection.LifeTime < DateTime.UtcNow)
                     return false;
 
             return true;
