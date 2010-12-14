@@ -252,8 +252,11 @@ namespace MongoDB
         public Document Explain()
         {
             TryModify();
-            _specOpts["$explain"] = true;
 
+            var savedLimit = _limit;
+
+            _specOpts["$explain"] = true;
+            _limit = _limit * -1;
             var explainResult = RetrieveData<Document>();
             try
             {
@@ -268,6 +271,8 @@ namespace MongoDB
             {
                 if(explainResult.CursorId > 0)
                     KillCursor(explainResult.CursorId);
+
+                _limit = savedLimit;
             }
         }
 
