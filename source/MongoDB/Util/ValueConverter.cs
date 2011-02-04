@@ -7,7 +7,7 @@ namespace MongoDB.Util
         public static object Convert(object value, Type destinationType)
         {
             if(value == null)
-                return null;
+                return destinationType.IsValueType ? Activator.CreateInstance(destinationType) : null;
 
             var valueType = value.GetType();
 

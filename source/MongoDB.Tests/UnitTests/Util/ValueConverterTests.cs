@@ -110,5 +110,21 @@ namespace MongoDB.UnitTests.Util
 
             Assert.IsNull(array);
         }
+
+        [Test]
+        public void Convert_NullWithTypeBool_ReturnsFalse()
+        {
+            var value = ValueConverter.Convert(null, typeof(bool));
+
+            Assert.AreEqual(false, value);
+        }
+
+        [Test]
+        public void Convert_NullWithTypeInt32_Returns0()
+        {
+            var value = ValueConverter.Convert(null, typeof(Int32));
+
+            Assert.AreEqual(0, value);
+        }
     }
 }
