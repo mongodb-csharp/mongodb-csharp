@@ -754,10 +754,13 @@ namespace MongoDB
         {
             var descriptor = _configuration.SerializationFactory.GetObjectDescriptor(typeof(T));
 
-            var foundOp = descriptor.GetMongoPropertyNames(document)
-                .Any(name => name.IndexOf('$') == 0);
+            var foundOp = document is Document && ( (Document)document ).Keys.Any(k => k.Contains("$"));
 
-            return foundOp == false ? new Document("$set", document) : document;
+            if(foundOp == false)
+                foundOp = descriptor.GetMongoPropertyNames(document)
+                    .Any(name => name.Contains('$'));
+
+            return foundOp == false ? new Document().Add("$set", document) : document;
         }
     }
 }

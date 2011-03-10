@@ -408,5 +408,44 @@ namespace MongoDB.IntegrationTests
             Assert.IsNotNull(result);
             Assert.AreEqual(result["Existing"], 2.0);
         }
+
+        public class Sequence
+        {
+            public string Name { get; set; }
+            public int Value { get; set; }
+        }
+
+        [Test]
+        public void FindAndModifyWithoutOperatorWorks()
+        {
+            var collection = DB.GetCollection<Sequence>();
+
+            collection.Remove(new Document());
+            collection.Insert(new Sequence { Name = "test", Value = 1 });
+
+            var spec = new Document().Add("Name", "test");
+            var update = new Document("Value", 10);
+
+            var document = collection.FindAndModify(update, spec, true);
+
+            Assert.AreEqual("test", document.Name);
+            Assert.AreEqual(10, document.Value);
+        }
+
+        [Test]
+        public void FindAndModifyIncOperatorWorks()
+        {
+            var collection = DB.GetCollection<Sequence>();
+
+            collection.Remove(new Document());
+            collection.Insert(new Sequence { Name = "test", Value = 1 });
+
+            var spec = new Document().Add("Name", "test");
+            var update = Mo.Inc("Value", 1);
+
+            var document = collection.FindAndModify(update, spec, true);
+
+            Assert.AreEqual(2, document.Value);
+        }
     }
 }
