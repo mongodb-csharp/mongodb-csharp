@@ -1,5 +1,9 @@
 MongoDB-CSharp
 ==============
+*This driver currently is in a maintenance mode. We will not do any future development on it, except fixing huge bugs. There is now an official driver with a fulltime develop behind it https://github.com/mongodb/mongo-csharp-driver.*
+
+If you search for Linq support for the official driver. Please visit https://github.com/craiggwilson/fluent-mongo where Craig Wilson has extracted the Linq support of this driver and added it to the official one.
+
 This is a community supported driver to connect to MongoDB using .Net. It is written entirely in C# and has been tested and developed under both Windows and Mono 2.0 (Ubuntu 32-bit 9.04). Its API is similar to the Mongo Client one. At this point it is becoming a solid base to add many more advanced features.
 
 Home: http://github.com/mongodb-csharp/mongodb-csharp
