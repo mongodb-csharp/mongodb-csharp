@@ -419,6 +419,19 @@ namespace MongoDB.IntegrationTests.Linq
         }
 
         [Test]
+        public void String_Contains_Metacharacters()
+        {
+            var people = from p in Collection.Linq()
+                         where p.FirstName.Contains("(.)$")
+                         select p;
+
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.NumberToSkip);
+            Assert.AreEqual(new Document("FirstName", new MongoRegex(@"\(\.\)\$")), queryObject.Query);
+        }
+
+        [Test]
         public void String_EndsWith()
         {
             var people = from p in Collection.Linq()
@@ -433,6 +446,20 @@ namespace MongoDB.IntegrationTests.Linq
         }
 
         [Test]
+        public void String_EndsWith_Metacharacters()
+        {
+            var people = from p in Collection.Linq()
+                         where p.FirstName.EndsWith("ea?")
+                         select p;
+
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.NumberToLimit);
+            Assert.AreEqual(0, queryObject.NumberToSkip);
+            Assert.AreEqual(new Document("FirstName", new MongoRegex(@"ea\?$")), queryObject.Query);
+        }
+
+        [Test]
         public void String_StartsWith()
         {
             var people = from p in Collection.Linq()
@@ -444,6 +471,20 @@ namespace MongoDB.IntegrationTests.Linq
             Assert.AreEqual(0, queryObject.NumberToLimit);
             Assert.AreEqual(0, queryObject.NumberToSkip);
             Assert.AreEqual(new Document("FirstName", new MongoRegex("^J")), queryObject.Query);
+        }
+
+        [Test]
+        public void String_StartsWithMetacharacters()
+        {
+            var people = from p in Collection.Linq()
+                         where p.FirstName.StartsWith("[JBZ]")
+                         select p;
+
+            var queryObject = ((IMongoQueryable)people).GetQueryObject();
+            Assert.AreEqual(0, queryObject.Fields.Count);
+            Assert.AreEqual(0, queryObject.NumberToLimit);
+            Assert.AreEqual(0, queryObject.NumberToSkip);
+            Assert.AreEqual(new Document("FirstName", new MongoRegex(@"^\[JBZ]")), queryObject.Query);
         }
 
         [Test]

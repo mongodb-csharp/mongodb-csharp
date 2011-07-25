@@ -424,6 +424,16 @@ namespace MongoDB.IntegrationTests.Linq
         }
 
         [Test]
+        public void String_Contains_Metacharacters()
+        {
+            var people = (from p in Collection.Linq()
+                          where p.FirstName.Contains("(.)$")
+                          select p).ToList();
+
+            Assert.AreEqual(0, people.Count);
+        }
+
+        [Test]
         public void String_EndsWith()
         {
             var people = (from p in Collection.Linq()
@@ -434,6 +444,16 @@ namespace MongoDB.IntegrationTests.Linq
         }
 
         [Test]
+        public void String_EndsWith_Metacharacters()
+        {
+            var people = (from p in Collection.Linq()
+                          where p.FirstName.EndsWith("ea?")
+                          select p).ToList();
+
+            Assert.AreEqual(0, people.Count);
+        }
+
+        [Test]
         public void String_StartsWith()
         {
             var people = (from p in Collection.Linq()
@@ -441,6 +461,16 @@ namespace MongoDB.IntegrationTests.Linq
                           select p).ToList();
 
             Assert.AreEqual(2, people.Count);
+        }
+
+        [Test]
+        public void String_StartsWith_Metacharacters()
+        {
+            var people = (from p in Collection.Linq()
+                          where p.FirstName.StartsWith("[JBZ]")
+                          select p).ToList();
+
+            Assert.AreEqual(0, people.Count);
         }
 
         [Test]
