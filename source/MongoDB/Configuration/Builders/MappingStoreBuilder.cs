@@ -38,16 +38,16 @@ namespace MongoDB.Configuration.Builders
                 foreach (var p in _profiles)
                     agg.AddAutoMapper(new AutoMapper(CreateOverrideableProfile(p.Profile), p.Filter));
 
-                    agg.AddAutoMapper(new AutoMapper(CreateOverrideableProfile(_defaultProfile ?? new AutoMappingProfile())));
-                    autoMapper = agg;
-                }
-                else
-                    autoMapper = new AutoMapper(CreateOverrideableProfile(_defaultProfile ?? new AutoMappingProfile()));
+                agg.AddAutoMapper(new AutoMapper(CreateOverrideableProfile(_defaultProfile ?? new AutoMappingProfile())));
+                autoMapper = agg;
+            }
+            else
+                autoMapper = new AutoMapper(CreateOverrideableProfile(_defaultProfile ?? new AutoMappingProfile()));
 
-                var store = new AutoMappingStore(autoMapper);
+            var store = new AutoMappingStore(autoMapper);
 
-                foreach (var type in _eagerMapTypes)
-                    store.GetClassMap(type);
+            foreach (var type in _eagerMapTypes)
+                store.GetClassMap(type);
 
             return store;
         }

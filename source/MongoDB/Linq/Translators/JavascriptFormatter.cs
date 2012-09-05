@@ -180,13 +180,13 @@ namespace MongoDB.Linq.Translators
                 switch (m.Method.Name)
                 {
                     case "StartsWith":
-                        _js.AppendFormat("/^{0}/", EvaluateConstant<string>(m.Arguments[0]));
+                        _js.AppendFormat("/^{0}/", Regex.Escape(EvaluateConstant<string>(m.Arguments[0])));
                         break;
                     case "EndsWith":
-                        _js.AppendFormat("/{0}$/", EvaluateConstant<string>(m.Arguments[0]));
+                        _js.AppendFormat("/{0}$/", Regex.Escape(EvaluateConstant<string>(m.Arguments[0])));
                         break;
                     case "Contains":
-                        _js.AppendFormat("/{0}/", EvaluateConstant<string>(m.Arguments[0]));
+                        _js.AppendFormat("/{0}/", Regex.Escape(EvaluateConstant<string>(m.Arguments[0])));
                         break;
                     case "SubString":
                         switch(m.Arguments.Count)
@@ -195,7 +195,7 @@ namespace MongoDB.Linq.Translators
                                 _js.AppendFormat(".substr({0})", EvaluateConstant<int>(m.Arguments[0]));
                                 break;
                             case 2:
-                                _js.AppendFormat(".substr({0})", EvaluateConstant<int>(m.Arguments[0]), EvaluateConstant<int>(m.Arguments[1]));
+                                _js.AppendFormat(".substr({0},{1})", EvaluateConstant<int>(m.Arguments[0]), EvaluateConstant<int>(m.Arguments[1]));
                                 break;
                         }
                         break;
