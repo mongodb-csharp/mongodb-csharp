@@ -608,7 +608,7 @@ namespace MongoDB
         /// <returns></returns>
         private object EnsureUpdateDocument(object document)
         {
-            var descriptor = _configuration.SerializationFactory.GetObjectDescriptor(typeof(T));
+            var descriptor = _configuration.SerializationFactory.GetObjectDescriptor(document.GetType());
 
             var foundOp = document is Document && ( (Document)document ).Keys.Any(k => k.Contains("$"));
 
