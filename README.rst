@@ -1,6 +1,4 @@
-*This driver currently is in a maintenance mode. We will not do any future development on it, except fixing huge bugs. There is now an official driver with a fulltime develop behind it https://github.com/mongodb/mongo-csharp-driver.*
-
-If you search for Linq support for the official driver. Please visit https://github.com/craiggwilson/fluent-mongo where Craig Wilson has extracted the Linq support of this driver and added it to the official one.
+*This driver is outdated and will not longer be developed since there is now a better official driver for a long time*
 
 MongoDB-CSharp
 ==============
